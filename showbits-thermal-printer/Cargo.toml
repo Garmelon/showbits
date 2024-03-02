@@ -1,0 +1,7 @@
+[package]
+name = "showbits-thermal-printer"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+showbits-common.workspace = true

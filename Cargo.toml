@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = ["showbits-common", "showbits-thermal-printer"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+
+[workspace.dependencies]
+showbits-common.path = "./showbits-common"
