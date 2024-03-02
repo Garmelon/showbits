@@ -1,3 +1,3 @@
-pub fn greet(who: &str) {
-    println!("Hello {who}!");
-}
+pub use crate::vec2::Vec2;
+
+mod vec2;

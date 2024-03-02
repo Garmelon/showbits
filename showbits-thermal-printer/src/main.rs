@@ -1,3 +1,5 @@
+use showbits_common::Vec2;
+
 fn main() {
-    showbits_common::greet("world");
+    println!("{:?}", Vec2::EAST);
 }
