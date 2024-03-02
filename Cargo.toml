@@ -17,3 +17,9 @@ rust.unused = "warn"
 rust.noop_method_call = "warn"
 rust.single_use_lifetimes = "warn"
 clippy.use_self = "warn"
+
+# Optimize dependencies in debug mode (mainly for faster image exports).
+# Does not apply to workspace members, only "real" dependencies.
+# https://doc.rust-lang.org/cargo/reference/profiles.html#overrides
+[profile.dev.package."*"]
+opt-level = 3
