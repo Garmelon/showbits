@@ -8,3 +8,12 @@ edition = "2021"
 
 [workspace.dependencies]
 showbits-common.path = "./showbits-common"
+
+[workspace.lints]
+rust.unsafe_code = "forbid"
+rust.future_incompatible = "warn"
+rust.rust_2018_idioms = "warn"
+rust.unused = "warn"
+rust.noop_method_call = "warn"
+rust.single_use_lifetimes = "warn"
+clippy.use_self = "warn"

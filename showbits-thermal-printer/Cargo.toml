@@ -5,3 +5,6 @@ edition.workspace = true
 
 [dependencies]
 showbits-common.workspace = true
+
+[lints]
+workspace = true
