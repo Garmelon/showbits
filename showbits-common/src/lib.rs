@@ -5,3 +5,4 @@ mod rect;
 mod vec2;
 mod view;
 mod widget;
+pub mod widgets;
