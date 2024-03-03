@@ -3,5 +3,8 @@ name = "showbits-common"
 version.workspace = true
 edition.workspace = true
 
+[dependencies]
+anyhow = "1.0.80"
+
 [lints]
 workspace = true
