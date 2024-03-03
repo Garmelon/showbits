@@ -1,4 +1,4 @@
-use crate::{Rect, Vec2, View};
+use crate::{widgets::Background, Rect, Vec2, View};
 
 pub trait Widget<C> {
     /// Size that the widget wants to be, given the width and height
@@ -24,6 +24,20 @@ pub trait Widget<C> {
     }
 
     fn draw(self, view: &mut View<'_, C>);
+}
+
+/// Extension trait for [`Widget`]s.
+pub trait WidgetExt<C> {
+    fn boxed(self) -> BoxedWidget<C>;
+}
+
+impl<C, W> WidgetExt<C> for W
+where
+    W: Widget<C> + 'static,
+{
+    fn boxed(self) -> BoxedWidget<C> {
+        BoxedWidget::new(self)
+    }
 }
 
 /// Wrapper trait around [`Widget`] that turns `Box<Self>` into a `Self` to get
@@ -77,22 +91,30 @@ impl<C> BoxedWidget<C> {
     pub fn area(&self) -> Rect {
         self.area
     }
-}
 
-impl<C> Widget<C> for BoxedWidget<C> {
-    fn size(&self, max_width: Option<i32>, max_height: Option<i32>) -> Vec2 {
+    // Widget-like functions
+
+    pub fn size(&self, max_width: Option<i32>, max_height: Option<i32>) -> Vec2 {
         self.widget.size(max_width, max_height)
     }
 
-    fn resize(&mut self, area: Rect) {
+    pub fn resize(&mut self, area: Rect) {
+        self.area = area;
         self.widget.resize(area);
     }
 
-    fn update(&mut self, area: Rect) -> anyhow::Result<()> {
-        self.widget.update(area)
+    pub fn update(&mut self) -> anyhow::Result<()> {
+        self.widget.update(self.area)
     }
 
-    fn draw(self, view: &mut View<'_, C>) {
-        self.widget.draw(view);
+    pub fn draw(self, view: &mut View<'_, C>) {
+        let mut view = view.dup().zoom(self.area);
+        self.widget.draw(&mut view);
+    }
+
+    // Widget constructors
+
+    pub fn background(self, color: C) -> Background<C> {
+        Background::new(self, color)
     }
 }

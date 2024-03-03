@@ -22,14 +22,9 @@ impl<'a, C> View<'a, C> {
         }
     }
 
-    pub fn with_area(mut self, area: Rect) -> Self {
-        self.area = area;
+    pub fn zoom(mut self, area: Rect) -> Self {
+        self.area = area + self.area.corner_nw();
         self
-    }
-
-    pub fn translated(self, delta: Vec2) -> Self {
-        let area = self.area + delta;
-        self.with_area(area)
     }
 
     pub fn size(&self) -> Vec2 {
