@@ -128,3 +128,28 @@ impl Mul<i32> for Vec2 {
         self * Self::new(rhs, rhs)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::Vec2;
+
+    #[test]
+    fn arithmetic() {
+        let a = Vec2::new(1, 3);
+        let b = Vec2::new(3, 7);
+
+        assert_eq!(-a, Vec2::new(-1, -3));
+        assert_eq!(a.neg_x(), Vec2::new(-1, 3));
+        assert_eq!(a.neg_y(), Vec2::new(1, -3));
+
+        assert_eq!(a + b, Vec2::new(4, 10));
+        assert_eq!(a + 2, Vec2::new(3, 5));
+
+        assert_eq!(a - b, Vec2::new(-2, -4));
+        assert_eq!(a - 2, Vec2::new(-1, 1));
+        assert_eq!(a - b, b.to(a));
+
+        assert_eq!(a * b, Vec2::new(3, 21));
+        assert_eq!(a * 2, Vec2::new(2, 6));
+    }
+}
