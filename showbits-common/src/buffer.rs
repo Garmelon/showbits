@@ -47,10 +47,4 @@ impl<C> Buffer<C> {
         let pixel = self.data.get_mut(index)?;
         Some(pixel)
     }
-
-    pub fn set(&mut self, pos: Vec2, color: C) {
-        if let Some(pixel) = self.at_mut(pos) {
-            *pixel = color;
-        }
-    }
 }
