@@ -20,8 +20,38 @@ impl Vec2 {
         Self { x, y }
     }
 
+    /// The vector pointing from `self` to `other`.
+    ///
+    /// ```
+    /// # use showbits_common::Vec2;
+    /// let a = Vec2::new(1, 3);
+    /// let b = Vec2::new(3, 7);
+    /// assert_eq!(a.to(b), b - a);
+    /// ```
     pub fn to(self, other: Self) -> Self {
         other - self
+    }
+
+    /// Negate the `x` component of the vector.
+    ///
+    /// ```
+    /// # use showbits_common::Vec2;
+    /// let v = Vec2::new(3, 4);
+    /// assert_eq!(v.neg_x(), v * Vec2::new(-1, 1));
+    /// ```
+    pub fn neg_x(self) -> Self {
+        Self { x: -self.x, ..self }
+    }
+
+    /// Negate the `y` component of the vector.
+    ///
+    /// ```
+    /// # use showbits_common::Vec2;
+    /// let v = Vec2::new(3, 4);
+    /// assert_eq!(v.neg_y(), v * Vec2::new(1, -1));
+    /// ```
+    pub fn neg_y(self) -> Self {
+        Self { y: -self.y, ..self }
     }
 }
 
@@ -53,6 +83,14 @@ impl Add for Vec2 {
     }
 }
 
+impl Add<i32> for Vec2 {
+    type Output = Self;
+
+    fn add(self, rhs: i32) -> Self::Output {
+        self + Self::new(rhs, rhs)
+    }
+}
+
 impl Sub for Vec2 {
     type Output = Self;
 
@@ -64,14 +102,11 @@ impl Sub for Vec2 {
     }
 }
 
-impl Mul<i32> for Vec2 {
+impl Sub<i32> for Vec2 {
     type Output = Self;
 
-    fn mul(self, rhs: i32) -> Self::Output {
-        Self {
-            x: self.x * rhs,
-            y: self.y * rhs,
-        }
+    fn sub(self, rhs: i32) -> Self::Output {
+        self - Self::new(rhs, rhs)
     }
 }
 
@@ -83,5 +118,13 @@ impl Mul for Vec2 {
             x: self.x * rhs.x,
             y: self.y * rhs.y,
         }
+    }
+}
+
+impl Mul<i32> for Vec2 {
+    type Output = Self;
+
+    fn mul(self, rhs: i32) -> Self::Output {
+        self * Self::new(rhs, rhs)
     }
 }
