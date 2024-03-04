@@ -1,4 +1,4 @@
-use crate::{Buffer, Rect, Vec2};
+use crate::{Buffer, Color, Rect, Vec2};
 
 // TODO Add Orientation (from inkfo)
 
@@ -38,10 +38,12 @@ impl<'a, C> View<'a, C> {
     pub fn at(&self, pos: Vec2) -> Option<&C> {
         self.buffer.at(self.pos_to_buffer_pos(pos))
     }
+}
 
+impl<C: Color> View<'_, C> {
     pub fn set(&mut self, pos: Vec2, color: C) {
         if let Some(pixel) = self.buffer.at_mut(self.pos_to_buffer_pos(pos)) {
-            *pixel = color;
+            *pixel = color.over(*pixel);
         }
     }
 }

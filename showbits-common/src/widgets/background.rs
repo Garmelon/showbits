@@ -1,4 +1,4 @@
-use crate::{BoxedWidget, Vec2, Widget};
+use crate::{BoxedWidget, Color, Vec2, Widget};
 
 pub struct Background<C> {
     inner: BoxedWidget<C>,
@@ -11,7 +11,7 @@ impl<C> Background<C> {
     }
 }
 
-impl<C: Copy> Widget<C> for Background<C> {
+impl<C: Color> Widget<C> for Background<C> {
     fn size(&self, max_width: Option<i32>, max_height: Option<i32>) -> crate::Vec2 {
         self.inner.size(max_width, max_height)
     }
