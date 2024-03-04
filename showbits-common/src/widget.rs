@@ -5,15 +5,16 @@ pub trait Widget<C> {
     /// constraints.
     fn size(&self, max_width: Option<i32>, max_height: Option<i32>) -> Vec2;
 
-    /// Recalculate the size of all inner widgets given the widget's own size.
+    /// Recalculate the area (size and position) of all inner widgets given the
+    /// widget's own area.
     ///
     /// # Implement if...
     ///
     /// - There are inner widgets
-    fn resize(&mut self, _area: Rect) {}
+    fn set_area(&mut self, _area: Rect) {}
 
     /// Perform any updates (e.g. fetching map tiles) that require the widget's
-    /// size and may fail.
+    /// area and may fail.
     ///
     /// # Implement if...
     ///
@@ -45,7 +46,7 @@ where
 /// approach of `Box<Widget>`.
 trait WidgetWrapper<C> {
     fn size(&self, max_width: Option<i32>, max_height: Option<i32>) -> Vec2;
-    fn resize(&mut self, _area: Rect);
+    fn set_area(&mut self, _area: Rect);
     fn update(&mut self, _area: Rect) -> anyhow::Result<()>;
     fn draw(self: Box<Self>, view: &mut View<'_, C>);
 }
@@ -59,8 +60,9 @@ impl<C, W: Widget<C>> WidgetWrapper<C> for W {
         Widget::size(self, max_width, max_height)
     }
 
-    fn resize(&mut self, area: Rect) {
-        Widget::resize(self, area);
+    fn set_area(&mut self, area: Rect) {
+        // Widget::set_area(self, area);
+        self.set_area(area);
     }
 
     fn update(&mut self, area: Rect) -> anyhow::Result<()> {
@@ -98,9 +100,9 @@ impl<C> BoxedWidget<C> {
         self.widget.size(max_width, max_height)
     }
 
-    pub fn resize(&mut self, area: Rect) {
+    pub fn set_area(&mut self, area: Rect) {
         self.area = area;
-        self.widget.resize(area);
+        self.widget.set_area(area);
     }
 
     pub fn update(&mut self) -> anyhow::Result<()> {

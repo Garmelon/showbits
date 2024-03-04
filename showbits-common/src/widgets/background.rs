@@ -16,8 +16,8 @@ impl<C: Color> Widget<C> for Background<C> {
         self.inner.size(max_width, max_height)
     }
 
-    fn resize(&mut self, area: crate::Rect) {
-        self.inner.resize(area);
+    fn set_area(&mut self, area: crate::Rect) {
+        self.inner.set_area(area);
     }
 
     fn update(&mut self, _area: crate::Rect) -> anyhow::Result<()> {
