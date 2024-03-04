@@ -3,7 +3,7 @@ use std::path::Path;
 use escpos::{
     driver::FileDriver,
     printer::Printer as EPrinter,
-    utils::{PageCode, Protocol, ESC},
+    utils::{PageCode, Protocol},
 };
 use tokio::sync::mpsc;
 
@@ -54,8 +54,8 @@ impl Printer {
         let y_l = y as u8;
         let y_h = (y >> 8) as u8;
         let mut command = vec![0x1D, b'v', b'0', m, x_l, x_h, y_l, y_h];
-        for y in 0..y {
-            for x in 0..x {
+        for _y in 0..y {
+            for _x in 0..x {
                 // command.push((x + y) as u8);
                 command.push(0b0000_0011);
             }
