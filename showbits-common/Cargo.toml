@@ -5,7 +5,7 @@ edition.workspace = true
 
 [dependencies]
 anyhow = "1.0.80"
-palette = "0.7.5"
+palette.workspace = true
 
 [lints]
 workspace = true

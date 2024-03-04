@@ -4,6 +4,7 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+palette.workspace = true
 showbits-common.workspace = true
 
 [lints]

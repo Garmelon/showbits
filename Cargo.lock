@@ -148,6 +148,7 @@ dependencies = [
 name = "showbits-thermal-printer"
 version = "0.0.0"
 dependencies = [
+ "palette",
  "showbits-common",
 ]
 

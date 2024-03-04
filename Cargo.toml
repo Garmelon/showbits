@@ -7,6 +7,7 @@ version = "0.0.0"
 edition = "2021"
 
 [workspace.dependencies]
+palette = "0.7.5"
 showbits-common.path = "./showbits-common"
 
 [workspace.lints]
