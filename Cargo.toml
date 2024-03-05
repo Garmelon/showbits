@@ -8,6 +8,7 @@ edition = "2021"
 
 [workspace.dependencies]
 anyhow = "1.0.80"
+image = "0.24.9"
 palette = "0.7.5"
 showbits-common.path = "./showbits-common"
 

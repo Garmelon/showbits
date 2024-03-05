@@ -20,6 +20,18 @@ impl Vec2 {
         Self { x, y }
     }
 
+    pub fn from_u32(x: u32, y: u32) -> Self {
+        let x: i32 = x.try_into().expect("x too large");
+        let y: i32 = y.try_into().expect("y too large");
+        Self::new(x, y)
+    }
+
+    pub fn to_u32(self) -> (u32, u32) {
+        let x: u32 = self.x.try_into().expect("x too small");
+        let y: u32 = self.y.try_into().expect("y too small");
+        (x, y)
+    }
+
     /// The vector pointing from `self` to `other`.
     ///
     /// ```

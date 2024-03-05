@@ -1,21 +1,21 @@
-use crate::{Buffer, Color, Rect, Vec2};
+use image::RgbImage;
+use palette::Srgb;
 
-// TODO Add Orientation (from inkfo)
+use crate::{Rect, Vec2};
 
-pub struct View<'a, C> {
+pub struct View<'a> {
     area: Rect,
-    buffer: &'a mut Buffer<C>,
+    buffer: &'a mut RgbImage,
 }
 
-impl<'a, C> View<'a, C> {
-    pub fn new(buffer: &'a mut Buffer<C>) -> Self {
-        Self {
-            area: Rect::from_nw(Vec2::ZERO, buffer.size()),
-            buffer,
-        }
+impl<'a> View<'a> {
+    pub fn new(buffer: &'a mut RgbImage) -> Self {
+        let size = Vec2::from_u32(buffer.width(), buffer.height());
+        let area = Rect::from_nw(Vec2::ZERO, size);
+        Self { area, buffer }
     }
 
-    pub fn dup(&mut self) -> View<'_, C> {
+    pub fn dup(&mut self) -> View<'_> {
         View {
             area: self.area,
             buffer: self.buffer,
@@ -35,15 +35,19 @@ impl<'a, C> View<'a, C> {
         pos + self.area.corner_nw()
     }
 
-    pub fn at(&self, pos: Vec2) -> Option<&C> {
-        self.buffer.at(self.pos_to_buffer_pos(pos))
+    pub fn get(&self, pos: Vec2) -> Option<Srgb> {
+        let (x, y) = self.pos_to_buffer_pos(pos).to_u32();
+        let pixel = self.buffer.get_pixel_checked(x, y)?;
+        let [r, g, b] = pixel.0;
+        let color = Srgb::new(r, g, b);
+        Some(color.into_format())
     }
-}
 
-impl<C: Color> View<'_, C> {
-    pub fn set(&mut self, pos: Vec2, color: C) {
-        if let Some(pixel) = self.buffer.at_mut(self.pos_to_buffer_pos(pos)) {
-            *pixel = color.over(*pixel);
+    pub fn set(&mut self, pos: Vec2, color: Srgb) {
+        let (x, y) = self.pos_to_buffer_pos(pos).to_u32();
+        if let Some(pixel) = self.buffer.get_pixel_mut_checked(x, y) {
+            let color = color.into_format::<u8>();
+            pixel.0 = [color.red, color.green, color.blue];
         }
     }
 }
