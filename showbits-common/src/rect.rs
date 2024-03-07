@@ -56,19 +56,19 @@ impl Rect {
     }
 
     /// Construct a rectangle from its north-east corner and size.
-    pub fn from_corner_ne(ne: Vec2, size: Vec2) -> Self {
+    pub fn from_ne(ne: Vec2, size: Vec2) -> Self {
         let sw = ne + (size - 1).neg_x();
         Self::from_ne_sw(ne, sw)
     }
 
     /// Construct a rectangle from its south-west corner and size.
-    pub fn from_corner_sw(sw: Vec2, size: Vec2) -> Self {
+    pub fn from_sw(sw: Vec2, size: Vec2) -> Self {
         let ne = sw + (size - 1).neg_y();
         Self::from_ne_sw(ne, sw)
     }
 
     /// Construct a rectangle from its south-east corner and size.
-    pub fn from_corner_se(se: Vec2, size: Vec2) -> Self {
+    pub fn from_se(se: Vec2, size: Vec2) -> Self {
         let nw = se - (size - 1);
         Self::from_nw_se(nw, se)
     }
