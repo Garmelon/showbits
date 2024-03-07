@@ -6,3 +6,4 @@ mod render;
 mod vec2;
 mod view;
 mod widget;
+pub mod widgets;

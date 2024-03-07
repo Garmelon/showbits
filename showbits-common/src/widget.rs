@@ -3,6 +3,8 @@ use taffy::{AvailableSpace, Size};
 use crate::{Node, View};
 
 pub trait Widget<C> {
+    /// Used for the measure function in
+    /// [`taffy::TaffyTree::compute_layout_with_measure`].
     #[allow(unused_variables)]
     fn size(
         &mut self,
@@ -13,8 +15,19 @@ pub trait Widget<C> {
         Size::ZERO
     }
 
-    fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()>;
-    fn draw_above(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()>;
+    /// Called before all children are drawn.
+    ///
+    /// Prefer this over [`Self::draw_above`] when implementing a leaf widget.
+    #[allow(unused_variables)]
+    fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
+        Ok(())
+    }
+
+    /// Called after all children are drawn.
+    #[allow(unused_variables)]
+    fn draw_above(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
+        Ok(())
+    }
 }
 
 pub type BoxedWidget<C> = Box<dyn Widget<C>>;

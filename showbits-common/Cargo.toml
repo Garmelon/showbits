@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+cosmic-text = "0.11.2"
 image.workspace = true
 palette.workspace = true
 

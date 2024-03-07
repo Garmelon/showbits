@@ -50,4 +50,16 @@ impl<'a> View<'a> {
             pixel.0 = [color.red, color.green, color.blue];
         }
     }
+
+    // More complicated drawing primitives
+
+    pub fn rect(&mut self, area: Rect, color: Srgb) {
+        let nw = area.corner_nw();
+        let se = area.corner_se();
+        for y in nw.y..=se.y {
+            for x in nw.x..=se.x {
+                self.set(Vec2::new(x, y), color);
+            }
+        }
+    }
 }
