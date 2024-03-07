@@ -2,22 +2,29 @@ use taffy::{AvailableSpace, Size};
 
 use crate::{Node, View};
 
-pub trait Widget {
+pub trait Widget<C> {
     #[allow(unused_variables)]
-    fn size(&mut self, known: Size<Option<f32>>, available: Size<AvailableSpace>) -> Size<f32> {
+    fn size(
+        &mut self,
+        ctx: &mut C,
+        known: Size<Option<f32>>,
+        available: Size<AvailableSpace>,
+    ) -> Size<f32> {
         Size::ZERO
     }
 
-    fn draw_below(&mut self, view: &mut View<'_>) -> anyhow::Result<()>;
-    fn draw_above(&mut self, view: &mut View<'_>) -> anyhow::Result<()>;
+    fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()>;
+    fn draw_above(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()>;
 }
 
-pub trait WidgetExt {
-    fn node(self) -> Node;
+pub type BoxedWidget<C> = Box<dyn Widget<C>>;
+
+pub trait WidgetExt<C> {
+    fn node(self) -> Node<C>;
 }
 
-impl<W: Widget + 'static> WidgetExt for W {
-    fn node(self) -> Node {
+impl<C, W: Widget<C> + 'static> WidgetExt<C> for W {
+    fn node(self) -> Node<C> {
         Node::empty().widget(self)
     }
 }

@@ -5,15 +5,15 @@ use taffy::{
     TaffyTree, TrackSizingFunction,
 };
 
-use crate::Widget;
+use crate::{BoxedWidget, Widget};
 
-pub struct Node {
+pub struct Node<C> {
     layout: Style,
     children: Vec<NodeId>,
-    widget: Option<Box<dyn Widget>>,
+    widget: Option<BoxedWidget<C>>,
 }
 
-impl Node {
+impl<C> Node<C> {
     pub fn empty() -> Self {
         Self {
             layout: Style::default(),
@@ -27,12 +27,12 @@ impl Node {
         self
     }
 
-    pub fn widget<W: Widget + 'static>(mut self, widget: W) -> Self {
+    pub fn widget<W: Widget<C> + 'static>(mut self, widget: W) -> Self {
         self.widget = Some(Box::new(widget));
         self
     }
 
-    pub fn register(self, tree: &mut TaffyTree<Box<dyn Widget>>) -> TaffyResult<NodeId> {
+    pub fn register(self, tree: &mut TaffyTree<BoxedWidget<C>>) -> TaffyResult<NodeId> {
         let id = tree.new_with_children(self.layout, &self.children)?;
         tree.set_node_context(id, self.widget)?;
         Ok(id)
@@ -170,7 +170,7 @@ macro_rules! layout_setter_rect {
     };
 }
 
-impl Node {
+impl<C> Node<C> {
     layout_setter!(display: Display);
 
     layout_setter!(overflow: Point<Overflow>);
