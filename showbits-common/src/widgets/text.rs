@@ -1,5 +1,5 @@
-use cosmic_text::{Attrs, Buffer, Color, FontSystem, Metrics, Shaping, SwashCache};
-use palette::Srgb;
+use cosmic_text::{Attrs, Buffer, FontSystem, Metrics, Shaping, SwashCache};
+use palette::Srgba;
 use taffy::prelude::{AvailableSpace, Size};
 
 use crate::{color, Rect, Vec2, View, Widget};
@@ -32,12 +32,12 @@ pub trait HasFontStuff {
 
 pub struct Text {
     buffer: Buffer,
-    color: Srgb,
+    color: Srgba,
 }
 
 impl Text {
     /// Default text color.
-    const COLOR: Srgb = Srgb::new(0.0, 0.0, 0.0);
+    const COLOR: Srgba = Srgba::new(0.0, 0.0, 0.0, 1.0);
 
     // Default shaping strategy.
     const SHAPING: Shaping = Shaping::Advanced;
@@ -81,7 +81,7 @@ impl Text {
         }
     }
 
-    pub fn color(mut self, color: Srgb) -> Self {
+    pub fn color(mut self, color: Srgba) -> Self {
         self.color = color;
         self
     }

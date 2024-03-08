@@ -5,8 +5,8 @@ use escpos::{
     printer::Printer as EPrinter,
     utils::{PageCode, Protocol, GS},
 };
-use image::{Rgb, RgbImage};
-use showbits_common::Tree;
+use image::{Rgba, RgbaImage};
+use showbits_common::{color, Tree};
 use taffy::{AvailableSpace, NodeId, Size};
 
 pub struct Printer {
@@ -91,7 +91,7 @@ impl Printer {
     /// https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/gs_lv_0.html
     fn print_image_to_printer(
         printer: &mut EPrinter<FileDriver>,
-        image: &RgbImage,
+        image: &RgbaImage,
     ) -> anyhow::Result<()> {
         assert_eq!(Self::WIDTH % 8, 0);
         assert_eq!(image.width(), Self::WIDTH);
@@ -122,7 +122,7 @@ impl Printer {
         Ok(())
     }
 
-    fn get_horizontal_byte_starting_at(image: &RgbImage, x: u32, y: u32) -> u8 {
+    fn get_horizontal_byte_starting_at(image: &RgbaImage, x: u32, y: u32) -> u8 {
         let p7 = Self::pixel_to_bit(*image.get_pixel(x, y));
         let p6 = Self::pixel_to_bit(*image.get_pixel(x + 1, y));
         let p5 = Self::pixel_to_bit(*image.get_pixel(x + 2, y));
@@ -148,9 +148,9 @@ impl Printer {
     ///
     /// Instead of doing the physically accurate thing, I do what makes the most
     /// sense visually.
-    fn pixel_to_bit(pixel: Rgb<u8>) -> bool {
-        let [r, g, b] = pixel.0;
-        let sum = (r as u32) + (g as u32) + (b as u32);
-        sum <= 3 * 255 / 2 // true == black
+    fn pixel_to_bit(pixel: Rgba<u8>) -> bool {
+        let color = color::from_image_color(pixel);
+        let avg = (color.red + color.green + color.blue) / 3.0;
+        avg < 0.5 // true == black
     }
 }

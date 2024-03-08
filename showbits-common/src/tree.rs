@@ -1,5 +1,5 @@
-use image::RgbImage;
-use palette::Srgb;
+use image::RgbaImage;
+use palette::Srgba;
 use taffy::{AvailableSpace, NodeId, Point, Size, TaffyResult, TaffyTree};
 
 use crate::{color, BoxedWidget, Rect, Vec2, View};
@@ -14,11 +14,11 @@ fn size_to_vec2(size: Size<f32>) -> Vec2 {
 
 pub struct Tree<C> {
     tree: TaffyTree<BoxedWidget<C>>,
-    background: Srgb,
+    background: Srgba,
 }
 
 impl<C> Tree<C> {
-    pub fn new(background: Srgb) -> Self {
+    pub fn new(background: Srgba) -> Self {
         Self {
             tree: TaffyTree::new(),
             background,
@@ -88,7 +88,7 @@ impl<C> Tree<C> {
         ctx: &mut C,
         root: NodeId,
         available: Size<AvailableSpace>,
-    ) -> anyhow::Result<RgbImage> {
+    ) -> anyhow::Result<RgbaImage> {
         self.layout(ctx, root, available)?;
 
         let layout = self.tree.layout(root)?;
@@ -97,7 +97,8 @@ impl<C> Tree<C> {
         // TODO Check how taffy treats the border?
 
         let (width, height) = size_to_vec2(layout.size).to_u32();
-        let mut image = RgbImage::from_pixel(width, height, color::to_image_rgb(self.background));
+        let mut image =
+            RgbaImage::from_pixel(width, height, color::to_image_color(self.background));
         self.render_to_view(ctx, root, &mut View::new(&mut image))?;
 
         Ok(image)

@@ -1,7 +1,6 @@
 use cosmic_text::{Attrs, Metrics};
-use palette::Srgb;
+use palette::Srgba;
 use showbits_common::{
-    color,
     widgets::{FontStuff, HasFontStuff, Text},
     Tree, WidgetExt,
 };
@@ -67,7 +66,7 @@ impl Drawer {
     }
 
     fn on_test(&mut self) -> anyhow::Result<()> {
-        let mut tree = Tree::<Context>::new(Srgb::new(1.0, 1.0, 1.0));
+        let mut tree = Tree::<Context>::new(Srgba::new(1.0, 1.0, 1.0, 1.0));
 
         let root = Text::simple(
             &mut self.ctx.font_stuff,
