@@ -55,13 +55,13 @@ impl<C> Tree<C> {
         node: NodeId,
         view: &mut View<'_>,
     ) -> anyhow::Result<()> {
-        let layout = self.tree.layout(node)?;
+        let layout = *self.tree.layout(node)?;
         let area = Rect::from_nw(point_to_vec2(layout.location), size_to_vec2(layout.size));
         let mut view = view.dup().zoom(area);
 
         // First pass
         if let Some(widget) = self.tree.get_node_context_mut(node) {
-            widget.draw_below(ctx, &mut view)?;
+            widget.draw_below(ctx, &mut view, &layout)?;
         }
 
         // Render children
@@ -77,7 +77,7 @@ impl<C> Tree<C> {
 
         // Second pass
         if let Some(widget) = self.tree.get_node_context_mut(node) {
-            widget.draw_above(ctx, &mut view)?;
+            widget.draw_above(ctx, &mut view, &layout)?;
         }
 
         Ok(())

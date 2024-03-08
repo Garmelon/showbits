@@ -1,6 +1,9 @@
 use cosmic_text::{Attrs, Buffer, FontSystem, Metrics, Shaping, SwashCache};
 use palette::Srgba;
-use taffy::prelude::{AvailableSpace, Size};
+use taffy::{
+    prelude::{AvailableSpace, Size},
+    Layout,
+};
 
 use crate::{color, Rect, Vec2, View, Widget};
 
@@ -120,7 +123,12 @@ impl<C: HasFontStuff> Widget<C> for Text {
         Size { width, height }
     }
 
-    fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
+    fn draw_below(
+        &mut self,
+        ctx: &mut C,
+        view: &mut View<'_>,
+        _layout: &Layout,
+    ) -> anyhow::Result<()> {
         let size = view.size();
 
         let FontStuff {

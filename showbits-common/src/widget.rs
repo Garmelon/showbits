@@ -1,4 +1,4 @@
-use taffy::{AvailableSpace, Size};
+use taffy::{AvailableSpace, Layout, Size};
 
 use crate::{Node, View};
 
@@ -19,13 +19,23 @@ pub trait Widget<C> {
     ///
     /// Prefer this over [`Self::draw_above`] when implementing a leaf widget.
     #[allow(unused_variables)]
-    fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
+    fn draw_below(
+        &mut self,
+        ctx: &mut C,
+        view: &mut View<'_>,
+        layout: &Layout,
+    ) -> anyhow::Result<()> {
         Ok(())
     }
 
     /// Called after all children are drawn.
     #[allow(unused_variables)]
-    fn draw_above(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
+    fn draw_above(
+        &mut self,
+        ctx: &mut C,
+        view: &mut View<'_>,
+        layout: &Layout,
+    ) -> anyhow::Result<()> {
         Ok(())
     }
 }
