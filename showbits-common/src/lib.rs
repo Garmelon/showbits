@@ -1,8 +1,8 @@
-pub use crate::{node::*, rect::*, render::*, vec2::*, view::*, widget::*};
+pub use crate::{node::*, rect::*, tree::*, vec2::*, view::*, widget::*};
 
 mod node;
 mod rect;
-mod render;
+mod tree;
 mod vec2;
 mod view;
 mod widget;

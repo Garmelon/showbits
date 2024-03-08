@@ -2,10 +2,10 @@ use taffy::{
     AlignContent, AlignItems, AlignSelf, Dimension, Display, FlexDirection, FlexWrap, GridAutoFlow,
     GridPlacement, JustifyContent, LengthPercentage, LengthPercentageAuto, Line, NodeId,
     NonRepeatedTrackSizingFunction, Overflow, Point, Position, Rect, Size, Style, TaffyResult,
-    TaffyTree, TrackSizingFunction,
+    TrackSizingFunction,
 };
 
-use crate::{BoxedWidget, Widget};
+use crate::{BoxedWidget, Tree, Widget};
 
 pub struct Node<C> {
     layout: Style,
@@ -32,7 +32,8 @@ impl<C> Node<C> {
         self
     }
 
-    pub fn register(self, tree: &mut TaffyTree<BoxedWidget<C>>) -> TaffyResult<NodeId> {
+    pub fn register(self, tree: &mut Tree<C>) -> TaffyResult<NodeId> {
+        let tree = tree.taffy_tree();
         let id = tree.new_with_children(self.layout, &self.children)?;
         tree.set_node_context(id, self.widget)?;
         Ok(id)
