@@ -17,8 +17,28 @@ fn color_to_srgb(color: Color) -> Srgb {
     Srgb::new(r, g, b).into_format()
 }
 
+pub struct FontStuff {
+    font_system: FontSystem,
+    swash_cache: SwashCache,
+}
+
+impl FontStuff {
+    pub fn new() -> Self {
+        Self {
+            font_system: FontSystem::new(),
+            swash_cache: SwashCache::new(),
+        }
+    }
+}
+
+impl Default for FontStuff {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 pub trait HasFontStuff {
-    fn font_system_and_swash_cache_mut(&mut self) -> (&mut FontSystem, &mut SwashCache);
+    fn font_stuff(&mut self) -> &mut FontStuff;
 }
 
 pub struct Text {
@@ -34,14 +54,16 @@ impl Text {
     const SHAPING: Shaping = Shaping::Advanced;
 
     pub fn simple(
-        font_system: &mut FontSystem,
+        font_stuff: &mut FontStuff,
         metrics: Metrics,
         attrs: Attrs<'_>,
         text: &str,
     ) -> Self {
+        let fs = &mut font_stuff.font_system;
+
         let mut buffer = Buffer::new_empty(metrics);
-        buffer.set_size(font_system, f32::INFINITY, f32::INFINITY);
-        buffer.set_text(font_system, text, attrs, Self::SHAPING);
+        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
+        buffer.set_text(fs, text, attrs, Self::SHAPING);
 
         Self {
             buffer,
@@ -50,7 +72,7 @@ impl Text {
     }
 
     pub fn rich<'r, 's, I>(
-        font_system: &mut FontSystem,
+        font_stuff: &mut FontStuff,
         metrics: Metrics,
         default_attrs: Attrs<'_>,
         spans: I,
@@ -58,9 +80,11 @@ impl Text {
     where
         I: IntoIterator<Item = (&'s str, Attrs<'r>)>,
     {
+        let fs = &mut font_stuff.font_system;
+
         let mut buffer = Buffer::new_empty(metrics);
-        buffer.set_size(font_system, f32::INFINITY, f32::INFINITY);
-        buffer.set_rich_text(font_system, spans, default_attrs, Self::SHAPING);
+        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
+        buffer.set_rich_text(fs, spans, default_attrs, Self::SHAPING);
 
         Self {
             buffer,
@@ -87,7 +111,7 @@ impl<C: HasFontStuff> Widget<C> for Text {
             AvailableSpace::MaxContent => f32::INFINITY,
         });
 
-        let (fs, _) = ctx.font_system_and_swash_cache_mut();
+        let fs = &mut ctx.font_stuff().font_system;
         self.buffer.set_size(fs, width, f32::INFINITY);
         self.buffer.shape_until_scroll(fs, false);
 
@@ -104,7 +128,11 @@ impl<C: HasFontStuff> Widget<C> for Text {
     fn draw_below(&mut self, ctx: &mut C, view: &mut View<'_>) -> anyhow::Result<()> {
         let size = view.size();
 
-        let (fs, sc) = ctx.font_system_and_swash_cache_mut();
+        let FontStuff {
+            font_system: fs,
+            swash_cache: sc,
+        } = ctx.font_stuff();
+
         self.buffer.set_size(fs, size.x as f32, size.y as f32);
         self.buffer.shape_until_scroll(fs, true);
 
