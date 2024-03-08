@@ -2,20 +2,9 @@ use cosmic_text::{Attrs, Buffer, Color, FontSystem, Metrics, Shaping, SwashCache
 use palette::Srgb;
 use taffy::prelude::{AvailableSpace, Size};
 
-use crate::{Rect, Vec2, View, Widget};
+use crate::{color, Rect, Vec2, View, Widget};
 
 // https://github.com/DioxusLabs/taffy/blob/main/examples/cosmic_text.rs
-
-fn srgb_to_color(color: Srgb) -> Color {
-    let color = color.into_format::<u8>();
-    let (r, g, b) = color.into_components();
-    Color::rgb(r, g, b)
-}
-
-fn color_to_srgb(color: Color) -> Srgb {
-    let (r, g, b, _) = color.as_rgba_tuple();
-    Srgb::new(r, g, b).into_format()
-}
 
 pub struct FontStuff {
     font_system: FontSystem,
@@ -136,9 +125,9 @@ impl<C: HasFontStuff> Widget<C> for Text {
         self.buffer.set_size(fs, size.x as f32, size.y as f32);
         self.buffer.shape_until_scroll(fs, true);
 
-        let color = srgb_to_color(self.color);
+        let color = color::to_text_color(self.color);
         self.buffer.draw(fs, sc, color, |x, y, w, h, color| {
-            let color = color_to_srgb(color);
+            let color = color::from_text_color(color);
             let area = Rect::from_nw(Vec2::new(x, y), Vec2::from_u32(w, h));
             view.rect(area, color);
         });

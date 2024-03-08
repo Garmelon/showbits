@@ -1,7 +1,7 @@
 use image::RgbImage;
 use palette::Srgb;
 
-use crate::{Rect, Vec2};
+use crate::{color, Rect, Vec2};
 
 pub struct View<'a> {
     area: Rect,
@@ -38,16 +38,13 @@ impl<'a> View<'a> {
     pub fn get(&self, pos: Vec2) -> Option<Srgb> {
         let (x, y) = self.pos_to_buffer_pos(pos).to_u32();
         let pixel = self.buffer.get_pixel_checked(x, y)?;
-        let [r, g, b] = pixel.0;
-        let color = Srgb::new(r, g, b);
-        Some(color.into_format())
+        Some(color::from_image_rgb(*pixel))
     }
 
     pub fn set(&mut self, pos: Vec2, color: Srgb) {
         let (x, y) = self.pos_to_buffer_pos(pos).to_u32();
         if let Some(pixel) = self.buffer.get_pixel_mut_checked(x, y) {
-            let color = color.into_format::<u8>();
-            pixel.0 = [color.red, color.green, color.blue];
+            *pixel = color::to_image_rgb(color);
         }
     }
 
