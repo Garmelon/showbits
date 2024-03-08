@@ -143,6 +143,6 @@ impl<C: HasFontStuff> Widget<C> for Text {
             view.rect(area, color);
         });
 
-        todo!()
+        Ok(())
     }
 }

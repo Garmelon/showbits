@@ -5,7 +5,7 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
-cosmic-text = "0.11.2"
+cosmic-text.workspace = true
 image.workspace = true
 palette.workspace = true
 taffy.workspace = true

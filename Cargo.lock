@@ -1173,6 +1173,7 @@ dependencies = [
  "anyhow",
  "axum",
  "clap",
+ "cosmic-text",
  "escpos",
  "image",
  "palette",
