@@ -1174,9 +1174,11 @@ dependencies = [
  "axum",
  "clap",
  "escpos",
+ "image",
  "palette",
  "serde",
  "showbits-common",
+ "taffy",
  "tokio",
 ]
 

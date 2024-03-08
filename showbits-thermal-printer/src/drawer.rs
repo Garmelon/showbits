@@ -42,31 +42,6 @@ impl Drawer {
         Ok(())
     }
 
-    // fn on_test(&mut self) -> anyhow::Result<()> {
-    //     self.printer.init()?;
-
-    //     let x = 48; // bytes
-    //     let y = 48; // dots
-
-    //     let m = 0;
-    //     let x_l = x as u8;
-    //     let x_h = (x >> 8) as u8;
-    //     let y_l = y as u8;
-    //     let y_h = (y >> 8) as u8;
-    //     let mut command = vec![0x1D, b'v', b'0', m, x_l, x_h, y_l, y_h];
-    //     for _y in 0..y {
-    //         for _x in 0..x {
-    //             // command.push((x + y) as u8);
-    //             command.push(0b0000_0011);
-    //         }
-    //     }
-    //     self.printer.custom(&command)?;
-
-    //     self.printer.print()?;
-
-    //     Ok(())
-    // }
-
     // fn on_rip(&mut self) -> anyhow::Result<()> {
     //     self.printer.init()?.feeds(6)?.print()?;
     //     Ok(())
