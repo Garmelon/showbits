@@ -2,9 +2,9 @@ use cosmic_text::{Attrs, Metrics};
 use palette::Srgba;
 use showbits_common::{
     widgets::{FontStuff, HasFontStuff, Text},
-    Tree, WidgetExt,
+    Node, Tree, WidgetExt,
 };
-use taffy::style_helpers::length;
+use taffy::style_helpers::{length, percent};
 use tokio::sync::mpsc;
 
 use crate::printer::Printer;
@@ -68,15 +68,20 @@ impl Drawer {
     fn on_test(&mut self) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(Srgba::new(1.0, 1.0, 1.0, 1.0));
 
-        let root = Text::simple(
+        let text = Text::simple(
             &mut self.ctx.font_stuff,
             Metrics::new(16.0, 32.0),
             Attrs::new(),
             "Hello world!",
         )
         .node()
-        .margin_all(length(10.0))
+        .margin_horiz(length(10.0))
         .register(&mut tree)?;
+
+        let root = Node::empty()
+            .size_width(percent(1.0))
+            .child(text)
+            .register(&mut tree)?;
 
         self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
         Ok(())
