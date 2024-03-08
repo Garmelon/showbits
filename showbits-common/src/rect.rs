@@ -73,24 +73,30 @@ impl Rect {
         Self::from_nw_se(nw, se)
     }
 
-    pub const fn corner_nw(&self) -> Vec2 {
+    pub const fn corner_nw(self) -> Vec2 {
         Vec2::new(self.west, self.north)
     }
 
-    pub const fn corner_ne(&self) -> Vec2 {
+    pub const fn corner_ne(self) -> Vec2 {
         Vec2::new(self.east, self.north)
     }
 
-    pub const fn corner_sw(&self) -> Vec2 {
+    pub const fn corner_sw(self) -> Vec2 {
         Vec2::new(self.west, self.south)
     }
 
-    pub const fn corner_se(&self) -> Vec2 {
+    pub const fn corner_se(self) -> Vec2 {
         Vec2::new(self.east, self.south)
     }
 
-    pub const fn size(&self) -> Vec2 {
+    pub const fn size(self) -> Vec2 {
         Vec2::new(self.east - self.west + 1, self.south - self.north + 1)
+    }
+
+    /// An iterator of all points contained within the rectangle.
+    pub fn points(self) -> impl Iterator<Item = Vec2> {
+        (self.north..=self.south)
+            .flat_map(move |y| (self.west..=self.east).map(move |x| Vec2::new(x, y)))
     }
 }
 

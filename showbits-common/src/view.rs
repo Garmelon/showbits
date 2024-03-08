@@ -59,12 +59,8 @@ impl<'a> View<'a> {
     // More complicated drawing primitives
 
     pub fn rect(&mut self, area: Rect, color: Srgba) {
-        let nw = area.corner_nw();
-        let se = area.corner_se();
-        for y in nw.y..=se.y {
-            for x in nw.x..=se.x {
-                self.set(Vec2::new(x, y), color);
-            }
+        for pos in area.points() {
+            self.set(pos, color);
         }
     }
 }
