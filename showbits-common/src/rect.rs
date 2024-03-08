@@ -73,6 +73,22 @@ impl Rect {
         Self::from_nw_se(nw, se)
     }
 
+    pub const fn north(self) -> i32 {
+        self.north
+    }
+
+    pub const fn south(self) -> i32 {
+        self.south
+    }
+
+    pub const fn west(self) -> i32 {
+        self.west
+    }
+
+    pub const fn east(self) -> i32 {
+        self.east
+    }
+
     pub const fn corner_nw(self) -> Vec2 {
         Vec2::new(self.west, self.north)
     }

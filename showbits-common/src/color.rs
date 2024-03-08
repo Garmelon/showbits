@@ -1,5 +1,9 @@
 use palette::Srgba;
 
+pub const TRANSPARENT: Srgba = Srgba::new(0.0, 0.0, 0.0, 0.0);
+pub const BLACK: Srgba = Srgba::new(0.0, 0.0, 0.0, 1.0);
+pub const WHITE: Srgba = Srgba::new(1.0, 1.0, 1.0, 1.0);
+
 pub fn from_image_color(color: image::Rgba<u8>) -> Srgba {
     let [r, g, b, a] = color.0;
     Srgba::new(r, g, b, a).into_format()

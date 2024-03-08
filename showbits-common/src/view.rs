@@ -31,6 +31,10 @@ impl<'a> View<'a> {
         self.area.size()
     }
 
+    pub fn area(&self) -> Rect {
+        Rect::from_nw(Vec2::ZERO, self.size())
+    }
+
     fn pos_to_buffer_pos(&self, pos: Vec2) -> Vec2 {
         pos + self.area.corner_nw()
     }

@@ -1,7 +1,7 @@
 use cosmic_text::{Attrs, Metrics};
 use palette::Srgba;
 use showbits_common::{
-    widgets::{FontStuff, HasFontStuff, Text},
+    widgets::{Block, FontStuff, HasFontStuff, Text},
     Node, Tree, WidgetExt,
 };
 use taffy::style_helpers::{length, percent};
@@ -70,17 +70,31 @@ impl Drawer {
 
         let text = Text::simple(
             &mut self.ctx.font_stuff,
-            Metrics::new(16.0, 32.0),
+            Metrics::new(16.0, 24.0),
             Attrs::new(),
-            "Hello world!",
+            "Hello\nworld!",
         )
         .node()
-        .margin_horiz(length(10.0))
+        .margin_horiz(length(8.0))
+        .margin_vert(length(2.0))
         .register(&mut tree)?;
 
-        let root = Node::empty()
-            .size_width(percent(1.0))
+        let wrap = Block::new()
+            .background(Srgba::new(0.0, 1.0, 0.0, 0.3))
+            .node()
             .child(text)
+            .register(&mut tree)?;
+
+        let root = Block::new()
+            .border(Srgba::new(1.0, 0.0, 0.0, 0.5))
+            .node()
+            .size_width(percent(1.0))
+            .border_top(length(5.0))
+            .border_right(length(10.0))
+            .border_bottom(length(15.0))
+            .border_left(length(20.0))
+            .padding_all(length(10.0))
+            .child(wrap)
             .register(&mut tree)?;
 
         self.printer.print_tree(&mut tree, &mut self.ctx, root)?;

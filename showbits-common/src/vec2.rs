@@ -32,6 +32,14 @@ impl Vec2 {
         (x, y)
     }
 
+    pub fn with_x(self, x: i32) -> Self {
+        Self { x, ..self }
+    }
+
+    pub fn with_y(self, y: i32) -> Self {
+        Self { y, ..self }
+    }
+
     /// The vector pointing from `self` to `other`.
     ///
     /// ```
