@@ -1,7 +1,6 @@
 mod drawer;
 mod printer;
 mod server;
-mod util;
 
 use std::path::PathBuf;
 
