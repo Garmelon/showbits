@@ -111,6 +111,12 @@ impl<C: HasFontStuff> Widget<C> for Text {
             .max_by(|a, b| a.partial_cmp(b).unwrap())
             .unwrap_or(0.0);
 
+        // If we don't round up here, the layout rounding may round down our
+        // size slightly. This may lead to more line breaks, moving some words
+        // below our visible area.
+        let width = width.ceil();
+        let height = height.ceil();
+
         Size { width, height }
     }
 
