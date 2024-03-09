@@ -140,7 +140,6 @@ impl Drawer {
             .node()
             .with_border_all(length(1.0))
             .with_padding_horiz(length(1.0))
-            .with_margin_right(length(4.0))
             .with_flex_shrink(0.0) // Avoid wrapping
             .and_child(username)
             .register(&mut tree)?;
@@ -178,9 +177,10 @@ impl Drawer {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
-            .with_padding_vert(length(1.0))
+            .with_padding_all(length(1.0))
             .with_flex_direction(FlexDirection::Row)
             .with_align_items(Some(AlignItems::Start))
+            .with_gap_width(length(2.0))
             .and_child(username)
             .and_child(content)
             .register(&mut tree)?;
