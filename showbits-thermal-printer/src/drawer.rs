@@ -1,8 +1,9 @@
 use cosmic_text::{Attrs, Metrics};
 use palette::Srgba;
 use showbits_common::{
+    color,
     widgets::{Block, FontStuff, HasFontStuff, Text},
-    Node, Tree, WidgetExt,
+    Tree, WidgetExt,
 };
 use taffy::style_helpers::{length, percent};
 use tokio::sync::mpsc;
@@ -80,19 +81,17 @@ impl Drawer {
         .register(&mut tree)?;
 
         let wrap = Block::new()
-            .background(Srgba::new(0.0, 1.0, 0.0, 0.3))
+            .border(color::BLACK)
             .node()
+            .border_all(length(2.0))
             .child(text)
             .register(&mut tree)?;
 
         let root = Block::new()
-            .border(Srgba::new(1.0, 0.0, 0.0, 0.5))
+            .border(color::BLACK)
             .node()
             .size_width(percent(1.0))
-            .border_top(length(5.0))
-            .border_right(length(10.0))
-            .border_bottom(length(15.0))
-            .border_left(length(20.0))
+            .border_all(length(2.0))
             .padding_all(length(10.0))
             .child(wrap)
             .register(&mut tree)?;

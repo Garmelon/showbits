@@ -23,13 +23,20 @@ impl Printer {
     const PAGE_CODE: PageCode = PageCode::PC437;
 
     /// Width of the printable area in pixels.
-    // TODO Figure out actual width
-    const WIDTH: u32 = 8 * 32;
+    ///
+    /// Assumed to be a multiple of 8, then measured to that precision.
+    const WIDTH: u32 = 8 * 48;
 
     /// Images are printed in chunks because a single print command can only
     /// print so much data.
-    // TODO Figure out sensible chunk height
-    const CHUNK_HEIGHT: u32 = 42;
+    ///
+    /// Looking at the [epson docs][0], most printers seem to support a max
+    /// height of 2303, though some go up to 4095. Because I don't want to waste
+    /// a bunch of paper trying various different heights, I'll go with 1023
+    /// because it's nice and round and slightly conservative.
+    ///
+    /// [0]: https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/gs_lv_0.html
+    const CHUNK_HEIGHT: u32 = 0b0000_0011_1111_1111;
 
     pub fn new(
         printer_path: Option<PathBuf>,
