@@ -67,4 +67,13 @@ impl<'a> View<'a> {
             self.set(pos, color);
         }
     }
+
+    pub fn image(&mut self, image: &RgbaImage) {
+        for y in 0..image.height() {
+            for x in 0..image.width() {
+                let color = color::from_image_color(*image.get_pixel(x, y));
+                self.set(Vec2::from_u32(x, y), color);
+            }
+        }
+    }
 }
