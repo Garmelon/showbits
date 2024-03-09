@@ -124,6 +124,7 @@ impl Drawer {
         let mut tree = Tree::<Context>::new(WHITE);
 
         let max_username_width_in_chars = 32.0;
+        let max_username_height_in_lines = 3.0;
         let max_content_height_in_lines = 16.0;
 
         let username = Text::new()
@@ -131,6 +132,7 @@ impl Drawer {
             .widget(&mut self.ctx.font_stuff)
             .node()
             .with_max_size_width(length(max_username_width_in_chars * 8.0))
+            .with_max_size_height(length(max_username_height_in_lines * 16.0))
             .register(&mut tree)?;
 
         let username = Block::new()
