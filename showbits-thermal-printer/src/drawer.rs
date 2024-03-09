@@ -3,7 +3,10 @@ use showbits_common::{
     widgets::{Block, FontStuff, HasFontStuff, Text},
     Node, Tree, WidgetExt,
 };
-use taffy::style_helpers::{length, percent};
+use taffy::{
+    style_helpers::{length, percent},
+    AlignItems, FlexDirection,
+};
 use tokio::sync::mpsc;
 
 use crate::printer::Printer;
@@ -59,7 +62,9 @@ impl Drawer {
             Command::Rip => self.printer.rip()?,
             Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
-            Command::ChatMessage { username, content } => todo!(),
+            Command::ChatMessage { username, content } => {
+                self.on_chat_message(username, content)?
+            }
         }
         Ok(())
     }
@@ -115,27 +120,51 @@ impl Drawer {
         Ok(())
     }
 
-    // fn on_chat_message(&mut self, username: String, content: String) -> anyhow::Result<()> {
-    //     let username = util::sanitize(&username);
-    //     let content = util::sanitize(&content);
+    fn on_chat_message(&mut self, username: String, content: String) -> anyhow::Result<()> {
+        let mut tree = Tree::<Context>::new(WHITE);
 
-    //     let username = username
-    //         .chars()
-    //         .map(|c| if c.is_ascii_whitespace() { '_' } else { c })
-    //         .take(16)
-    //         .collect::<String>();
+        let max_username_width_in_chars = 12.0;
+        let max_content_height_in_lines = 16.0;
 
-    //     let content = content.chars().take(300).collect::<String>();
+        let username = Text::new()
+            .and_plain(username)
+            .widget(&mut self.ctx.font_stuff)
+            .node()
+            .with_max_size_width(length(max_username_width_in_chars * 8.0))
+            .register(&mut tree)?;
 
-    //     self.printer
-    //         .init()?
-    //         .reverse(true)?
-    //         .write(&username)?
-    //         .reverse(false)?
-    //         .write(" ")?
-    //         .writeln(&content)?
-    //         .print()?;
+        let username = Block::new()
+            .with_border(BLACK)
+            .node()
+            .with_border_all(length(1.0))
+            .with_padding_horiz(length(1.0))
+            .with_flex_shrink(0.0) // Avoid wrapping
+            .and_child(username)
+            .register(&mut tree)?;
 
-    //     Ok(())
-    // }
+        let content = Text::new()
+            .and_plain(content)
+            .widget(&mut self.ctx.font_stuff)
+            .node()
+            .with_max_size_height(length(max_content_height_in_lines * 16.0))
+            .register(&mut tree)?;
+
+        let content = Node::empty()
+            .with_padding_vert(length(1.0))
+            .and_child(content)
+            .register(&mut tree)?;
+
+        let root = Node::empty()
+            .with_size_width(percent(1.0))
+            .with_padding_vert(length(1.0))
+            .with_flex_direction(FlexDirection::Row)
+            .with_align_items(Some(AlignItems::Start))
+            .with_gap_width(length(4.0))
+            .and_child(username)
+            .and_child(content)
+            .register(&mut tree)?;
+
+        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        Ok(())
+    }
 }

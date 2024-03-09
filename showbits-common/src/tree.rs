@@ -103,4 +103,8 @@ impl<C> Tree<C> {
 
         Ok(image)
     }
+
+    pub fn print_debug(&mut self, root: NodeId) {
+        self.tree.print_tree(root)
+    }
 }
