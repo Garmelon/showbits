@@ -1,6 +1,6 @@
 use cosmic_text::{Attrs, AttrsOwned, Buffer, Family, FontSystem, Metrics, Shaping, SwashCache};
 use palette::Srgba;
-use showbits_assets::{UNIFONT, UNIFONT_NAME, UNIFONT_SIZE};
+use showbits_assets::{UNIFONT, UNIFONT_JP, UNIFONT_NAME, UNIFONT_SIZE, UNIFONT_UPPER};
 use taffy::{
     prelude::{AvailableSpace, Size},
     Layout,
@@ -20,6 +20,8 @@ impl FontStuff {
         let mut font_system = FontSystem::new();
         let db = font_system.db_mut();
         db.load_font_data(UNIFONT.to_vec());
+        db.load_font_data(UNIFONT_JP.to_vec());
+        db.load_font_data(UNIFONT_UPPER.to_vec());
         db.set_monospace_family(UNIFONT_NAME);
 
         Self {
@@ -61,7 +63,7 @@ impl Text {
             metrics: Self::default_metrics(),
             default_attrs: AttrsOwned::new(Self::default_attrs()),
             chunks: vec![],
-            shaping: Shaping::Basic,
+            shaping: Shaping::Advanced,
             color: color::BLACK,
         }
     }
