@@ -3,7 +3,7 @@ use image::{
     RgbaImage,
 };
 use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
-use palette::{IntoColor, LinSrgb, Srgba};
+use palette::{IntoColor, Srgb, Srgba};
 use taffy::prelude::{AvailableSpace, Layout, Size};
 
 use crate::Widget;
@@ -15,12 +15,12 @@ pub enum DitherAlgorithm {
 }
 
 impl DitherAlgorithm {
-    fn dither(self, image: RgbaImage, palette: &Palette<LinSrgb>) -> RgbaImage {
+    fn dither(self, image: RgbaImage, palette: &Palette<Srgb>) -> RgbaImage {
         match self {
             Self::FloydSteinberg => {
-                <AlgoFloydSteinberg as Algorithm<LinSrgb, DiffEuclid>>::run(image, palette)
+                <AlgoFloydSteinberg as Algorithm<Srgb, DiffEuclid>>::run(image, palette)
             }
-            Self::Stucki => <AlgoStucki as Algorithm<LinSrgb, DiffEuclid>>::run(image, palette),
+            Self::Stucki => <AlgoStucki as Algorithm<Srgb, DiffEuclid>>::run(image, palette),
         }
     }
 }
@@ -31,7 +31,11 @@ pub struct Image {
     grow: bool,
     filter: FilterType,
 
-    dither_palette: Option<Palette<LinSrgb>>,
+    // The palette uses Srgb instead of LinSrgb because dithering in Srgb
+    // produces better results when printed, even though color distance
+    // calculations are objectively wrong. Maybe the printer's black ink
+    // behaviour makes them correct again.
+    dither_palette: Option<Palette<Srgb>>,
     dither_algorithm: DitherAlgorithm,
 }
 
@@ -66,7 +70,7 @@ impl Image {
         let palette = palette
             .iter()
             .map(|c| c.color.into_color())
-            .collect::<Vec<LinSrgb>>();
+            .collect::<Vec<Srgb>>();
 
         self.dither_palette = Some(Palette::new(palette));
         self
