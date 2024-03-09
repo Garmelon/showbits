@@ -48,6 +48,6 @@ pub trait WidgetExt<C> {
 
 impl<C, W: Widget<C> + 'static> WidgetExt<C> for W {
     fn node(self) -> Node<C> {
-        Node::empty().widget(self)
+        Node::empty().with_widget(self)
     }
 }

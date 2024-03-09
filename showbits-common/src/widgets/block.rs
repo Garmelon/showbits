@@ -16,12 +16,12 @@ impl Block {
         }
     }
 
-    pub fn border(mut self, color: Srgba) -> Self {
+    pub fn with_border(mut self, color: Srgba) -> Self {
         self.border = color;
         self
     }
 
-    pub fn background(mut self, color: Srgba) -> Self {
+    pub fn with_background(mut self, color: Srgba) -> Self {
         self.background = color;
         self
     }

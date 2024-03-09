@@ -69,28 +69,28 @@ impl Drawer {
         let mut tree = Tree::<Context>::new(Srgba::new(1.0, 1.0, 1.0, 1.0));
 
         let text = Text::new()
-            .chunk_plain("Hello\nworld!")
             .with_metrics(Text::default_metrics().scale(2.0))
+            .and_plain("Hello\nworld!")
             .widget(&mut self.ctx.font_stuff)
             .node()
-            .margin_horiz(length(8.0))
-            .margin_vert(length(2.0))
+            .with_margin_horiz(length(8.0))
+            .with_margin_vert(length(2.0))
             .register(&mut tree)?;
 
         let wrap = Block::new()
-            .border(color::BLACK)
+            .with_border(color::BLACK)
             .node()
-            .border_all(length(2.0))
-            .child(text)
+            .with_border_all(length(2.0))
+            .and_child(text)
             .register(&mut tree)?;
 
         let root = Block::new()
-            .border(color::BLACK)
+            .with_border(color::BLACK)
             .node()
-            .size_width(percent(1.0))
-            .border_all(length(2.0))
-            .padding_all(length(10.0))
-            .child(wrap)
+            .with_size_width(percent(1.0))
+            .with_border_all(length(2.0))
+            .with_padding_all(length(10.0))
+            .and_child(wrap)
             .register(&mut tree)?;
 
         self.printer.print_tree(&mut tree, &mut self.ctx, root)?;

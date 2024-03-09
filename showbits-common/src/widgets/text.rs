@@ -96,19 +96,19 @@ impl Text {
         self
     }
 
-    pub fn chunk_plain<S: ToString>(mut self, text: S) -> Self {
+    pub fn and_plain<S: ToString>(mut self, text: S) -> Self {
         let chunk = (self.default_attrs.clone(), text.to_string());
         self.chunks.push(chunk);
         self
     }
 
-    pub fn chunk_rich<S: ToString>(mut self, attrs: Attrs<'_>, text: S) -> Self {
+    pub fn and_rich<S: ToString>(mut self, attrs: Attrs<'_>, text: S) -> Self {
         let chunk = (AttrsOwned::new(attrs), text.to_string());
         self.chunks.push(chunk);
         self
     }
 
-    pub fn chunks<I>(mut self, chunks: I) -> Self
+    pub fn and_chunks<I>(mut self, chunks: I) -> Self
     where
         I: IntoIterator<Item = (AttrsOwned, String)>,
     {
