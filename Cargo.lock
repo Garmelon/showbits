@@ -1156,6 +1156,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "showbits-assets"
+version = "0.0.0"
+
+[[package]]
 name = "showbits-common"
 version = "0.0.0"
 dependencies = [

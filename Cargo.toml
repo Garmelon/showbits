@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["showbits-common", "showbits-thermal-printer"]
+members = ["showbits-assets", "showbits-common", "showbits-thermal-printer"]
 
 [workspace.package]
 version = "0.0.0"
@@ -11,6 +11,7 @@ anyhow = "1.0.80"
 cosmic-text = "0.11.2"
 image = "0.24.9"
 palette = "0.7.5"
+showbits-assets.path = "./showbits-assets"
 showbits-common.path = "./showbits-common"
 
 [workspace.dependencies.taffy]
