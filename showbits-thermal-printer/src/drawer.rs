@@ -1,6 +1,7 @@
+use image::RgbaImage;
 use showbits_common::{
     color::{BLACK, WHITE},
-    widgets::{Block, FontStuff, HasFontStuff, Text},
+    widgets::{Block, FontStuff, HasFontStuff, Image, Text},
     Node, Tree, WidgetExt,
 };
 use taffy::{
@@ -16,6 +17,7 @@ pub enum Command {
     Rip,
     Test,
     Text(String),
+    Image(RgbaImage),
     ChatMessage { username: String, content: String },
 }
 
@@ -62,6 +64,7 @@ impl Drawer {
             Command::Rip => self.printer.rip()?,
             Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
+            Command::Image(image) => self.on_image(image)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
@@ -114,6 +117,24 @@ impl Drawer {
         let root = Node::empty()
             .with_size_width(percent(1.0))
             .and_child(text)
+            .register(&mut tree)?;
+
+        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        Ok(())
+    }
+
+    fn on_image(&mut self, image: RgbaImage) -> anyhow::Result<()> {
+        let mut tree = Tree::<Context>::new(WHITE);
+
+        let image = Image::new(image)
+            .with_dither_palette(&[BLACK, WHITE])
+            .node()
+            .register(&mut tree)?;
+
+        let root = Node::empty()
+            .with_size_width(percent(1.0))
+            .with_padding_bottom(length(32.0))
+            .and_child(image)
             .register(&mut tree)?;
 
         self.printer.print_tree(&mut tree, &mut self.ctx, root)?;

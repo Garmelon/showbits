@@ -1,4 +1,9 @@
-use axum::{extract::State, routing::post, Form, Router};
+use axum::{
+    extract::{Multipart, State},
+    http::StatusCode,
+    routing::post,
+    Form, Router,
+};
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
@@ -15,6 +20,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/test", post(post_test))
         .route("/rip", post(post_rip))
         .route("/text", post(post_text))
+        .route("/image", post(post_image))
         .route("/chat_message", post(post_chat_message))
         .with_state(Server { tx });
 
@@ -42,6 +48,37 @@ struct PostTextForm {
 
 async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
     let _ = server.tx.send(Command::Text(request.0.text)).await;
+}
+
+async fn post_image(server: State<Server>, mut multipart: Multipart) -> Result<(), StatusCode> {
+    let mut image = None;
+
+    while let Some(field) = multipart
+        .next_field()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+    {
+        let name = field.name().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+        if name == "image" {
+            let data = field
+                .bytes()
+                .await
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+            let decoded = image::load_from_memory(&data)
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
+                .into_rgba8();
+
+            image = Some(decoded);
+        }
+    }
+
+    if let Some(image) = image {
+        let _ = server.tx.send(Command::Image(image)).await;
+        Ok(())
+    } else {
+        Err(StatusCode::INTERNAL_SERVER_ERROR)
+    }
 }
 
 #[derive(Deserialize)]
