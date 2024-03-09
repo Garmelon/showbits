@@ -1,8 +1,7 @@
-use palette::Srgba;
 use showbits_common::{
-    color,
+    color::{BLACK, WHITE},
     widgets::{Block, FontStuff, HasFontStuff, Text},
-    Tree, WidgetExt,
+    Node, Tree, WidgetExt,
 };
 use taffy::style_helpers::{length, percent};
 use tokio::sync::mpsc;
@@ -59,14 +58,14 @@ impl Drawer {
             Command::Stop => {} // Already handled one level above
             Command::Rip => self.printer.rip()?,
             Command::Test => self.on_test()?,
-            Command::Text(_) => todo!(),
+            Command::Text(text) => self.on_text(text)?,
             Command::ChatMessage { username, content } => todo!(),
         }
         Ok(())
     }
 
     fn on_test(&mut self) -> anyhow::Result<()> {
-        let mut tree = Tree::<Context>::new(Srgba::new(1.0, 1.0, 1.0, 1.0));
+        let mut tree = Tree::<Context>::new(WHITE);
 
         let text = Text::new()
             .with_metrics(Text::default_metrics().scale(2.0))
@@ -78,14 +77,14 @@ impl Drawer {
             .register(&mut tree)?;
 
         let wrap = Block::new()
-            .with_border(color::BLACK)
+            .with_border(BLACK)
             .node()
             .with_border_all(length(2.0))
             .and_child(text)
             .register(&mut tree)?;
 
         let root = Block::new()
-            .with_border(color::BLACK)
+            .with_border(BLACK)
             .node()
             .with_size_width(percent(1.0))
             .with_border_all(length(2.0))
@@ -97,11 +96,24 @@ impl Drawer {
         Ok(())
     }
 
-    // fn on_text(&mut self, text: String) -> anyhow::Result<()> {
-    //     let text = util::sanitize(&text);
-    //     self.printer.init()?.write(&text)?.print()?;
-    //     Ok(())
-    // }
+    fn on_text(&mut self, text: String) -> anyhow::Result<()> {
+        let mut tree = Tree::<Context>::new(WHITE);
+
+        let text = Text::new()
+            .with_metrics(Text::default_metrics().scale(2.0))
+            .and_plain(text)
+            .widget(&mut self.ctx.font_stuff)
+            .node()
+            .register(&mut tree)?;
+
+        let root = Node::empty()
+            .with_size_width(percent(1.0))
+            .and_child(text)
+            .register(&mut tree)?;
+
+        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        Ok(())
+    }
 
     // fn on_chat_message(&mut self, username: String, content: String) -> anyhow::Result<()> {
     //     let username = util::sanitize(&username);
