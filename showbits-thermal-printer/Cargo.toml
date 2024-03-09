@@ -10,7 +10,9 @@ clap = { version = "4.5.1", features = ["derive", "deprecated"] }
 cosmic-text.workspace = true
 escpos = { version = "0.7.2", features = ["full"] }
 image.workspace = true
+mime_guess = "2.0.4"
 palette.workspace = true
+rust-embed = "8.3.0"
 serde = { version = "1.0.197", features = ["derive"] }
 showbits-common.workspace = true
 taffy.workspace = true

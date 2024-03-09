@@ -1,7 +1,9 @@
+mod r#static;
+
 use axum::{
     extract::{DefaultBodyLimit, Multipart, State},
     http::StatusCode,
-    routing::post,
+    routing::{get, post},
     Form, Router,
 };
 use serde::Deserialize;
@@ -22,6 +24,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/text", post(post_text))
         .route("/image", post(post_image))
         .route("/chat_message", post(post_chat_message))
+        .fallback(get(r#static::get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
 
