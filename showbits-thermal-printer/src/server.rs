@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Multipart, State},
+    extract::{DefaultBodyLimit, Multipart, State},
     http::StatusCode,
     routing::post,
     Form, Router,
@@ -22,6 +22,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/text", post(post_text))
         .route("/image", post(post_image))
         .route("/chat_message", post(post_chat_message))
+        .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
 
     let listener = TcpListener::bind(addr).await?;
