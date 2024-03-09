@@ -39,6 +39,8 @@ pub struct Drawer {
 }
 
 impl Drawer {
+    const FEED: f32 = 64.0;
+
     pub fn new(rx: mpsc::Receiver<Command>, printer: Printer) -> Self {
         Self {
             rx,
@@ -133,7 +135,7 @@ impl Drawer {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
-            .with_padding_bottom(length(32.0))
+            .with_padding_bottom(length(Self::FEED))
             .and_child(image)
             .register(&mut tree)?;
 
