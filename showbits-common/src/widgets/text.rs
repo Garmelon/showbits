@@ -1,5 +1,6 @@
-use cosmic_text::{Attrs, Buffer, FontSystem, Metrics, Shaping, SwashCache};
+use cosmic_text::{Attrs, AttrsOwned, Buffer, Family, FontSystem, Metrics, Shaping, SwashCache};
 use palette::Srgba;
+use showbits_assets::{UNIFONT, UNIFONT_NAME, UNIFONT_SIZE};
 use taffy::{
     prelude::{AvailableSpace, Size},
     Layout,
@@ -16,8 +17,13 @@ pub struct FontStuff {
 
 impl FontStuff {
     pub fn new() -> Self {
+        let mut font_system = FontSystem::new();
+        let db = font_system.db_mut();
+        db.load_font_data(UNIFONT.to_vec());
+        db.set_monospace_family(UNIFONT_NAME);
+
         Self {
-            font_system: FontSystem::new(),
+            font_system,
             swash_cache: SwashCache::new(),
         }
     }
@@ -34,63 +40,112 @@ pub trait HasFontStuff {
 }
 
 pub struct Text {
-    buffer: Buffer,
+    metrics: Metrics,
+    default_attrs: AttrsOwned,
+    chunks: Vec<(AttrsOwned, String)>,
+    shaping: Shaping,
     color: Srgba,
 }
 
 impl Text {
-    /// Default text color.
-    const COLOR: Srgba = Srgba::new(0.0, 0.0, 0.0, 1.0);
+    pub const fn default_metrics() -> Metrics {
+        Metrics::new(UNIFONT_SIZE, UNIFONT_SIZE)
+    }
 
-    // Default shaping strategy.
-    const SHAPING: Shaping = Shaping::Advanced;
+    pub fn default_attrs<'a>() -> Attrs<'a> {
+        Attrs::new().family(Family::Monospace)
+    }
 
-    pub fn simple(
-        font_stuff: &mut FontStuff,
-        metrics: Metrics,
-        attrs: Attrs<'_>,
-        text: &str,
-    ) -> Self {
-        let fs = &mut font_stuff.font_system;
-
-        let mut buffer = Buffer::new_empty(metrics);
-        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
-        buffer.set_text(fs, text, attrs, Self::SHAPING);
-
+    pub fn new() -> Self {
         Self {
-            buffer,
-            color: Self::COLOR,
+            metrics: Self::default_metrics(),
+            default_attrs: AttrsOwned::new(Self::default_attrs()),
+            chunks: vec![],
+            shaping: Shaping::Basic,
+            color: color::BLACK,
         }
     }
 
-    pub fn rich<'r, 's, I>(
-        font_stuff: &mut FontStuff,
-        metrics: Metrics,
-        default_attrs: Attrs<'_>,
-        spans: I,
-    ) -> Self
-    where
-        I: IntoIterator<Item = (&'s str, Attrs<'r>)>,
-    {
-        let fs = &mut font_stuff.font_system;
-
-        let mut buffer = Buffer::new_empty(metrics);
-        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
-        buffer.set_rich_text(fs, spans, default_attrs, Self::SHAPING);
-
-        Self {
-            buffer,
-            color: Self::COLOR,
-        }
+    pub fn with_metrics(mut self, metrics: Metrics) -> Self {
+        self.metrics = metrics;
+        self
     }
 
-    pub fn color(mut self, color: Srgba) -> Self {
+    pub fn with_font_size(mut self, size: f32) -> Self {
+        self.metrics.font_size = size;
+        self
+    }
+
+    pub fn with_line_height(mut self, height: f32) -> Self {
+        self.metrics.line_height = height;
+        self
+    }
+
+    pub fn with_default_attrs(mut self, attrs: Attrs<'_>) -> Self {
+        self.default_attrs = AttrsOwned::new(attrs);
+        self
+    }
+
+    pub fn with_shaping(mut self, shaping: Shaping) -> Self {
+        self.shaping = shaping;
+        self
+    }
+
+    pub fn with_color(mut self, color: Srgba) -> Self {
         self.color = color;
         self
     }
+
+    pub fn chunk_plain<S: ToString>(mut self, text: S) -> Self {
+        let chunk = (self.default_attrs.clone(), text.to_string());
+        self.chunks.push(chunk);
+        self
+    }
+
+    pub fn chunk_rich<S: ToString>(mut self, attrs: Attrs<'_>, text: S) -> Self {
+        let chunk = (AttrsOwned::new(attrs), text.to_string());
+        self.chunks.push(chunk);
+        self
+    }
+
+    pub fn chunks<I>(mut self, chunks: I) -> Self
+    where
+        I: IntoIterator<Item = (AttrsOwned, String)>,
+    {
+        self.chunks.extend(chunks);
+        self
+    }
+
+    pub fn widget<C: HasFontStuff>(self, font_stuff: &mut FontStuff) -> impl Widget<C> {
+        let fs = &mut font_stuff.font_system;
+        let mut buffer = Buffer::new_empty(self.metrics);
+        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
+
+        let spans = self
+            .chunks
+            .iter()
+            .map(|(attrs, text)| (text as &str, attrs.as_attrs()));
+        buffer.set_rich_text(fs, spans, self.default_attrs.as_attrs(), self.shaping);
+
+        TextWidget {
+            buffer,
+            color: self.color,
+        }
+    }
 }
 
-impl<C: HasFontStuff> Widget<C> for Text {
+impl Default for Text {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+struct TextWidget {
+    buffer: Buffer,
+    color: Srgba,
+}
+
+impl<C: HasFontStuff> Widget<C> for TextWidget {
     fn size(
         &mut self,
         ctx: &mut C,

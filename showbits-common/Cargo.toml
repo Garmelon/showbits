@@ -8,6 +8,7 @@ anyhow.workspace = true
 cosmic-text.workspace = true
 image.workspace = true
 palette.workspace = true
+showbits-assets.workspace = true
 taffy.workspace = true
 
 [lints]

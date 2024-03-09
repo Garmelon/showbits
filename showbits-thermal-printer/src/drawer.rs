@@ -1,4 +1,3 @@
-use cosmic_text::{Attrs, Metrics};
 use palette::Srgba;
 use showbits_common::{
     color,
@@ -69,16 +68,14 @@ impl Drawer {
     fn on_test(&mut self) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(Srgba::new(1.0, 1.0, 1.0, 1.0));
 
-        let text = Text::simple(
-            &mut self.ctx.font_stuff,
-            Metrics::new(16.0, 24.0),
-            Attrs::new(),
-            "Hello\nworld!",
-        )
-        .node()
-        .margin_horiz(length(8.0))
-        .margin_vert(length(2.0))
-        .register(&mut tree)?;
+        let text = Text::new()
+            .chunk_plain("Hello\nworld!")
+            .with_metrics(Text::default_metrics().scale(2.0))
+            .widget(&mut self.ctx.font_stuff)
+            .node()
+            .margin_horiz(length(8.0))
+            .margin_vert(length(2.0))
+            .register(&mut tree)?;
 
         let wrap = Block::new()
             .border(color::BLACK)

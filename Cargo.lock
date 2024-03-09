@@ -1167,6 +1167,7 @@ dependencies = [
  "cosmic-text",
  "image",
  "palette",
+ "showbits-assets",
  "taffy",
 ]
 
