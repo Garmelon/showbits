@@ -123,7 +123,7 @@ impl Drawer {
     fn on_chat_message(&mut self, username: String, content: String) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
 
-        let max_username_width_in_chars = 12.0;
+        let max_username_width_in_chars = 32.0;
         let max_content_height_in_lines = 16.0;
 
         let username = Text::new()
