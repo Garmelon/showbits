@@ -169,7 +169,7 @@ impl Drawer {
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
-            .with_gap(length(16.0))
+            .with_gap(length(8.0))
             .and_child(image)
             .and_child(title)
             .register(&mut tree)?;
