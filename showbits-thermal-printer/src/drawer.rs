@@ -18,6 +18,7 @@ pub enum Command {
     Test,
     Text(String),
     Image(RgbaImage),
+    Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
 }
 
@@ -67,6 +68,7 @@ impl Drawer {
             Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
             Command::Image(image) => self.on_image(image)?,
+            Command::Photo { image, title } => self.on_photo(image, title)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
@@ -140,6 +142,36 @@ impl Drawer {
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
             .and_child(image)
+            .register(&mut tree)?;
+
+        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        Ok(())
+    }
+
+    fn on_photo(&mut self, image: RgbaImage, title: String) -> anyhow::Result<()> {
+        let mut tree = Tree::<Context>::new(WHITE);
+
+        let image = Image::new(image)
+            .with_dither_palette(&[BLACK, WHITE])
+            .node()
+            .register(&mut tree)?;
+
+        let title = Text::new()
+            .with_metrics(Text::default_metrics().scale(2.0))
+            .and_plain(title)
+            .widget(&mut self.ctx.font_stuff)
+            .node()
+            .register(&mut tree)?;
+
+        let root = Node::empty()
+            .with_size_width(percent(1.0))
+            .with_padding_bottom(length(Self::FEED))
+            .with_display(Display::Flex)
+            .with_flex_direction(FlexDirection::Column)
+            .with_align_items(Some(AlignItems::Center))
+            .with_gap(length(16.0))
+            .and_child(image)
+            .and_child(title)
             .register(&mut tree)?;
 
         self.printer.print_tree(&mut tree, &mut self.ctx, root)?;

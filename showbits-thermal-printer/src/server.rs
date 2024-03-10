@@ -28,6 +28,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/rip", post(post_rip))
         .route("/text", post(post_text))
         .route("/image", post(post_image).fallback(get_static_file))
+        .route("/photo", post(post_photo).fallback(get_static_file))
         .route("/chat_message", post(post_chat_message))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
@@ -63,21 +64,49 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
     let mut image = None;
 
     while let Some(field) = multipart.next_field().await? {
-        if let Some(name) = field.name() {
-            if name == "image" {
+        if let Some("image") = field.name() {
+            let data = field.bytes().await?;
+            let decoded = image::load_from_memory(&data)?.into_rgba8();
+            image = Some(decoded);
+        }
+    }
+
+    let Some(image) = image else {
+        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
+    };
+
+    let _ = server.tx.send(Command::Image(image)).await;
+    Ok(Redirect::to("image").into_response())
+}
+
+async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
+    let mut image = None;
+    let mut title = None;
+
+    while let Some(field) = multipart.next_field().await? {
+        match field.name() {
+            Some("image") => {
                 let data = field.bytes().await?;
                 let decoded = image::load_from_memory(&data)?.into_rgba8();
                 image = Some(decoded);
             }
+            Some("title") => {
+                title = Some(field.text().await?);
+            }
+            _ => {}
         }
     }
 
-    if let Some(image) = image {
-        let _ = server.tx.send(Command::Image(image)).await;
-        return Ok(Redirect::to("image").into_response());
-    }
+    let Some(image) = image else {
+        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
+    };
 
-    Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY))
+    let Some(title) = title else {
+        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
+    };
+
+    let _ = server.tx.send(Command::Photo { image, title }).await;
+    Ok(Redirect::to("photo").into_response())
 }
 
 #[derive(Deserialize)]
