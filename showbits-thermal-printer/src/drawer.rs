@@ -6,7 +6,7 @@ use showbits_common::{
 };
 use taffy::{
     style_helpers::{length, percent},
-    AlignItems, FlexDirection,
+    AlignItems, Display, FlexDirection,
 };
 use tokio::sync::mpsc;
 
@@ -136,6 +136,9 @@ impl Drawer {
         let root = Node::empty()
             .with_size_width(percent(1.0))
             .with_padding_bottom(length(Self::FEED))
+            .with_display(Display::Flex)
+            .with_flex_direction(FlexDirection::Column)
+            .with_align_items(Some(AlignItems::Center))
             .and_child(image)
             .register(&mut tree)?;
 
