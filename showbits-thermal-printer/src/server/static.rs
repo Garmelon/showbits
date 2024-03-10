@@ -4,15 +4,13 @@ use axum::{
 };
 use rust_embed::RustEmbed;
 
+use super::statuscode::status_code;
+
 #[derive(RustEmbed)]
 #[folder = "static"]
 struct StaticFiles;
 
 struct StaticFile(String);
-
-fn not_found() -> Response {
-    (StatusCode::NOT_FOUND, "404 Not Found").into_response()
-}
 
 fn look_up_path(path: &str) -> Option<Response> {
     let path = path.trim_start_matches('/');
@@ -32,13 +30,13 @@ impl IntoResponse for StaticFile {
         if path.ends_with(".html") {
             // A file `/foo/bar.html` should not be accessible directly, only
             // indirectly at `/foo/bar`.
-            return not_found();
+            return status_code(StatusCode::NOT_FOUND);
         }
 
         if path.ends_with("/index") {
             // A file `/foo/index.html` should not be accessible directly, only
             // indirectly at `/foo/`.
-            return not_found();
+            return status_code(StatusCode::NOT_FOUND);
         }
 
         if path.ends_with('/') {
@@ -55,7 +53,7 @@ impl IntoResponse for StaticFile {
             return response;
         }
 
-        not_found()
+        status_code(StatusCode::NOT_FOUND)
     }
 }
 

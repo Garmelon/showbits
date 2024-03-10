@@ -1,8 +1,11 @@
+mod somehow;
 mod r#static;
+mod statuscode;
 
 use axum::{
     extract::{DefaultBodyLimit, Multipart, State},
     http::StatusCode,
+    response::{IntoResponse, Redirect, Response},
     routing::{get, post},
     Form, Router,
 };
@@ -10,6 +13,8 @@ use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::drawer::Command;
+
+use self::{r#static::get_static_file, statuscode::status_code};
 
 #[derive(Clone)]
 struct Server {
@@ -22,9 +27,9 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/test", post(post_test))
         .route("/rip", post(post_rip))
         .route("/text", post(post_text))
-        .route("/image", post(post_image))
+        .route("/image", post(post_image).fallback(get_static_file))
         .route("/chat_message", post(post_chat_message))
-        .fallback(get(r#static::get_static_file))
+        .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
 
@@ -54,35 +59,25 @@ async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
     let _ = server.tx.send(Command::Text(request.0.text)).await;
 }
 
-async fn post_image(server: State<Server>, mut multipart: Multipart) -> Result<(), StatusCode> {
+async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
 
-    while let Some(field) = multipart
-        .next_field()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-    {
-        let name = field.name().ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
-        if name == "image" {
-            let data = field
-                .bytes()
-                .await
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-            let decoded = image::load_from_memory(&data)
-                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?
-                .into_rgba8();
-
-            image = Some(decoded);
+    while let Some(field) = multipart.next_field().await? {
+        if let Some(name) = field.name() {
+            if name == "image" {
+                let data = field.bytes().await?;
+                let decoded = image::load_from_memory(&data)?.into_rgba8();
+                image = Some(decoded);
+            }
         }
     }
 
     if let Some(image) = image {
         let _ = server.tx.send(Command::Image(image)).await;
-        Ok(())
-    } else {
-        Err(StatusCode::INTERNAL_SERVER_ERROR)
+        return Ok(Redirect::to("image").into_response());
     }
+
+    Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY))
 }
 
 #[derive(Deserialize)]
