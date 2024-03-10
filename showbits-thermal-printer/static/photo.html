@@ -19,9 +19,9 @@
         height: 100%;
       }
 
-      button {
+      #button {
         position: absolute;
-        bottom: 1em;
+        bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
 
@@ -34,11 +34,11 @@
         background-color: transparent;
       }
 
-      button:active {
+      #button:active {
         border-color: #fff;
       }
 
-      button .circle {
+      #button .circle {
         width: 60px;
         height: 60px;
         border-radius: 60px;
@@ -47,23 +47,69 @@
         background-color: #f00;
       }
 
-      button:active .circle {
+      #button:active .circle {
         background-color: #a00;
+      }
+
+      #flip {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+
+        width: 60px;
+        height: 60px;
+
+        background-color: transparent;
+        border: 5px solid #fff;
+        border-radius: 100px;
+      }
+
+      #flip:active {
+        background-color: #fff;
+      }
+
+      #flip svg {
+        display: block;
+        margin: auto;
+
+        width: 70%;
+        height: 70%;
+      }
+
+      #flip:active path {
+        fill: #000;
       }
     </style>
     <script type="module">
       const video = document.getElementById("video");
       const button = document.getElementById("button");
+      const flip = document.getElementById("flip");
 
-      // Show camera feed full-screen
-      navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: { ideal: "environment" } } })
-        .then((stream) => {
-          video.srcObject = stream;
-        })
-        .catch((error) => {
-          console.error("Error accessing the camera:", error);
+      let currentStream = null;
+
+      function getStreamFacingMode(stream) {
+        if (!stream) return null;
+        const videos = stream.getVideoTracks();
+        if (videos.length === 0) return null;
+        const video = videos[0];
+        return video.getSettings().facingMode;
+      }
+
+      async function initStream(facingMode) {
+        // Display video
+        let stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: facingMode } },
         });
+        currentStream = stream;
+        video.srcObject = stream;
+
+        // Enable or disable flip button
+        const actualFacingMode = getStreamFacingMode(stream);
+        const canFlip = actualFacingMode !== undefined;
+        flip.hidden = !canFlip;
+      }
+
+      await initStream("environment");
 
       button.addEventListener("click", () => {
         const canvas = document.createElement("canvas");
@@ -83,11 +129,24 @@
           });
         });
       });
+
+      flip.addEventListener("click", () => {
+        let facingMode = getStreamFacingMode(currentStream);
+        if (!facingMode) return;
+        facingMode = facingMode === "user" ? "environment" : "user";
+        initStream(facingMode);
+      });
     </script>
   </head>
 
   <body>
     <video id="video" autoplay></video>
     <button id="button"><div class="circle"></div></button>
+    <button id="flip" hidden>
+      <svg viewBox="0 0 6 6">
+        <path fill="#fff" stroke="none" d="M0,2h1v4h1v-4h1l-1.5,-2"></path>
+        <path fill="#fff" stroke="none" d="M3,4h1v-4h1v4h1l-1.5,2"></path>
+      </svg>
+    </button>
   </body>
 </html>
