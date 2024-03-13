@@ -1,3 +1,5 @@
+mod calendar;
+
 use image::RgbaImage;
 use showbits_common::{
     color::{BLACK, WHITE},
@@ -20,6 +22,7 @@ pub enum Command {
     Image(RgbaImage),
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
+    Calendar { year: i32, month: u8 },
 }
 
 #[derive(Default)]
@@ -72,6 +75,7 @@ impl Drawer {
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
+            Command::Calendar { year, month } => self.draw_calendar(year, month)?,
         }
         Ok(())
     }

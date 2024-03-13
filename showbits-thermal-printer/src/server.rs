@@ -30,6 +30,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
         .route("/chat_message", post(post_chat_message))
+        .route("/calendar", post(post_calendar))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -121,6 +122,22 @@ async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageF
         .send(Command::ChatMessage {
             username: request.0.username,
             content: request.0.content,
+        })
+        .await;
+}
+
+#[derive(Deserialize)]
+struct PostCalendarForm {
+    year: i32,
+    month: u8,
+}
+
+async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
+    let _ = server
+        .tx
+        .send(Command::Calendar {
+            year: request.0.year,
+            month: request.0.month,
         })
         .await;
 }
