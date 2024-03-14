@@ -25,7 +25,6 @@
         left: 50%;
         transform: translateX(-50%);
 
-        /* TODO Use px or vw instead of em */
         width: 100px;
         height: 100px;
 
@@ -56,12 +55,15 @@
         bottom: 20px;
         right: 20px;
 
+        box-sizing: border-box;
         width: 60px;
         height: 60px;
 
         background-color: transparent;
         border: 5px solid #fff;
         border-radius: 100px;
+
+        touch-action: manipulation;
       }
 
       #flip:active {
@@ -69,11 +71,13 @@
       }
 
       #flip svg {
-        display: block;
-        margin: auto;
+        width: 60%;
+        height: 60%;
 
-        width: 70%;
-        height: 70%;
+        position: relative;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
       }
 
       #flip:active path {
@@ -85,7 +89,7 @@
       const button = document.getElementById("button");
       const flip = document.getElementById("flip");
 
-      let currentStream = null;
+      const facing = new URLSearchParams(window.location.search).get("facing");
 
       function getStreamFacingMode(stream) {
         if (!stream) return null;
@@ -100,16 +104,17 @@
         let stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { ideal: facingMode } },
         });
-        currentStream = stream;
         video.srcObject = stream;
 
         // Enable or disable flip button
-        const actualFacingMode = getStreamFacingMode(stream);
-        const canFlip = actualFacingMode !== undefined;
+        const facing = getStreamFacingMode(stream);
+        const canFlip = facing !== undefined;
+        const facingOpposite = facing === "user" ? "environment" : "user";
         flip.hidden = !canFlip;
+        flip.setAttribute("href", `?facing=${facingOpposite}`);
       }
 
-      await initStream("environment");
+      await initStream(facing);
 
       button.addEventListener("click", () => {
         const canvas = document.createElement("canvas");
@@ -129,24 +134,17 @@
           });
         });
       });
-
-      flip.addEventListener("click", () => {
-        let facingMode = getStreamFacingMode(currentStream);
-        if (!facingMode) return;
-        facingMode = facingMode === "user" ? "environment" : "user";
-        initStream(facingMode);
-      });
     </script>
   </head>
 
   <body>
     <video id="video" autoplay></video>
     <button id="button"><div class="circle"></div></button>
-    <button id="flip" hidden>
+    <a id="flip" hidden>
       <svg viewBox="0 0 6 6">
         <path fill="#fff" stroke="none" d="M0,2h1v4h1v-4h1l-1.5,-2"></path>
         <path fill="#fff" stroke="none" d="M3,4h1v-4h1v4h1l-1.5,2"></path>
       </svg>
-    </button>
+    </a>
   </body>
 </html>
