@@ -1,6 +1,6 @@
 mod calendar;
 
-use image::RgbaImage;
+use image::{Luma, Pixel, RgbaImage};
 use showbits_common::{
     color::{BLACK, WHITE},
     widgets::{Block, FontStuff, HasFontStuff, Image, Text},
@@ -131,8 +131,16 @@ impl Drawer {
         Ok(())
     }
 
-    fn on_image(&mut self, image: RgbaImage) -> anyhow::Result<()> {
+    fn on_image(&mut self, mut image: RgbaImage) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
+
+        for pixel in image.pixels_mut() {
+            let [l] = pixel.to_luma().0;
+            let l = l as f32 / 255.0; // Convert to [0, 1]
+            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
+            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
+            *pixel = Luma([l]).to_rgba();
+        }
 
         let image = Image::new(image)
             .with_dither_palette(&[BLACK, WHITE])
@@ -152,8 +160,16 @@ impl Drawer {
         Ok(())
     }
 
-    fn on_photo(&mut self, image: RgbaImage, title: String) -> anyhow::Result<()> {
+    fn on_photo(&mut self, mut image: RgbaImage, title: String) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
+
+        for pixel in image.pixels_mut() {
+            let [l] = pixel.to_luma().0;
+            let l = l as f32 / 255.0; // Convert to [0, 1]
+            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
+            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
+            *pixel = Luma([l]).to_rgba();
+        }
 
         let image = Image::new(image)
             .with_dither_palette(&[BLACK, WHITE])
