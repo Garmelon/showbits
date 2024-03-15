@@ -1,8 +1,9 @@
 mod calendar;
 
 use image::{Luma, Pixel, RgbaImage};
+use palette::{FromColor, IntoColor, LinLumaa};
 use showbits_common::{
-    color::{BLACK, WHITE},
+    color::{self, BLACK, WHITE},
     widgets::{Block, FontStuff, HasFontStuff, Image, Text},
     Node, Tree, WidgetExt,
 };
@@ -19,7 +20,7 @@ pub enum Command {
     Rip,
     Test,
     Text(String),
-    Image(RgbaImage),
+    Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
     Calendar { year: i32, month: u8 },
@@ -70,7 +71,7 @@ impl Drawer {
             Command::Rip => self.printer.rip()?,
             Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
-            Command::Image(image) => self.on_image(image)?,
+            Command::Image { image, bright } => self.on_image(image, bright)?,
             Command::Photo { image, title } => self.on_photo(image, title)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
@@ -131,15 +132,15 @@ impl Drawer {
         Ok(())
     }
 
-    fn on_image(&mut self, mut image: RgbaImage) -> anyhow::Result<()> {
+    fn on_image(&mut self, mut image: RgbaImage, bright: bool) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
 
-        for pixel in image.pixels_mut() {
-            let [l] = pixel.to_luma().0;
-            let l = l as f32 / 255.0; // Convert to [0, 1]
-            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
-            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
-            *pixel = Luma([l]).to_rgba();
+        if bright {
+            for pixel in image.pixels_mut() {
+                let mut color = LinLumaa::from_color(color::from_image_color(*pixel));
+                color.luma = 1.0 - 0.4 * (1.0 - color.luma);
+                *pixel = color::to_image_color(color.into_color());
+            }
         }
 
         let image = Image::new(image)

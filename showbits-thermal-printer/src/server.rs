@@ -63,12 +63,19 @@ async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
 
 async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
+    let mut bright = false;
 
     while let Some(field) = multipart.next_field().await? {
-        if let Some("image") = field.name() {
-            let data = field.bytes().await?;
-            let decoded = image::load_from_memory(&data)?.into_rgba8();
-            image = Some(decoded);
+        match field.name() {
+            Some("image") => {
+                let data = field.bytes().await?;
+                let decoded = image::load_from_memory(&data)?.into_rgba8();
+                image = Some(decoded);
+            }
+            Some("bright") => {
+                bright = true;
+            }
+            _ => {}
         }
     }
 
@@ -76,7 +83,7 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
         return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
     };
 
-    let _ = server.tx.send(Command::Image(image)).await;
+    let _ = server.tx.send(Command::Image { image, bright }).await;
     Ok(Redirect::to("image").into_response())
 }
 
