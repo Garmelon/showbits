@@ -18,8 +18,8 @@ impl Printer {
     /// Experimentation has determined that the printer uses PC437 and the page
     /// code can't be changed.
     ///
-    /// https://en.wikipedia.org/wiki/Code_page_437
-    /// https://download4.epson.biz/sec_pubs/pos/reference_en/charcode/page_00.html
+    /// <https://en.wikipedia.org/wiki/Code_page_437>
+    /// <https://download4.epson.biz/sec_pubs/pos/reference_en/charcode/page_00.html>
     const PAGE_CODE: PageCode = PageCode::PC437;
 
     /// Width of the printable area in pixels.
@@ -95,7 +95,7 @@ impl Printer {
     /// amount of data it can handle. In-between chunks, the paper is not moved,
     /// meaning that chunks connect to each other seamlessly.
     ///
-    /// https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/gs_lv_0.html
+    /// <https://download4.epson.biz/sec_pubs/pos/reference_en/escpos/gs_lv_0.html>
     fn print_image_to_printer(
         printer: &mut EPrinter<FileDriver>,
         image: &RgbaImage,
