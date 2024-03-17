@@ -1,4 +1,5 @@
 mod calendar;
+mod cells;
 
 use image::{Luma, Pixel, RgbaImage};
 use palette::{FromColor, IntoColor, LinLumaa};
@@ -24,6 +25,7 @@ pub enum Command {
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
     Calendar { year: i32, month: u8 },
+    Cells { rule: u8, rows: u32, scale: u32 },
 }
 
 #[derive(Default)]
@@ -77,6 +79,7 @@ impl Drawer {
                 self.on_chat_message(username, content)?
             }
             Command::Calendar { year, month } => self.draw_calendar(year, month)?,
+            Command::Cells { rule, rows, scale } => self.draw_cells(rule, rows, scale)?,
         }
         Ok(())
     }

@@ -25,7 +25,7 @@ impl Printer {
     /// Width of the printable area in pixels.
     ///
     /// Assumed to be a multiple of 8, then measured to that precision.
-    const WIDTH: u32 = 8 * 48;
+    pub const WIDTH: u32 = 8 * 48;
 
     /// Images are printed in chunks because a single print command can only
     /// print so much data.
