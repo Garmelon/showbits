@@ -4,7 +4,8 @@ use showbits_common::{
     Node, Tree, WidgetExt,
 };
 use taffy::{
-    style_helpers::{length, percent, repeat}, AlignContent, AlignItems, Display, FlexDirection
+    style_helpers::{length, percent, repeat},
+    AlignContent, AlignItems, Display, FlexDirection,
 };
 use time::Date;
 
