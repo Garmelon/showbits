@@ -19,6 +19,10 @@
         height: 100%;
       }
 
+      video.mirrored {
+        scale: -1 1;
+      }
+
       #button {
         position: absolute;
         bottom: 20px;
@@ -106,8 +110,13 @@
         });
         video.srcObject = stream;
 
-        // Enable or disable flip button
+        // Flip video horizontally if it's facing the user
         const facing = getStreamFacingMode(stream);
+        if (facing !== "environment") {
+          video.classList.add("mirrored");
+        }
+
+        // Enable or disable flip button
         const canFlip = facing !== undefined;
         const facingOpposite = facing === "user" ? "environment" : "user";
         flip.hidden = !canFlip;
