@@ -165,6 +165,11 @@ impl Drawer {
     }
 
     fn on_photo(&mut self, mut image: RgbaImage, title: String) -> anyhow::Result<()> {
+        println!(
+            "Printing photo {title:?} ({}x{})",
+            image.width(),
+            image.height()
+        );
         let mut tree = Tree::<Context>::new(WHITE);
 
         for pixel in image.pixels_mut() {
