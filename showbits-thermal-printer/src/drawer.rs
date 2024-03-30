@@ -16,6 +16,8 @@ use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
+pub use calendar::CalendarDrawing;
+
 #[derive(Default)]
 pub struct Context {
     font_stuff: FontStuff,
@@ -35,7 +37,6 @@ pub enum Command {
     Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
-    Calendar { year: i32, month: u8 },
     Cells { rule: u8, rows: u32, scale: u32 },
 }
 
@@ -86,7 +87,6 @@ impl Drawer {
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
-            Command::Calendar { year, month } => self.draw_calendar(year, month)?,
             Command::Cells { rule, rows, scale } => self.draw_cells(rule, rows, scale)?,
         }
         Ok(())

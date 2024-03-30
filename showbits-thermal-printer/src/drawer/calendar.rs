@@ -9,11 +9,18 @@ use taffy::{
 };
 use time::Date;
 
-use super::{Context, Drawer};
+use crate::printer::Printer;
 
-impl Drawer {
-    pub fn draw_calendar(&mut self, year: i32, month: u8) -> anyhow::Result<()> {
-        let mut date = Date::from_calendar_date(year, month.try_into()?, 1)?;
+use super::{Context, Drawing};
+
+pub struct CalendarDrawing {
+    pub year: i32,
+    pub month: u8,
+}
+
+impl Drawing for CalendarDrawing {
+    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+        let mut date = Date::from_calendar_date(self.year, self.month.try_into()?, 1)?;
 
         let mut tree = Tree::<Context>::new(WHITE);
 
@@ -27,7 +34,7 @@ impl Drawer {
             let text = Text::new()
                 .with_metrics(Text::default_metrics().scale(2.0))
                 .and_plain(weekday)
-                .widget(&mut self.ctx.font_stuff)
+                .widget(&mut ctx.font_stuff)
                 .node()
                 .with_justify_self(Some(AlignItems::Center))
                 .with_align_self(Some(AlignItems::Center))
@@ -45,7 +52,7 @@ impl Drawer {
         loop {
             let day = Text::new()
                 .and_plain(date.day().to_string())
-                .widget(&mut self.ctx.font_stuff)
+                .widget(&mut ctx.font_stuff)
                 .node()
                 .register(&mut tree)?;
 
@@ -69,14 +76,16 @@ impl Drawer {
         }
 
         let title = Text::new()
-            .and_plain(format!("Ankreuzkalender {year:04}-{month:02}"))
-            .widget(&mut self.ctx.font_stuff)
+            .and_plain(format!(
+                "Ankreuzkalender {:04}-{:02}",
+                self.year, self.month
+            ))
+            .widget(&mut ctx.font_stuff)
             .node()
             .register(&mut tree)?;
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
-            .with_padding_bottom(length(Self::FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -84,7 +93,8 @@ impl Drawer {
             .and_child(grid.register(&mut tree)?)
             .register(&mut tree)?;
 
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        printer.print_tree(&mut tree, ctx, root)?;
+        printer.feed()?;
         Ok(())
     }
 }

@@ -56,7 +56,7 @@ impl Printer {
         })
     }
 
-    pub fn rip(&mut self) -> anyhow::Result<()> {
+    pub fn feed(&mut self) -> anyhow::Result<()> {
         if let Some(printer) = &mut self.printer {
             printer.init()?.feeds(4)?.print()?;
         }

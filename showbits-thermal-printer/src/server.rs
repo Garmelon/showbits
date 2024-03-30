@@ -12,7 +12,7 @@ use axum::{
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::drawer::Command;
+use crate::drawer::{CalendarDrawing, Command};
 
 use self::{r#static::get_static_file, statuscode::status_code};
 
@@ -133,10 +133,10 @@ struct PostCalendarForm {
 async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
     let _ = server
         .tx
-        .send(Command::Calendar {
+        .send(Command::draw(CalendarDrawing {
             year: request.0.year,
             month: request.0.month,
-        })
+        }))
         .await;
 }
 
