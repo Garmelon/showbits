@@ -16,9 +16,22 @@ use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
+#[derive(Default)]
+pub struct Context {
+    font_stuff: FontStuff,
+}
+
+pub trait Drawing {
+    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()>;
+}
+
+pub struct BoxedDrawing(Box<dyn Drawing + Send>);
+
 pub enum Command {
     Stop,
     Rip,
+    Draw(BoxedDrawing),
+
     Test,
     Text(String),
     Image { image: RgbaImage, bright: bool },
@@ -28,9 +41,10 @@ pub enum Command {
     Cells { rule: u8, rows: u32, scale: u32 },
 }
 
-#[derive(Default)]
-struct Context {
-    font_stuff: FontStuff,
+impl Command {
+    pub fn draw<D: Drawing + Send + 'static>(drawing: D) -> Self {
+        Self::Draw(BoxedDrawing(Box::new(drawing)))
+    }
 }
 
 impl HasFontStuff for Context {
@@ -71,6 +85,8 @@ impl Drawer {
         match command {
             Command::Stop => {} // Already handled one level above
             Command::Rip => self.printer.rip()?,
+            Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
+
             Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
             Command::Image { image, bright } => self.on_image(image, bright)?,
