@@ -23,9 +23,7 @@ struct Server {
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/stop", post(post_stop))
         .route("/test", post(post_test))
-        .route("/rip", post(post_rip))
         .route("/text", post(post_text))
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
@@ -41,16 +39,8 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
     Ok(())
 }
 
-async fn post_stop(server: State<Server>) {
-    let _ = server.tx.send(Command::Stop).await;
-}
-
 async fn post_test(server: State<Server>) {
     let _ = server.tx.send(Command::Test).await;
-}
-
-async fn post_rip(server: State<Server>) {
-    let _ = server.tx.send(Command::Rip).await;
 }
 
 #[derive(Deserialize)]

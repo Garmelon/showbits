@@ -28,8 +28,6 @@ pub trait Drawing {
 pub struct BoxedDrawing(Box<dyn Drawing + Send>);
 
 pub enum Command {
-    Stop,
-    Rip,
     Draw(BoxedDrawing),
 
     Test,
@@ -72,10 +70,6 @@ impl Drawer {
 
     pub fn run(&mut self) -> anyhow::Result<()> {
         while let Some(command) = self.rx.blocking_recv() {
-            if matches!(command, Command::Stop) {
-                break;
-            };
-
             self.on_command(command)?;
         }
         Ok(())
@@ -83,8 +77,6 @@ impl Drawer {
 
     fn on_command(&mut self, command: Command) -> anyhow::Result<()> {
         match command {
-            Command::Stop => {} // Already handled one level above
-            Command::Rip => self.printer.rip()?,
             Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
 
             Command::Test => self.on_test()?,
