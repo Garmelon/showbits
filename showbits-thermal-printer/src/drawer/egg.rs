@@ -1,6 +1,6 @@
 use image::{imageops, RgbaImage};
-use rand::Rng;
-use showbits_assets::{EGG_COVER, EGG_PATTERNS};
+use rand::{seq::SliceRandom, Rng};
+use showbits_assets::{EGG_BAD_COVERS, EGG_BAD_PATTERNS, EGG_COVERS, EGG_PATTERNS};
 use showbits_common::{
     color::{self, WHITE},
     widgets::{Image, Text},
@@ -14,29 +14,44 @@ use super::{Context, Drawing};
 
 pub struct EggDrawing;
 
-fn load_image(bytes: &[u8]) -> anyhow::Result<RgbaImage> {
-    Ok(image::load_from_memory(bytes)?.into_rgba8())
+fn load_image(bytes: &[u8]) -> RgbaImage {
+    image::load_from_memory(bytes)
+        .expect("malformed image data")
+        .into_rgba8()
 }
 
 impl Drawing for EggDrawing {
     fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
-        // Load image data from memory
-        let cover = load_image(EGG_COVER)?;
-        let mut patterns = vec![];
-        for pattern in EGG_PATTERNS {
-            patterns.push(load_image(pattern)?);
-        }
+        let mut rng = rand::thread_rng();
 
-        // Prepare egg image
+        // Choose which set of egg images to use
+        let bad_egg = rng.gen_range(0..16) == 0;
+        let (covers, patterns) = if bad_egg {
+            (EGG_BAD_COVERS, EGG_BAD_PATTERNS)
+        } else {
+            (EGG_COVERS, EGG_PATTERNS)
+        };
+
+        // Load images from memory
+        let covers = covers.iter().map(|img| load_image(img)).collect::<Vec<_>>();
+        let patterns = patterns
+            .iter()
+            .map(|img| load_image(img))
+            .collect::<Vec<_>>();
+
+        // Choose a random cover
+        let cover = covers.choose(&mut rng).expect("too few covers");
+
+        // Prepare image of appropriate size
         let mut image =
             RgbaImage::from_pixel(cover.width(), cover.height(), color::to_image_color(WHITE));
 
         // Draw patterns onto egg
         let mut last_idx = None;
-        let mut y = rand::thread_rng().gen_range(-100_i64..0);
+        let mut y = rng.gen_range(-100_i64..0);
         while y < image.height().into() {
             let idx = loop {
-                let idx = rand::thread_rng().gen_range(0..patterns.len());
+                let idx = rng.gen_range(0..patterns.len());
                 if Some(idx) != last_idx {
                     break idx;
                 }
@@ -49,7 +64,7 @@ impl Drawing for EggDrawing {
         }
 
         // Finally, draw the cover
-        imageops::overlay(&mut image, &cover, 0, 0);
+        imageops::overlay(&mut image, cover, 0, 0);
 
         let mut tree = Tree::<Context>::new(WHITE);
 
