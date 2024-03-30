@@ -1388,6 +1388,7 @@ dependencies = [
  "rand",
  "rust-embed",
  "serde",
+ "showbits-assets",
  "showbits-common",
  "taffy",
  "time",

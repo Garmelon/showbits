@@ -1,6 +1,7 @@
 mod calendar;
 mod cells;
 mod chat_message;
+mod egg;
 mod image;
 mod photo;
 mod text;
@@ -12,7 +13,7 @@ use crate::printer::Printer;
 
 pub use self::{
     calendar::CalendarDrawing, cells::CellsDrawing, chat_message::ChatMessageDrawing,
-    image::ImageDrawing, photo::PhotoDrawing, text::TextDrawing,
+    egg::EggDrawing, image::ImageDrawing, photo::PhotoDrawing, text::TextDrawing,
 };
 
 #[derive(Default)]
