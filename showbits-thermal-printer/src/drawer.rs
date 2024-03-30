@@ -32,7 +32,6 @@ pub struct BoxedDrawing(Box<dyn Drawing + Send>);
 pub enum Command {
     Draw(BoxedDrawing),
 
-    Test,
     Text(String),
     Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
@@ -79,7 +78,6 @@ impl Drawer {
         match command {
             Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
 
-            Command::Test => self.on_test()?,
             Command::Text(text) => self.on_text(text)?,
             Command::Image { image, bright } => self.on_image(image, bright)?,
             Command::Photo { image, title } => self.on_photo(image, title)?,
@@ -87,38 +85,6 @@ impl Drawer {
                 self.on_chat_message(username, content)?
             }
         }
-        Ok(())
-    }
-
-    fn on_test(&mut self) -> anyhow::Result<()> {
-        let mut tree = Tree::<Context>::new(WHITE);
-
-        let text = Text::new()
-            .with_metrics(Text::default_metrics().scale(2.0))
-            .and_plain("Hello\nworld!")
-            .widget(&mut self.ctx.font_stuff)
-            .node()
-            .with_margin_horiz(length(8.0))
-            .with_margin_vert(length(2.0))
-            .register(&mut tree)?;
-
-        let wrap = Block::new()
-            .with_border(BLACK)
-            .node()
-            .with_border_all(length(2.0))
-            .and_child(text)
-            .register(&mut tree)?;
-
-        let root = Block::new()
-            .with_border(BLACK)
-            .node()
-            .with_size_width(percent(1.0))
-            .with_border_all(length(2.0))
-            .with_padding_all(length(10.0))
-            .and_child(wrap)
-            .register(&mut tree)?;
-
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
         Ok(())
     }
 

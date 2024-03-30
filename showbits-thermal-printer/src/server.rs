@@ -23,7 +23,6 @@ struct Server {
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/test", post(post_test))
         .route("/text", post(post_text))
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
@@ -37,10 +36,6 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
     let listener = TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
-}
-
-async fn post_test(server: State<Server>) {
-    let _ = server.tx.send(Command::Test).await;
 }
 
 #[derive(Deserialize)]
