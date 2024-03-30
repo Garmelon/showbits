@@ -13,7 +13,8 @@ use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::drawer::{
-    CalendarDrawing, CellsDrawing, Command, ImageDrawing, PhotoDrawing, TextDrawing,
+    CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, ImageDrawing, PhotoDrawing,
+    TextDrawing,
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
@@ -123,10 +124,10 @@ struct PostChatMessageForm {
 async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageForm>) {
     let _ = server
         .tx
-        .send(Command::ChatMessage {
+        .send(Command::draw(ChatMessageDrawing {
             username: request.0.username,
             content: request.0.content,
-        })
+        }))
         .await;
 }
 
