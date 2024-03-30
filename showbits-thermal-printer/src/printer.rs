@@ -58,7 +58,7 @@ impl Printer {
 
     pub fn feed(&mut self) -> anyhow::Result<()> {
         if let Some(printer) = &mut self.printer {
-            printer.init()?.feeds(4)?.print()?;
+            printer.init()?.feeds(3)?.print()?;
         }
 
         Ok(())
