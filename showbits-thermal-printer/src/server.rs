@@ -12,7 +12,9 @@ use axum::{
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::drawer::{CalendarDrawing, CellsDrawing, Command, ImageDrawing, TextDrawing};
+use crate::drawer::{
+    CalendarDrawing, CellsDrawing, Command, ImageDrawing, PhotoDrawing, TextDrawing,
+};
 
 use self::{r#static::get_static_file, statuscode::status_code};
 
@@ -105,7 +107,10 @@ async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow:
         return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
     };
 
-    let _ = server.tx.send(Command::Photo { image, title }).await;
+    let _ = server
+        .tx
+        .send(Command::draw(PhotoDrawing { image, title }))
+        .await;
     Ok(Redirect::to("photo").into_response())
 }
 

@@ -1,24 +1,25 @@
 mod calendar;
 mod cells;
 mod image;
+mod photo;
 mod text;
 
-use ::image::{Luma, Pixel, RgbaImage};
 use showbits_common::{
     color::{BLACK, WHITE},
-    widgets::{Block, FontStuff, HasFontStuff, Image, Text},
+    widgets::{Block, FontStuff, HasFontStuff, Text},
     Node, Tree, WidgetExt,
 };
 use taffy::{
     style_helpers::{length, percent},
-    AlignItems, Display, FlexDirection,
+    AlignItems, FlexDirection,
 };
 use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
 pub use self::{
-    calendar::CalendarDrawing, cells::CellsDrawing, image::ImageDrawing, text::TextDrawing,
+    calendar::CalendarDrawing, cells::CellsDrawing, image::ImageDrawing, photo::PhotoDrawing,
+    text::TextDrawing,
 };
 
 #[derive(Default)]
@@ -35,7 +36,6 @@ pub struct BoxedDrawing(Box<dyn Drawing + Send>);
 pub enum Command {
     Draw(BoxedDrawing),
 
-    Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
 }
 
@@ -58,8 +58,6 @@ pub struct Drawer {
 }
 
 impl Drawer {
-    const FEED: f32 = 64.0;
-
     pub fn new(rx: mpsc::Receiver<Command>, printer: Printer) -> Self {
         Self {
             rx,
@@ -79,54 +77,10 @@ impl Drawer {
         match command {
             Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
 
-            Command::Photo { image, title } => self.on_photo(image, title)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
         }
-        Ok(())
-    }
-
-    fn on_photo(&mut self, mut image: RgbaImage, title: String) -> anyhow::Result<()> {
-        println!(
-            "Printing photo {title:?} ({}x{})",
-            image.width(),
-            image.height()
-        );
-        let mut tree = Tree::<Context>::new(WHITE);
-
-        for pixel in image.pixels_mut() {
-            let [l] = pixel.to_luma().0;
-            let l = l as f32 / 255.0; // Convert to [0, 1]
-            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
-            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
-            *pixel = Luma([l]).to_rgba();
-        }
-
-        let image = Image::new(image)
-            .with_dither_palette(&[BLACK, WHITE])
-            .node()
-            .register(&mut tree)?;
-
-        let title = Text::new()
-            .with_metrics(Text::default_metrics().scale(2.0))
-            .and_plain(title)
-            .widget(&mut self.ctx.font_stuff)
-            .node()
-            .register(&mut tree)?;
-
-        let root = Node::empty()
-            .with_size_width(percent(1.0))
-            .with_padding_bottom(length(Self::FEED))
-            .with_display(Display::Flex)
-            .with_flex_direction(FlexDirection::Column)
-            .with_align_items(Some(AlignItems::Center))
-            .with_gap(length(8.0))
-            .and_child(image)
-            .and_child(title)
-            .register(&mut tree)?;
-
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
         Ok(())
     }
 
