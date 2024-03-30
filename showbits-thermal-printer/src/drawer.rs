@@ -16,7 +16,7 @@ use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
-pub use calendar::CalendarDrawing;
+pub use self::{calendar::CalendarDrawing, cells::CellsDrawing};
 
 #[derive(Default)]
 pub struct Context {
@@ -37,7 +37,6 @@ pub enum Command {
     Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
-    Cells { rule: u8, rows: u32, scale: u32 },
 }
 
 impl Command {
@@ -87,7 +86,6 @@ impl Drawer {
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
-            Command::Cells { rule, rows, scale } => self.draw_cells(rule, rows, scale)?,
         }
         Ok(())
     }

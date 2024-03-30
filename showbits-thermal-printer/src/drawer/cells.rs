@@ -3,14 +3,11 @@ use image::{
     Rgba, RgbaImage,
 };
 use showbits_common::{color, widgets::Image, Node, Tree, WidgetExt};
-use taffy::{
-    style_helpers::{length, percent},
-    AlignItems, Display, FlexDirection,
-};
+use taffy::{style_helpers::percent, AlignItems, Display, FlexDirection};
 
 use crate::printer::Printer;
 
-use super::{Context, Drawer};
+use super::{Context, Drawing};
 
 const BLACK: Rgba<u8> = Rgba([0, 0, 0, 255]);
 const WHITE: Rgba<u8> = Rgba([255, 255, 255, 255]);
@@ -45,9 +42,15 @@ fn apply_rule(rule: u8, neighbors: [bool; 3]) -> bool {
     rule & (1 << index) != 0
 }
 
-impl Drawer {
-    pub fn draw_cells(&mut self, rule: u8, rows: u32, scale: u32) -> anyhow::Result<()> {
-        let mut image = RgbaImage::new(Printer::WIDTH / scale, rows);
+pub struct CellsDrawing {
+    pub rule: u8,
+    pub rows: u32,
+    pub scale: u32,
+}
+
+impl Drawing for CellsDrawing {
+    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+        let mut image = RgbaImage::new(Printer::WIDTH / self.scale, self.rows);
 
         // Initialize first line randomly
         for x in 0..image.width() {
@@ -55,18 +58,18 @@ impl Drawer {
         }
 
         // Calculate next rows
-        for y in 1..rows {
+        for y in 1..self.rows {
             for x in 0..image.width() {
                 let neighbors = neighbors_at(&image, x, y - 1);
-                let state = apply_rule(rule, neighbors);
+                let state = apply_rule(self.rule, neighbors);
                 image.put_pixel(x, y, b2c(state));
             }
         }
 
         let image = imageops::resize(
             &image,
-            image.width() * scale,
-            image.height() * scale,
+            image.width() * self.scale,
+            image.height() * self.scale,
             FilterType::Nearest,
         );
 
@@ -76,14 +79,14 @@ impl Drawer {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
-            .with_padding_bottom(length(Self::FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
             .and_child(image)
             .register(&mut tree)?;
 
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
+        printer.print_tree(&mut tree, ctx, root)?;
+        printer.feed()?;
         Ok(())
     }
 }

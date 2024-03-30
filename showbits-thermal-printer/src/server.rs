@@ -12,7 +12,7 @@ use axum::{
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::drawer::{CalendarDrawing, Command};
+use crate::drawer::{CalendarDrawing, CellsDrawing, Command};
 
 use self::{r#static::get_static_file, statuscode::status_code};
 
@@ -150,10 +150,10 @@ struct PostCellsForm {
 async fn post_cells(server: State<Server>, request: Form<PostCellsForm>) {
     let _ = server
         .tx
-        .send(Command::Cells {
+        .send(Command::draw(CellsDrawing {
             rule: request.0.rule,
             rows: request.0.rows.unwrap_or(32).min(512),
             scale: request.0.scale.unwrap_or(4),
-        })
+        }))
         .await;
 }
