@@ -29,7 +29,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/calendar", post(post_calendar))
         .route("/cells", post(post_cells))
         .route("/chat_message", post(post_chat_message))
-        .route("/egg", post(post_egg))
+        .route("/egg", post(post_egg).fallback(get_static_file))
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
         .route("/text", post(post_text))
@@ -100,8 +100,9 @@ async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageF
 
 // /egg
 
-async fn post_egg(server: State<Server>) {
+async fn post_egg(server: State<Server>) -> impl IntoResponse {
     let _ = server.tx.send(Command::draw(EggDrawing)).await;
+    Redirect::to("egg")
 }
 
 // /image
