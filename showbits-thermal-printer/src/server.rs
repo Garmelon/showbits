@@ -26,12 +26,12 @@ struct Server {
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/text", post(post_text))
-        .route("/image", post(post_image).fallback(get_static_file))
-        .route("/photo", post(post_photo).fallback(get_static_file))
-        .route("/chat_message", post(post_chat_message))
         .route("/calendar", post(post_calendar))
         .route("/cells", post(post_cells))
+        .route("/chat_message", post(post_chat_message))
+        .route("/image", post(post_image).fallback(get_static_file))
+        .route("/photo", post(post_photo).fallback(get_static_file))
+        .route("/text", post(post_text))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -41,17 +41,63 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
     Ok(())
 }
 
+// /calendar
+
 #[derive(Deserialize)]
-struct PostTextForm {
-    text: String,
+struct PostCalendarForm {
+    year: i32,
+    month: u8,
 }
 
-async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
+async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
     let _ = server
         .tx
-        .send(Command::draw(TextDrawing(request.0.text)))
+        .send(Command::draw(CalendarDrawing {
+            year: request.0.year,
+            month: request.0.month,
+        }))
         .await;
 }
+
+// /cells
+
+#[derive(Deserialize)]
+struct PostCellsForm {
+    rule: u8,
+    rows: Option<u32>,
+    scale: Option<u32>,
+}
+
+async fn post_cells(server: State<Server>, request: Form<PostCellsForm>) {
+    let _ = server
+        .tx
+        .send(Command::draw(CellsDrawing {
+            rule: request.0.rule,
+            rows: request.0.rows.unwrap_or(32).min(512),
+            scale: request.0.scale.unwrap_or(4),
+        }))
+        .await;
+}
+
+// /chat_message
+
+#[derive(Deserialize)]
+struct PostChatMessageForm {
+    username: String,
+    content: String,
+}
+
+async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageForm>) {
+    let _ = server
+        .tx
+        .send(Command::draw(ChatMessageDrawing {
+            username: request.0.username,
+            content: request.0.content,
+        }))
+        .await;
+}
+
+// /image
 
 async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
@@ -81,6 +127,8 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
         .await;
     Ok(Redirect::to("image").into_response())
 }
+
+// /photo
 
 async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
@@ -115,52 +163,16 @@ async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow:
     Ok(Redirect::to("photo").into_response())
 }
 
-#[derive(Deserialize)]
-struct PostChatMessageForm {
-    username: String,
-    content: String,
-}
-
-async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(ChatMessageDrawing {
-            username: request.0.username,
-            content: request.0.content,
-        }))
-        .await;
-}
+// /text
 
 #[derive(Deserialize)]
-struct PostCalendarForm {
-    year: i32,
-    month: u8,
+struct PostTextForm {
+    text: String,
 }
 
-async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
+async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
     let _ = server
         .tx
-        .send(Command::draw(CalendarDrawing {
-            year: request.0.year,
-            month: request.0.month,
-        }))
-        .await;
-}
-
-#[derive(Deserialize)]
-struct PostCellsForm {
-    rule: u8,
-    rows: Option<u32>,
-    scale: Option<u32>,
-}
-
-async fn post_cells(server: State<Server>, request: Form<PostCellsForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(CellsDrawing {
-            rule: request.0.rule,
-            rows: request.0.rows.unwrap_or(32).min(512),
-            scale: request.0.scale.unwrap_or(4),
-        }))
+        .send(Command::draw(TextDrawing(request.0.text)))
         .await;
 }
