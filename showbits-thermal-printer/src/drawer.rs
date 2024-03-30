@@ -1,11 +1,11 @@
 mod calendar;
 mod cells;
+mod image;
 mod text;
 
-use image::{Luma, Pixel, RgbaImage};
-use palette::{FromColor, IntoColor, LinLumaa};
+use ::image::{Luma, Pixel, RgbaImage};
 use showbits_common::{
-    color::{self, BLACK, WHITE},
+    color::{BLACK, WHITE},
     widgets::{Block, FontStuff, HasFontStuff, Image, Text},
     Node, Tree, WidgetExt,
 };
@@ -17,7 +17,9 @@ use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
-pub use self::{calendar::CalendarDrawing, cells::CellsDrawing, text::TextDrawing};
+pub use self::{
+    calendar::CalendarDrawing, cells::CellsDrawing, image::ImageDrawing, text::TextDrawing,
+};
 
 #[derive(Default)]
 pub struct Context {
@@ -33,7 +35,6 @@ pub struct BoxedDrawing(Box<dyn Drawing + Send>);
 pub enum Command {
     Draw(BoxedDrawing),
 
-    Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
 }
@@ -78,41 +79,11 @@ impl Drawer {
         match command {
             Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
 
-            Command::Image { image, bright } => self.on_image(image, bright)?,
             Command::Photo { image, title } => self.on_photo(image, title)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
         }
-        Ok(())
-    }
-
-    fn on_image(&mut self, mut image: RgbaImage, bright: bool) -> anyhow::Result<()> {
-        let mut tree = Tree::<Context>::new(WHITE);
-
-        if bright {
-            for pixel in image.pixels_mut() {
-                let mut color = LinLumaa::from_color(color::from_image_color(*pixel));
-                color.luma = 1.0 - 0.4 * (1.0 - color.luma);
-                *pixel = color::to_image_color(color.into_color());
-            }
-        }
-
-        let image = Image::new(image)
-            .with_dither_palette(&[BLACK, WHITE])
-            .node()
-            .register(&mut tree)?;
-
-        let root = Node::empty()
-            .with_size_width(percent(1.0))
-            .with_padding_bottom(length(Self::FEED))
-            .with_display(Display::Flex)
-            .with_flex_direction(FlexDirection::Column)
-            .with_align_items(Some(AlignItems::Center))
-            .and_child(image)
-            .register(&mut tree)?;
-
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
         Ok(())
     }
 
