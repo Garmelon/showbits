@@ -1,5 +1,6 @@
 mod calendar;
 mod cells;
+mod text;
 
 use image::{Luma, Pixel, RgbaImage};
 use palette::{FromColor, IntoColor, LinLumaa};
@@ -16,7 +17,7 @@ use tokio::sync::mpsc;
 
 use crate::printer::Printer;
 
-pub use self::{calendar::CalendarDrawing, cells::CellsDrawing};
+pub use self::{calendar::CalendarDrawing, cells::CellsDrawing, text::TextDrawing};
 
 #[derive(Default)]
 pub struct Context {
@@ -32,7 +33,6 @@ pub struct BoxedDrawing(Box<dyn Drawing + Send>);
 pub enum Command {
     Draw(BoxedDrawing),
 
-    Text(String),
     Image { image: RgbaImage, bright: bool },
     Photo { image: RgbaImage, title: String },
     ChatMessage { username: String, content: String },
@@ -78,32 +78,12 @@ impl Drawer {
         match command {
             Command::Draw(drawing) => drawing.0.draw(&mut self.printer, &mut self.ctx)?,
 
-            Command::Text(text) => self.on_text(text)?,
             Command::Image { image, bright } => self.on_image(image, bright)?,
             Command::Photo { image, title } => self.on_photo(image, title)?,
             Command::ChatMessage { username, content } => {
                 self.on_chat_message(username, content)?
             }
         }
-        Ok(())
-    }
-
-    fn on_text(&mut self, text: String) -> anyhow::Result<()> {
-        let mut tree = Tree::<Context>::new(WHITE);
-
-        let text = Text::new()
-            .with_metrics(Text::default_metrics().scale(2.0))
-            .and_plain(text)
-            .widget(&mut self.ctx.font_stuff)
-            .node()
-            .register(&mut tree)?;
-
-        let root = Node::empty()
-            .with_size_width(percent(1.0))
-            .and_child(text)
-            .register(&mut tree)?;
-
-        self.printer.print_tree(&mut tree, &mut self.ctx, root)?;
         Ok(())
     }
 

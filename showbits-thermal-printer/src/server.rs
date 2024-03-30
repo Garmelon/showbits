@@ -12,7 +12,7 @@ use axum::{
 use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::drawer::{CalendarDrawing, CellsDrawing, Command};
+use crate::drawer::{CalendarDrawing, CellsDrawing, Command, TextDrawing};
 
 use self::{r#static::get_static_file, statuscode::status_code};
 
@@ -44,7 +44,10 @@ struct PostTextForm {
 }
 
 async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
-    let _ = server.tx.send(Command::Text(request.0.text)).await;
+    let _ = server
+        .tx
+        .send(Command::draw(TextDrawing(request.0.text)))
+        .await;
 }
 
 async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
