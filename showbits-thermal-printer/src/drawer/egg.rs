@@ -25,7 +25,7 @@ impl Drawing for EggDrawing {
         let mut rng = rand::thread_rng();
 
         // Choose which set of egg images to use
-        let bad_egg = rng.gen_range(0..16) == 0;
+        let bad_egg = rng.gen_range(0..8) == 0;
         let (covers, patterns) = if bad_egg {
             (EGG_BAD_COVERS, EGG_BAD_PATTERNS)
         } else {
