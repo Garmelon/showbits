@@ -14,7 +14,7 @@ use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::drawer::{
     CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
-    PhotoDrawing, TextDrawing,
+    PhotoDrawing, TextDrawing, TicTacToeDrawing,
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
@@ -33,6 +33,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
         .route("/text", post(post_text))
+        .route("/tictactoe", post(post_tictactoe))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -183,4 +184,10 @@ async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
         .tx
         .send(Command::draw(TextDrawing(request.0.text)))
         .await;
+}
+
+// /tictactoe
+
+async fn post_tictactoe(server: State<Server>) {
+    let _ = server.tx.send(Command::draw(TicTacToeDrawing)).await;
 }
