@@ -7,15 +7,15 @@ version = "0.0.0"
 edition = "2021"
 
 [workspace.dependencies]
-anyhow = "1.0.80"
+anyhow = "1.0.83"
 cosmic-text = "0.11.2"
-image = "0.24.9"
-palette = "0.7.5"
+image = "0.25.1"
+palette = "0.7.6"
 showbits-assets.path = "./showbits-assets"
 showbits-common.path = "./showbits-common"
 
 [workspace.dependencies.taffy]
-version = "0.4.0"
+version = "0.4.3"
 default-features = false
 features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]
 
