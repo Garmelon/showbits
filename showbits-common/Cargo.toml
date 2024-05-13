@@ -5,13 +5,18 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
+comemo = "0.4.0"
 cosmic-text.workspace = true
+fontdb = "0.17.0"
 image.workspace = true
 mark.git = "https://github.com/Garmelon/mark.git"
 palette.workspace = true
 paste = "1.0.14"
 showbits-assets.workspace = true
 taffy.workspace = true
+typst = "0.11.0"
+typst-assets = { version = "0.11.0", features = ["fonts"] }
+typst-render = "0.11.0"
 
 [lints]
 workspace = true

@@ -6,6 +6,7 @@ mod image;
 mod photo;
 mod text;
 mod tictactoe;
+mod typst;
 
 use showbits_common::widgets::{FontStuff, HasFontStuff};
 use tokio::sync::mpsc;
@@ -15,7 +16,7 @@ use crate::printer::Printer;
 pub use self::{
     calendar::CalendarDrawing, cells::CellsDrawing, chat_message::ChatMessageDrawing,
     egg::EggDrawing, image::ImageDrawing, photo::PhotoDrawing, text::TextDrawing,
-    tictactoe::TicTacToeDrawing,
+    tictactoe::TicTacToeDrawing, typst::TypstDrawing,
 };
 
 #[derive(Default)]
