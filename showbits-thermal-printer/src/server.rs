@@ -34,7 +34,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/photo", post(post_photo).fallback(get_static_file))
         .route("/text", post(post_text))
         .route("/tictactoe", post(post_tictactoe))
-        .route("/typst", post(post_typst))
+        .route("/typst", post(post_typst).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
