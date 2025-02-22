@@ -24,7 +24,7 @@ serde = { version = "1.0.218", features = ["derive"] }
 showbits-assets.path = "./showbits-assets"
 showbits-common.path = "./showbits-common"
 time = "0.3.37"
-tokio = "1.37.0"
+tokio = "1.43.0"
 typst = "0.11.0"
 typst-assets = { version = "0.11.0", features = ["fonts"] }
 typst-render = "0.11.0"
