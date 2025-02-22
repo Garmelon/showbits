@@ -121,7 +121,7 @@ impl Text {
     pub fn widget<C: HasFontStuff>(self, font_stuff: &mut FontStuff) -> impl Widget<C> + use<C> {
         let fs = &mut font_stuff.font_system;
         let mut buffer = Buffer::new_empty(self.metrics);
-        buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
+        buffer.set_size(fs, None, None);
 
         let spans = self
             .chunks
@@ -161,12 +161,13 @@ impl<C: HasFontStuff> Widget<C> for TextWidget {
         });
 
         let fs = &mut ctx.font_stuff().font_system;
-        self.buffer.set_size(fs, width, f32::INFINITY);
+        self.buffer.set_size(fs, Some(width), None);
         self.buffer.shape_until_scroll(fs, false);
 
-        let runs = self.buffer.layout_runs();
+        let runs = self.buffer.layout_runs().collect::<Vec<_>>();
         let height = runs.len() as f32 * self.buffer.metrics().line_height;
         let width = runs
+            .into_iter()
             .map(|run| run.line_w)
             .max_by(|a, b| a.partial_cmp(b).unwrap())
             .unwrap_or(0.0);
@@ -193,7 +194,8 @@ impl<C: HasFontStuff> Widget<C> for TextWidget {
             swash_cache: sc,
         } = ctx.font_stuff();
 
-        self.buffer.set_size(fs, size.x as f32, size.y as f32);
+        self.buffer
+            .set_size(fs, Some(size.x as f32), Some(size.y as f32));
         self.buffer.shape_until_scroll(fs, true);
 
         let color = color::to_text_color(self.color);
