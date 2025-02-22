@@ -38,7 +38,7 @@ fn neighbors_at(image: &RgbaImage, x: u32, y: u32) -> [bool; 3] {
 
 fn apply_rule(rule: u8, neighbors: [bool; 3]) -> bool {
     let [left, mid, right] = neighbors.map(|n| n as u8);
-    let index = left << 2 | mid << 1 | right;
+    let index = (left << 2) | (mid << 1) | right;
     rule & (1 << index) != 0
 }
 

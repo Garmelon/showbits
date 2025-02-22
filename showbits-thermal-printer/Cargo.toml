@@ -7,7 +7,6 @@ edition.workspace = true
 anyhow.workspace = true
 axum = { version = "0.7.5", features = ["multipart"] }
 clap = { version = "4.5.4", features = ["derive", "deprecated"] }
-cosmic-text.workspace = true
 escpos = { version = "0.12.2" }
 image.workspace = true
 mime_guess = "2.0.4"

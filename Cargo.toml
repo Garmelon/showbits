@@ -20,13 +20,26 @@ default-features = false
 features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]
 
 [workspace.lints]
-rust.unsafe_code = "forbid"
+rust.unsafe_code = { level = "forbid", priority = 1 }
+# Lint groups
+rust.deprecated_safe = "warn"
 rust.future_incompatible = "warn"
+rust.keyword_idents = "warn"
 rust.rust_2018_idioms = "warn"
 rust.unused = "warn"
-rust.noop_method_call = "warn"
+# Individual lints
+rust.non_local_definitions = "warn"
+rust.redundant_imports = "warn"
+rust.redundant_lifetimes = "warn"
 rust.single_use_lifetimes = "warn"
+rust.unit_bindings = "warn"
+rust.unused_crate_dependencies = "warn"
+rust.unused_import_braces = "warn"
+rust.unused_lifetimes = "warn"
+rust.unused_qualifications = "warn"
+# Clippy
 clippy.use_self = "warn"
+
 
 # Optimize dependencies in debug mode (mainly for faster image exports).
 # Does not apply to workspace members, only "real" dependencies.

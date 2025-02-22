@@ -7,7 +7,6 @@ edition.workspace = true
 anyhow.workspace = true
 comemo = "0.4.0"
 cosmic-text.workspace = true
-fontdb = "0.17.0"
 image.workspace = true
 mark.git = "https://github.com/Garmelon/mark.git"
 palette.workspace = true
