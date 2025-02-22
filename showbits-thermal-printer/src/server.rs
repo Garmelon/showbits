@@ -114,6 +114,7 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
     let mut image = None;
     let mut bright = false;
     let mut algo = DitherAlgorithm::FloydSteinberg;
+    let mut scale = 1_u32;
 
     while let Some(field) = multipart.next_field().await? {
         match field.name() {
@@ -130,6 +131,9 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
                 "stucki" => algo = DitherAlgorithm::Stucki,
                 _ => {}
             },
+            Some("scale") => {
+                scale = field.text().await?.parse::<u32>()?;
+            }
             _ => {}
         }
     }
@@ -144,6 +148,7 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
             image,
             bright,
             algo,
+            scale,
         }))
         .await;
     Ok(Redirect::to("image").into_response())

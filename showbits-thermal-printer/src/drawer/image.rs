@@ -15,6 +15,7 @@ pub struct ImageDrawing {
     pub image: RgbaImage,
     pub bright: bool,
     pub algo: DitherAlgorithm,
+    pub scale: u32,
 }
 
 impl Drawing for ImageDrawing {
@@ -33,6 +34,7 @@ impl Drawing for ImageDrawing {
         let image = Image::new(image)
             .with_dither_palette(&[BLACK, WHITE])
             .with_dither_algorithm(self.algo)
+            .with_scale(self.scale)
             .node()
             .register(&mut tree)?;
 

@@ -29,6 +29,7 @@ pub struct Image {
     image: RgbaImage,
     shrink: bool,
     grow: bool,
+    scale: u32,
     filter: FilterType,
 
     dither_palette: Option<Palette<LinSrgb>>,
@@ -42,6 +43,7 @@ impl Image {
             shrink: true,
             grow: false,
             filter: FilterType::CatmullRom,
+            scale: 1,
             dither_palette: None,
             dither_algorithm: DitherAlgorithm::FloydSteinberg,
         }
@@ -54,6 +56,11 @@ impl Image {
 
     pub fn with_grow(mut self, grow: bool) -> Self {
         self.grow = grow;
+        self
+    }
+
+    pub fn with_scale(mut self, scale: u32) -> Self {
+        self.scale = scale.max(1);
         self
     }
 
@@ -94,8 +101,8 @@ impl<C> Widget<C> for Image {
         }
 
         let size = Size {
-            width: self.image.width() as f32,
-            height: self.image.height() as f32,
+            width: (self.image.width() * self.scale) as f32,
+            height: (self.image.height() * self.scale) as f32,
         };
 
         let max_width = known.width.or(match available.width {
@@ -134,13 +141,19 @@ impl<C> Widget<C> for Image {
         _layout: &Layout,
     ) -> anyhow::Result<()> {
         let (width, height) = view.size().to_u32();
-        let image = imageops::resize(&self.image, width, height, self.filter);
+
+        let iwidth = width / self.scale;
+        let iheight = height / self.scale;
+
+        let image = imageops::resize(&self.image, iwidth, iheight, self.filter);
 
         let image = if let Some(palette) = &self.dither_palette {
             self.dither_algorithm.dither(image, palette)
         } else {
             image
         };
+
+        let image = imageops::resize(&image, width, height, FilterType::Nearest);
 
         view.image(&image);
         Ok(())
