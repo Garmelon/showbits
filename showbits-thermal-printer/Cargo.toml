@@ -1,24 +1,24 @@
 [package]
 name = "showbits-thermal-printer"
-version.workspace = true
-edition.workspace = true
+version = { workspace = true }
+edition = { workspace = true }
 
 [dependencies]
-anyhow.workspace = true
-axum = { version = "0.7.5", features = ["multipart"] }
-clap = { version = "4.5.4", features = ["derive", "deprecated"] }
-escpos = { version = "0.12.2" }
-image.workspace = true
-mime_guess = "2.0.4"
-palette.workspace = true
-rand = "0.8.5"
-rust-embed = "8.4.0"
-serde = { version = "1.0.201", features = ["derive"] }
-showbits-assets.workspace = true
-showbits-common.workspace = true
-taffy.workspace = true
-time = "0.3.36"
-tokio = { version = "1.37.0", features = ["full"] }
+anyhow = { workspace = true }
+axum = { workspace = true, features = ["multipart"] }
+clap = { workspace = true }
+escpos = { workspace = true }
+image = { workspace = true }
+mime_guess = { workspace = true }
+palette = { workspace = true }
+rand = { workspace = true }
+rust-embed = { workspace = true }
+serde = { workspace = true }
+showbits-assets = { workspace = true }
+showbits-common = { workspace = true }
+taffy = { workspace = true }
+time = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
 
 [lints]
 workspace = true

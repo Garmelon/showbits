@@ -8,11 +8,26 @@ edition = "2021"
 
 [workspace.dependencies]
 anyhow = "1.0.83"
+axum = "0.7.5"
+clap = { version = "4.5.4", features = ["derive", "deprecated"] }
+comemo = "0.4.0"
 cosmic-text = "0.11.2"
+escpos = "0.12.2"
 image = "0.25.1"
+mark.git = "https://github.com/Garmelon/mark.git"
+mime_guess = "2.0.4"
 palette = "0.7.6"
+paste = "1.0.15"
+rand = "0.8.5"
+rust-embed = "8.4.0"
+serde = { version = "1.0.201", features = ["derive"] }
 showbits-assets.path = "./showbits-assets"
 showbits-common.path = "./showbits-common"
+time = "0.3.36"
+tokio = "1.37.0"
+typst = "0.11.0"
+typst-assets = { version = "0.11.0", features = ["fonts"] }
+typst-render = "0.11.0"
 
 [workspace.dependencies.taffy]
 version = "0.4.3"
