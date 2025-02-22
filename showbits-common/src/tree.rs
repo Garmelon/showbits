@@ -39,7 +39,7 @@ impl<C> Tree<C> {
         self.tree.compute_layout_with_measure(
             root,
             available,
-            |known, available, _node, context| {
+            |known, available, _node, context, _style| {
                 if let Some(widget) = context {
                     widget.size(ctx, known, available)
                 } else {

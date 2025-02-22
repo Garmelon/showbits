@@ -29,7 +29,7 @@ typst-assets = { version = "0.13.0", features = ["fonts"] }
 typst-render = "0.13.0"
 
 [workspace.dependencies.taffy]
-version = "0.4.3"
+version = "0.7.6"
 default-features = false
 features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]
 
