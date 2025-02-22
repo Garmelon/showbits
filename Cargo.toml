@@ -7,7 +7,7 @@ version = "0.0.0"
 edition = "2024"
 
 [workspace.dependencies]
-anyhow = "1.0.83"
+anyhow = "1.0.96"
 axum = "0.7.5"
 clap = { version = "4.5.4", features = ["derive", "deprecated"] }
 comemo = "0.4.0"
