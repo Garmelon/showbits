@@ -118,7 +118,7 @@ impl Text {
         self
     }
 
-    pub fn widget<C: HasFontStuff>(self, font_stuff: &mut FontStuff) -> impl Widget<C> {
+    pub fn widget<C: HasFontStuff>(self, font_stuff: &mut FontStuff) -> impl Widget<C> + use<C> {
         let fs = &mut font_stuff.font_system;
         let mut buffer = Buffer::new_empty(self.metrics);
         buffer.set_size(fs, f32::INFINITY, f32::INFINITY);
