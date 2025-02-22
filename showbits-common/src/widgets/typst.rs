@@ -1,7 +1,6 @@
 use std::{fs, path::PathBuf, sync::OnceLock};
 
 use anyhow::anyhow;
-use comemo::Prehashed;
 use image::RgbaImage;
 use taffy::{
     Layout,
@@ -10,11 +9,11 @@ use taffy::{
 use typst::{
     Library, World,
     diag::{FileError, FileResult},
-    eval::Tracer,
     foundations::{Bytes, Datetime},
     layout::Abs,
     syntax::{FileId, Source},
     text::{Font, FontBook},
+    utils::LazyHash,
     visualize::Color,
 };
 
@@ -34,8 +33,8 @@ impl FontSlot {
     pub fn get(&self) -> Option<Font> {
         self.font
             .get_or_init(|| {
-                let data = fs::read(&self.path).ok()?.into();
-                Font::new(data, self.index)
+                let data = fs::read(&self.path).ok()?;
+                Font::new(Bytes::new(data), self.index)
             })
             .clone()
     }
@@ -57,7 +56,7 @@ impl FontLoader {
     fn load_embedded_fonts(&mut self) {
         // https://github.com/typst/typst/blob/be12762d942e978ddf2e0ac5c34125264ab483b7/crates/typst-cli/src/fonts.rs#L107-L121
         for font_file in typst_assets::fonts() {
-            let font_data = Bytes::from_static(font_file);
+            let font_data = Bytes::new(font_file);
             for (i, font) in Font::iter(font_data).enumerate() {
                 self.book.push(font.info().clone());
                 self.fonts.push(FontSlot {
@@ -71,8 +70,8 @@ impl FontLoader {
 }
 
 struct DummyWorld {
-    library: Prehashed<Library>,
-    book: Prehashed<FontBook>,
+    library: LazyHash<Library>,
+    book: LazyHash<FontBook>,
     main: Source,
     fonts: Vec<FontSlot>,
 }
@@ -83,8 +82,8 @@ impl DummyWorld {
         loader.load_embedded_fonts();
 
         Self {
-            library: Prehashed::new(Library::builder().build()),
-            book: Prehashed::new(loader.book),
+            library: LazyHash::new(Library::builder().build()),
+            book: LazyHash::new(loader.book),
             main: Source::detached(main),
             fonts: loader.fonts,
         }
@@ -92,19 +91,22 @@ impl DummyWorld {
 }
 
 impl World for DummyWorld {
-    fn library(&self) -> &Prehashed<Library> {
+    fn library(&self) -> &LazyHash<Library> {
         &self.library
     }
 
-    fn book(&self) -> &Prehashed<FontBook> {
+    fn book(&self) -> &LazyHash<FontBook> {
         &self.book
     }
 
-    fn main(&self) -> Source {
-        self.main.clone()
+    fn main(&self) -> FileId {
+        self.main.id()
     }
 
-    fn source(&self, _id: FileId) -> FileResult<Source> {
+    fn source(&self, id: FileId) -> FileResult<Source> {
+        if id == self.main.id() {
+            return Ok(self.main.clone());
+        }
         Err(FileError::AccessDenied)
     }
 
@@ -149,19 +151,15 @@ impl Typst {
         source.push_str(&self.code);
 
         let world = DummyWorld::new(source);
-        let mut tracer = Tracer::new();
 
-        let document = typst::compile(&world, &mut tracer).map_err(|errs| {
+        let document = typst::compile(&world).output.map_err(|errs| {
             errs.into_iter()
                 .map(|sd| sd.message.to_string())
                 .collect::<Vec<_>>()
         })?;
 
-        let pixmap =
-            typst_render::render_merged(&document, SCALE, Color::WHITE, Abs::zero(), Color::WHITE);
-
+        let pixmap = typst_render::render_merged(&document, SCALE, Abs::zero(), Some(Color::WHITE));
         let buffer = RgbaImage::from_raw(pixmap.width(), pixmap.height(), pixmap.take()).unwrap();
-
         Ok(buffer)
     }
 }
