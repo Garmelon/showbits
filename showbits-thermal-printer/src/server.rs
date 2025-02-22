@@ -10,6 +10,7 @@ use axum::{
     routing::{get, post},
 };
 use serde::Deserialize;
+use showbits_common::widgets::DitherAlgorithm;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::drawer::{
@@ -112,6 +113,7 @@ async fn post_egg(server: State<Server>) -> impl IntoResponse {
 async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
     let mut bright = false;
+    let mut algo = DitherAlgorithm::FloydSteinberg;
 
     while let Some(field) = multipart.next_field().await? {
         match field.name() {
@@ -123,6 +125,11 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
             Some("bright") => {
                 bright = true;
             }
+            Some("algo") => match &field.text().await? as &str {
+                "floyd-steinberg" => algo = DitherAlgorithm::FloydSteinberg,
+                "stucki" => algo = DitherAlgorithm::Stucki,
+                _ => {}
+            },
             _ => {}
         }
     }
@@ -133,7 +140,11 @@ async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow:
 
     let _ = server
         .tx
-        .send(Command::draw(ImageDrawing { image, bright }))
+        .send(Command::draw(ImageDrawing {
+            image,
+            bright,
+            algo,
+        }))
         .await;
     Ok(Redirect::to("image").into_response())
 }

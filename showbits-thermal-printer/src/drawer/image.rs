@@ -3,7 +3,7 @@ use palette::{FromColor, IntoColor, LinLumaa};
 use showbits_common::{
     Node, Tree, WidgetExt,
     color::{self, BLACK, WHITE},
-    widgets::Image,
+    widgets::{DitherAlgorithm, Image},
 };
 use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
 
@@ -14,6 +14,7 @@ use super::{Context, Drawing};
 pub struct ImageDrawing {
     pub image: RgbaImage,
     pub bright: bool,
+    pub algo: DitherAlgorithm,
 }
 
 impl Drawing for ImageDrawing {
@@ -31,6 +32,7 @@ impl Drawing for ImageDrawing {
 
         let image = Image::new(image)
             .with_dither_palette(&[BLACK, WHITE])
+            .with_dither_algorithm(self.algo)
             .node()
             .register(&mut tree)?;
 
