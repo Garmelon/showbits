@@ -1,11 +1,11 @@
 use showbits_common::{
+    Node, Tree, WidgetExt,
     color::{BLACK, WHITE},
     widgets::{Block, Text},
-    Node, Tree, WidgetExt,
 };
 use taffy::{
-    style_helpers::{length, percent},
     AlignItems, Display, FlexDirection,
+    style_helpers::{length, percent},
 };
 
 use crate::printer::Printer;

@@ -1,7 +1,7 @@
 use palette::Srgba;
 use taffy::Layout;
 
-use crate::{color, Rect, Vec2, View, Widget};
+use crate::{Rect, Vec2, View, Widget, color};
 
 pub struct Block {
     border: Srgba,

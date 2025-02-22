@@ -1,4 +1,4 @@
-use showbits_common::{color::WHITE, widgets::Typst, Node, Tree, WidgetExt};
+use showbits_common::{Node, Tree, WidgetExt, color::WHITE, widgets::Typst};
 use taffy::style_helpers::percent;
 
 use crate::printer::Printer;

@@ -2,7 +2,7 @@ use image::RgbaImage;
 use palette::Srgba;
 use taffy::{AvailableSpace, NodeId, Point, Size, TaffyResult, TaffyTree};
 
-use crate::{color, BoxedWidget, Rect, Vec2, View};
+use crate::{BoxedWidget, Rect, Vec2, View, color};
 
 fn point_to_vec2(point: Point<f32>) -> Vec2 {
     Vec2::new(point.x as i32, point.y as i32)

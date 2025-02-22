@@ -1,6 +1,6 @@
 use image::{
-    imageops::{self, FilterType},
     RgbaImage,
+    imageops::{self, FilterType},
 };
 use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
 use palette::{IntoColor, LinSrgb, Srgba};

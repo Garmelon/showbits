@@ -1,11 +1,11 @@
 use image::RgbaImage;
 use palette::{FromColor, IntoColor, LinLumaa};
 use showbits_common::{
+    Node, Tree, WidgetExt,
     color::{self, BLACK, WHITE},
     widgets::Image,
-    Node, Tree, WidgetExt,
 };
-use taffy::{style_helpers::percent, AlignItems, Display, FlexDirection};
+use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
 
 use crate::printer::Printer;
 

@@ -1,7 +1,7 @@
 use image::RgbaImage;
-use palette::{blend::Compose, Srgba};
+use palette::{Srgba, blend::Compose};
 
-use crate::{color, Rect, Vec2};
+use crate::{Rect, Vec2, color};
 
 pub struct View<'a> {
     area: Rect,

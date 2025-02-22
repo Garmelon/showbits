@@ -1,9 +1,9 @@
 use image::{
-    imageops::{self, FilterType},
     Rgba, RgbaImage,
+    imageops::{self, FilterType},
 };
-use showbits_common::{color, widgets::Image, Node, Tree, WidgetExt};
-use taffy::{style_helpers::percent, AlignItems, Display, FlexDirection};
+use showbits_common::{Node, Tree, WidgetExt, color, widgets::Image};
+use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
 
 use crate::printer::Printer;
 

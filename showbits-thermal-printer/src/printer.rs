@@ -3,10 +3,10 @@ use std::path::PathBuf;
 use escpos::{
     driver::FileDriver,
     printer::Printer as EPrinter,
-    utils::{PageCode, Protocol, GS},
+    utils::{GS, PageCode, Protocol},
 };
 use image::{Rgba, RgbaImage};
-use showbits_common::{color, Tree};
+use showbits_common::{Tree, color};
 use taffy::{AvailableSpace, NodeId, Size};
 
 pub struct Printer {

@@ -1,12 +1,12 @@
-use image::{imageops, RgbaImage};
-use rand::{seq::SliceRandom, Rng};
+use image::{RgbaImage, imageops};
+use rand::{Rng, seq::SliceRandom};
 use showbits_assets::{EGG_BAD_COVERS, EGG_BAD_PATTERNS, EGG_COVERS, EGG_PATTERNS};
 use showbits_common::{
+    Node, Tree, WidgetExt,
     color::{self, WHITE},
     widgets::{Image, Text},
-    Node, Tree, WidgetExt,
 };
-use taffy::{style_helpers::percent, AlignItems, Display, FlexDirection};
+use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
 
 use crate::printer::Printer;
 

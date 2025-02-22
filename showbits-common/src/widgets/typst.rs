@@ -4,10 +4,11 @@ use anyhow::anyhow;
 use comemo::Prehashed;
 use image::RgbaImage;
 use taffy::{
-    prelude::{AvailableSpace, Size},
     Layout,
+    prelude::{AvailableSpace, Size},
 };
 use typst::{
+    Library, World,
     diag::{FileError, FileResult},
     eval::Tracer,
     foundations::{Bytes, Datetime},
@@ -15,7 +16,6 @@ use typst::{
     syntax::{FileId, Source},
     text::{Font, FontBook},
     visualize::Color,
-    Library, World,
 };
 
 use crate::{View, Widget};

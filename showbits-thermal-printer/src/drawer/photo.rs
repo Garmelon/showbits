@@ -1,12 +1,12 @@
 use image::{Luma, Pixel, RgbaImage};
 use showbits_common::{
+    Node, Tree, WidgetExt,
     color::{BLACK, WHITE},
     widgets::{Image, Text},
-    Node, Tree, WidgetExt,
 };
 use taffy::{
-    style_helpers::{length, percent},
     AlignItems, Display, FlexDirection,
+    style_helpers::{length, percent},
 };
 
 use crate::printer::Printer;

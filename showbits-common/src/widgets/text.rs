@@ -2,11 +2,11 @@ use cosmic_text::{Attrs, AttrsOwned, Buffer, Family, FontSystem, Metrics, Shapin
 use palette::Srgba;
 use showbits_assets::{UNIFONT, UNIFONT_JP, UNIFONT_NAME, UNIFONT_SIZE, UNIFONT_UPPER};
 use taffy::{
-    prelude::{AvailableSpace, Size},
     Layout,
+    prelude::{AvailableSpace, Size},
 };
 
-use crate::{color, Rect, Vec2, View, Widget};
+use crate::{Rect, Vec2, View, Widget, color};
 
 // https://github.com/DioxusLabs/taffy/blob/main/examples/cosmic_text.rs
 
