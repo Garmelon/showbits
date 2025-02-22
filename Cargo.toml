@@ -12,7 +12,7 @@ axum = "0.8.1"
 clap = { version = "4.5.30", features = ["derive", "deprecated"] }
 comemo = "0.4.0"
 cosmic-text = "0.12.1"
-escpos = "0.12.2"
+escpos = "0.15.0"
 image = "0.25.1"
 mark.git = "https://github.com/Garmelon/mark.git"
 mime_guess = "2.0.4"

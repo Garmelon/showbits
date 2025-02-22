@@ -753,12 +753,11 @@ checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
 name = "escpos"
-version = "0.12.2"
+version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d61072257bf7231b08a87c29e904ccdc1e7e140b3af19b865ba98aaa19eeaa48"
+checksum = "eafeb6ffc6e8f07aa93e0c7be9d4017e60af96c988d9b3e1060df3d1459f8908"
 dependencies = [
  "encoding_rs",
- "lazy_static",
  "log",
 ]
 
@@ -1427,12 +1426,6 @@ checksum = "bd85a5776cd9500c2e2059c8c76c3b01528566b7fcbaf8098b55a33fc298849b"
 dependencies = [
  "arrayvec",
 ]
-
-[[package]]
-name = "lazy_static"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 
 [[package]]
 name = "lebe"

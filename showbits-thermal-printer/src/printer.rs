@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use escpos::{
     driver::FileDriver,
     printer::Printer as EPrinter,
+    printer_options::PrinterOptions,
     utils::{GS, PageCode, Protocol},
 };
 use image::{Rgba, RgbaImage};
@@ -44,8 +45,10 @@ impl Printer {
     ) -> anyhow::Result<Self> {
         let printer = if let Some(path) = printer_path {
             let driver = FileDriver::open(&path)?;
-            let printer = EPrinter::new(driver, Protocol::default(), Some(Self::PAGE_CODE));
-            Some(printer)
+            let protocol = Protocol::default();
+            let mut options = PrinterOptions::default();
+            options.page_code(Some(Self::PAGE_CODE));
+            Some(EPrinter::new(driver, protocol, Some(options)))
         } else {
             None
         };
