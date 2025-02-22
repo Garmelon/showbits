@@ -1,5 +1,5 @@
 use image::{RgbaImage, imageops};
-use rand::{Rng, seq::SliceRandom};
+use rand::{Rng, seq::IndexedRandom};
 use showbits_assets::{EGG_BAD_COVERS, EGG_BAD_PATTERNS, EGG_COVERS, EGG_PATTERNS};
 use showbits_common::{
     Node, Tree, WidgetExt,
@@ -22,10 +22,10 @@ fn load_image(bytes: &[u8]) -> RgbaImage {
 
 impl Drawing for EggDrawing {
     fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         // Choose which set of egg images to use
-        let bad_egg = rng.gen_range(0..8) == 0;
+        let bad_egg = rng.random_range(0..8) == 0;
         let (covers, patterns) = if bad_egg {
             (EGG_BAD_COVERS, EGG_BAD_PATTERNS)
         } else {
@@ -48,10 +48,10 @@ impl Drawing for EggDrawing {
 
         // Draw patterns onto egg
         let mut last_idx = None;
-        let mut y = rng.gen_range(-100_i64..0);
+        let mut y = rng.random_range(-100_i64..0);
         while y < image.height().into() {
             let idx = loop {
-                let idx = rng.gen_range(0..patterns.len());
+                let idx = rng.random_range(0..patterns.len());
                 if Some(idx) != last_idx {
                     break idx;
                 }
