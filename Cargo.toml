@@ -1,10 +1,10 @@
 [workspace]
-resolver = "2"
+resolver = "3"
 members = ["showbits-assets", "showbits-common", "showbits-thermal-printer"]
 
 [workspace.package]
 version = "0.0.0"
-edition = "2021"
+edition = "2024"
 
 [workspace.dependencies]
 anyhow = "1.0.83"
@@ -54,9 +54,6 @@ rust.unused_lifetimes = "warn"
 rust.unused_qualifications = "warn"
 # Clippy
 clippy.use_self = "warn"
-# Migrating to the 2024 edition
-rust.rust_2024_compatibility = "warn"
-rust.tail_expr_drop_order = { level = "allow", priority = 1 }
 
 # Optimize dependencies in debug mode (mainly for faster image exports).
 # Does not apply to workspace members, only "real" dependencies.
