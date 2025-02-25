@@ -1,3 +1,4 @@
+use jiff::civil;
 use showbits_common::{
     Node, Tree, WidgetExt,
     color::{BLACK, WHITE},
@@ -7,20 +8,19 @@ use taffy::{
     AlignContent, AlignItems, Display, FlexDirection,
     style_helpers::{length, percent, repeat},
 };
-use time::Date;
 
 use crate::printer::Printer;
 
 use super::{Context, Drawing};
 
 pub struct CalendarDrawing {
-    pub year: i32,
-    pub month: u8,
+    pub year: i16,
+    pub month: i8,
 }
 
 impl Drawing for CalendarDrawing {
     fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
-        let mut date = Date::from_calendar_date(self.year, self.month.try_into()?, 1)?;
+        let mut date = civil::Date::new(self.year, self.month, 1)?;
 
         let mut tree = Tree::<Context>::new(WHITE);
 
@@ -43,7 +43,7 @@ impl Drawing for CalendarDrawing {
             grid = grid.and_child(text);
         }
 
-        let placeholders = date.weekday().number_days_from_monday();
+        let placeholders = date.weekday().to_monday_zero_offset();
         for _ in 0..placeholders {
             let empty = Node::empty().register(&mut tree)?;
             grid = grid.and_child(empty);
@@ -68,7 +68,7 @@ impl Drawing for CalendarDrawing {
 
             grid = grid.and_child(block);
 
-            let next_day = date.next_day().unwrap();
+            let next_day = date.tomorrow()?;
             if date.month() != next_day.month() {
                 break;
             }

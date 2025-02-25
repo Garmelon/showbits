@@ -49,7 +49,8 @@ impl Drawing for EggDrawing {
         // Draw patterns onto egg
         let mut last_idx = None;
         let mut y = rng.random_range(-100_i64..0);
-        while y < image.height().into() {
+        let height: i64 = image.height().into();
+        while y < height {
             let idx = loop {
                 let idx = rng.random_range(0..patterns.len());
                 if Some(idx) != last_idx {

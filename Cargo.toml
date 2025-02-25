@@ -13,6 +13,7 @@ clap = { version = "4.5.30", features = ["derive", "deprecated"] }
 cosmic-text = "0.12.1"
 escpos = "0.15.0"
 image = "0.25.5"
+jiff = "0.2.1"
 mark.git = "https://github.com/Garmelon/mark.git"
 mime_guess = "2.0.5"
 palette = "0.7.6"
@@ -22,7 +23,6 @@ rust-embed = "8.5.0"
 serde = { version = "1.0.218", features = ["derive"] }
 showbits-assets.path = "./showbits-assets"
 showbits-common.path = "./showbits-common"
-time = "0.3.37"
 tokio = "1.43.0"
 typst = "0.13.0"
 typst-assets = { version = "0.13.0", features = ["fonts"] }

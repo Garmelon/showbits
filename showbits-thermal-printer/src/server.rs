@@ -49,8 +49,8 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
 
 #[derive(Deserialize)]
 struct PostCalendarForm {
-    year: i32,
-    month: u8,
+    year: i16,
+    month: i8,
 }
 
 async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {

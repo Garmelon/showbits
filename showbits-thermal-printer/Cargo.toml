@@ -9,6 +9,7 @@ axum = { workspace = true, features = ["multipart"] }
 clap = { workspace = true }
 escpos = { workspace = true }
 image = { workspace = true }
+jiff = { workspace = true }
 mime_guess = { workspace = true }
 palette = { workspace = true }
 rand = { workspace = true }
@@ -17,7 +18,6 @@ serde = { workspace = true }
 showbits-assets = { workspace = true }
 showbits-common = { workspace = true }
 taffy = { workspace = true }
-time = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 
 [lints]
