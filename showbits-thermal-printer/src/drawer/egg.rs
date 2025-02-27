@@ -6,7 +6,7 @@ use showbits_common::{
     color::{self, WHITE},
     widgets::{Image, Text},
 };
-use taffy::{prelude::length, style_helpers::percent, AlignItems, Display, FlexDirection};
+use taffy::{AlignItems, Display, FlexDirection, prelude::length, style_helpers::percent};
 
 use crate::persistent_printer::PersistentPrinter;
 

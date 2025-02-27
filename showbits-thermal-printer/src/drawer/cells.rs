@@ -50,7 +50,8 @@ pub struct CellsDrawing {
 
 impl Drawing for CellsDrawing {
     fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
-        let mut image: image::ImageBuffer<Rgba<u8>, Vec<u8>> = RgbaImage::new(Printer::WIDTH / self.scale, self.rows);
+        let mut image: image::ImageBuffer<Rgba<u8>, Vec<u8>> =
+            RgbaImage::new(Printer::WIDTH / self.scale, self.rows);
 
         // Initialize first line randomly
         for x in 0..image.width() {
