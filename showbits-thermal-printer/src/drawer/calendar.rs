@@ -9,9 +9,9 @@ use taffy::{
     style_helpers::{length, percent, repeat},
 };
 
-use crate::printer::Printer;
+use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::{Context, Drawing, FEED};
 
 pub struct CalendarDrawing {
     pub year: i16,
@@ -19,7 +19,7 @@ pub struct CalendarDrawing {
 }
 
 impl Drawing for CalendarDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
         let mut date = civil::Date::new(self.year, self.month, 1)?;
 
         let mut tree = Tree::<Context>::new(WHITE);
@@ -86,6 +86,7 @@ impl Drawing for CalendarDrawing {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
+            .with_padding_bottom(length(FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -94,7 +95,6 @@ impl Drawing for CalendarDrawing {
             .register(&mut tree)?;
 
         printer.print_tree(&mut tree, ctx, root)?;
-        printer.feed()?;
         Ok(())
     }
 }

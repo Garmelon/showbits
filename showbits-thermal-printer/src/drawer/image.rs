@@ -5,11 +5,11 @@ use showbits_common::{
     color::{self, BLACK, WHITE},
     widgets::{DitherAlgorithm, Image},
 };
-use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
+use taffy::{AlignItems, Display, FlexDirection, prelude::length, style_helpers::percent};
 
-use crate::printer::Printer;
+use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::{Context, Drawing, FEED};
 
 pub struct ImageDrawing {
     pub image: RgbaImage,
@@ -19,7 +19,7 @@ pub struct ImageDrawing {
 }
 
 impl Drawing for ImageDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
         let mut image = self.image.clone();
         if self.bright {
             for pixel in image.pixels_mut() {
@@ -40,6 +40,7 @@ impl Drawing for ImageDrawing {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
+            .with_padding_bottom(length(FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -47,7 +48,6 @@ impl Drawing for ImageDrawing {
             .register(&mut tree)?;
 
         printer.print_tree(&mut tree, ctx, root)?;
-        printer.feed()?;
         Ok(())
     }
 }

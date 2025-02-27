@@ -3,11 +3,11 @@ use image::{
     imageops::{self, FilterType},
 };
 use showbits_common::{Node, Tree, WidgetExt, color, widgets::Image};
-use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
+use taffy::{AlignItems, Display, FlexDirection, prelude::length, style_helpers::percent};
 
-use crate::printer::Printer;
+use crate::{persistent_printer::PersistentPrinter, printer::Printer};
 
-use super::{Context, Drawing};
+use super::{Context, Drawing, FEED};
 
 const BLACK: Rgba<u8> = Rgba([0, 0, 0, 255]);
 const WHITE: Rgba<u8> = Rgba([255, 255, 255, 255]);
@@ -49,8 +49,8 @@ pub struct CellsDrawing {
 }
 
 impl Drawing for CellsDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
-        let mut image = RgbaImage::new(Printer::WIDTH / self.scale, self.rows);
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
+        let mut image: image::ImageBuffer<Rgba<u8>, Vec<u8>> = RgbaImage::new(Printer::WIDTH / self.scale, self.rows);
 
         // Initialize first line randomly
         for x in 0..image.width() {
@@ -79,6 +79,7 @@ impl Drawing for CellsDrawing {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
+            .with_padding_bottom(length(FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -86,7 +87,6 @@ impl Drawing for CellsDrawing {
             .register(&mut tree)?;
 
         printer.print_tree(&mut tree, ctx, root)?;
-        printer.feed()?;
         Ok(())
     }
 }

@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use anyhow::Context;
 use escpos::{
     driver::FileDriver,
     printer::Printer as EPrinter,
@@ -7,8 +8,7 @@ use escpos::{
     utils::{GS, PageCode, Protocol},
 };
 use image::{Rgba, RgbaImage};
-use showbits_common::{Tree, color};
-use taffy::{AvailableSpace, NodeId, Size};
+use showbits_common::color;
 
 pub struct Printer {
     printer: Option<EPrinter<FileDriver>>,
@@ -44,7 +44,9 @@ impl Printer {
         export_path: Option<PathBuf>,
     ) -> anyhow::Result<Self> {
         let printer = if let Some(path) = printer_path {
-            let driver = FileDriver::open(&path)?;
+            let driver = FileDriver::open(&path)
+                .with_context(|| format!("At {}", path.display()))
+                .context("Failed to open printer driver")?;
             let protocol = Protocol::default();
             let mut options = PrinterOptions::default();
             options.page_code(Some(Self::PAGE_CODE));
@@ -59,34 +61,16 @@ impl Printer {
         })
     }
 
-    pub fn feed(&mut self) -> anyhow::Result<()> {
-        if let Some(printer) = &mut self.printer {
-            printer.init()?.feeds(3)?.print()?;
-        }
-
-        Ok(())
-    }
-
-    pub fn print_tree<C>(
-        &mut self,
-        tree: &mut Tree<C>,
-        ctx: &mut C,
-        root: NodeId,
-    ) -> anyhow::Result<()> {
-        let available = Size {
-            width: AvailableSpace::Definite(Self::WIDTH as f32),
-            // TODO Maybe MinContent? If not, why not?
-            height: AvailableSpace::MaxContent,
-        };
-
-        let image = tree.render(ctx, root, available)?;
-
+    pub fn print_image(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
         if let Some(path) = &self.export_path {
-            image.save(path)?;
+            image
+                .save(path)
+                .with_context(|| format!("At {}", path.display()))
+                .context("Failed to export to-be-printed image")?;
         }
 
         if let Some(printer) = &mut self.printer {
-            Self::print_image_to_printer(printer, &image)?;
+            Self::print_image_to_printer(printer, image).context("Failed to print image")?;
         }
 
         Ok(())

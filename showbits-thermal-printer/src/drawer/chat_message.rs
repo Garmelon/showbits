@@ -8,7 +8,7 @@ use taffy::{
     style_helpers::{length, percent},
 };
 
-use crate::printer::Printer;
+use crate::persistent_printer::PersistentPrinter;
 
 use super::{Context, Drawing};
 
@@ -18,7 +18,7 @@ pub struct ChatMessageDrawing {
 }
 
 impl Drawing for ChatMessageDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
 
         let max_username_width_in_chars = 32.0;

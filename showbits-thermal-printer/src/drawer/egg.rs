@@ -6,11 +6,11 @@ use showbits_common::{
     color::{self, WHITE},
     widgets::{Image, Text},
 };
-use taffy::{AlignItems, Display, FlexDirection, style_helpers::percent};
+use taffy::{prelude::length, style_helpers::percent, AlignItems, Display, FlexDirection};
 
-use crate::printer::Printer;
+use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::{Context, Drawing, FEED};
 
 pub struct EggDrawing;
 
@@ -21,7 +21,7 @@ fn load_image(bytes: &[u8]) -> RgbaImage {
 }
 
 impl Drawing for EggDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
         let mut rng = rand::rng();
 
         // Choose which set of egg images to use
@@ -84,6 +84,7 @@ impl Drawing for EggDrawing {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
+            .with_padding_bottom(length(FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -92,7 +93,6 @@ impl Drawing for EggDrawing {
             .register(&mut tree)?;
 
         printer.print_tree(&mut tree, ctx, root)?;
-        printer.feed()?;
         Ok(())
     }
 }

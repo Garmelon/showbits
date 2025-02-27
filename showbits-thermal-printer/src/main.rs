@@ -1,18 +1,23 @@
 mod drawer;
+mod persistent_printer;
 mod printer;
 mod server;
 
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Duration};
 
 use clap::Parser;
-use drawer::Drawer;
-use printer::Printer;
+use drawer::{BacklogDrawing, Command};
 use tokio::{runtime::Runtime, sync::mpsc};
+
+use self::{drawer::Drawer, persistent_printer::PersistentPrinter};
 
 #[derive(Parser)]
 struct Args {
     /// Address the web server will listen at.
     addr: String,
+
+    /// Path to the queue directory.
+    queue: PathBuf,
 
     /// Path to the printer's USB device file.
     ///
@@ -30,11 +35,17 @@ fn main() -> anyhow::Result<()> {
 
     let (tx, rx) = mpsc::channel(3);
 
-    let printer = Printer::new(args.printer, args.export)?;
+    let printer = PersistentPrinter::new(args.printer, args.export, args.queue);
     let mut drawer = Drawer::new(rx, printer);
 
     let runtime = Runtime::new()?;
-    runtime.spawn(server::run(tx, args.addr));
+    runtime.spawn(server::run(tx.clone(), args.addr));
+    runtime.spawn(async move {
+        loop {
+            let _ = tx.send(Command::draw(BacklogDrawing)).await;
+            tokio::time::sleep(Duration::from_secs(1)).await;
+        }
+    });
 
     println!("Running");
     drawer.run()?;

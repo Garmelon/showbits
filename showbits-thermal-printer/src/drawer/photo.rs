@@ -9,9 +9,9 @@ use taffy::{
     style_helpers::{length, percent},
 };
 
-use crate::printer::Printer;
+use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::{Context, Drawing, FEED};
 
 pub struct PhotoDrawing {
     pub image: RgbaImage,
@@ -19,7 +19,7 @@ pub struct PhotoDrawing {
 }
 
 impl Drawing for PhotoDrawing {
-    fn draw(&self, printer: &mut Printer, ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter, ctx: &mut Context) -> anyhow::Result<()> {
         let mut tree = Tree::<Context>::new(WHITE);
 
         let mut image = self.image.clone();
@@ -45,6 +45,7 @@ impl Drawing for PhotoDrawing {
 
         let root = Node::empty()
             .with_size_width(percent(1.0))
+            .with_padding_bottom(length(FEED))
             .with_display(Display::Flex)
             .with_flex_direction(FlexDirection::Column)
             .with_align_items(Some(AlignItems::Center))
@@ -54,7 +55,6 @@ impl Drawing for PhotoDrawing {
             .register(&mut tree)?;
 
         printer.print_tree(&mut tree, ctx, root)?;
-        printer.feed()?;
         Ok(())
     }
 }
