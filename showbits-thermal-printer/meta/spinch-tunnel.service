@@ -1,6 +1,10 @@
 [Unit]
 Description=Showbits Thermal Printer Tunnel
 
+# https://wiki.archlinux.org/title/Systemd#Running_services_after_the_network_is_up
+Wants=network-online.target
+After=network-online.target
+
 [Service]
 Type=simple
 ExecStart=ssh plugh@plugh.de -NR 8005:localhost:8001
