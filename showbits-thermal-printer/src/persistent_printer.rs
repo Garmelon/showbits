@@ -100,6 +100,13 @@ impl PersistentPrinter {
     }
 
     pub fn print_backlog(&mut self) -> anyhow::Result<()> {
+        // Don't try to print if the chances of success are zero.
+        if let Some(file) = &self.printer_file {
+            if !file.exists() {
+                return Ok(());
+            }
+        }
+
         let mut files = vec![];
 
         match self.queue_dir.read_dir() {
@@ -127,7 +134,9 @@ impl PersistentPrinter {
             if self.print_image_robustly(&image).is_err() {
                 return Ok(());
             }
-            fs::remove_file(&file)?;
+            fs::remove_file(&file)
+                .with_context(|| format!("At {}", file.display()))
+                .context("Failed to remove printed image")?;
         }
 
         Ok(())
