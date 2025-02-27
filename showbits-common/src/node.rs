@@ -158,8 +158,8 @@ macro_rules! layout_setter_rect {
                 self
             }
 
-            pub fn [<with_ $name _bottom>](mut self, left: $type) -> Self {
-                self.layout.$name.bottom = left;
+            pub fn [<with_ $name _bottom>](mut self, bottom: $type) -> Self {
+                self.layout.$name.bottom = bottom;
                 self
             }
 
