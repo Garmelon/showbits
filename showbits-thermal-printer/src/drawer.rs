@@ -20,7 +20,7 @@ pub use self::{
     text::TextDrawing, tictactoe::TicTacToeDrawing, typst::TypstDrawing,
 };
 
-pub const FEED: f32 = 64.0;
+pub const FEED: f32 = 96.0;
 
 #[derive(Default)]
 pub struct Context {
