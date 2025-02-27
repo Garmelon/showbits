@@ -13,10 +13,17 @@ rsync -vP \
 or return 1
 
 rsync -vP \
+    showbits-thermal-printer/meta/spinch-tunnel.service \
+    bondrucker@spinch:showbits-thermal-printer-tunnel.service
+or return 1
+
+rsync -vP \
     target/aarch64-unknown-linux-gnu/release/showbits-thermal-printer \
     bondrucker@spinch:showbits-thermal-printer
 or return 1
 
 ssh root@spinch "\
-systemctl daemon-reload && \
-systemctl restart showbits-thermal-printer.service"
+systemctl daemon-reload \
+&& systemctl restart showbits-thermal-printer.service \
+&& systemctl restart showbits-thermal-printer-tunnel.service \
+"
