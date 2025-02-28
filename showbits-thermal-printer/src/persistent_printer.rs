@@ -44,7 +44,7 @@ impl PersistentPrinter {
         tree.render(ctx, root, available)
     }
 
-    fn print_image(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
+    fn print_image_immediately(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
         let Some(printer) = &mut self.printer else {
             bail!("no printer found");
         };
@@ -60,12 +60,12 @@ impl PersistentPrinter {
 
     fn print_image_robustly(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
         println!("Printing image");
-        if self.print_image(image).is_ok() {
+        if self.print_image_immediately(image).is_ok() {
             return Ok(());
         }
         println!("First attempt failed, reconnecting and retrying");
         self.reconnect_printer()?;
-        self.print_image(image)?;
+        self.print_image_immediately(image)?;
         Ok(())
     }
 
@@ -86,6 +86,13 @@ impl PersistentPrinter {
         Ok(())
     }
 
+    pub fn print_image(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
+        if self.print_image_robustly(image).is_err() {
+            self.enqueue_image(image)?;
+        }
+        Ok(())
+    }
+
     pub fn print_tree<C>(
         &mut self,
         tree: &mut Tree<C>,
@@ -93,9 +100,7 @@ impl PersistentPrinter {
         root: NodeId,
     ) -> anyhow::Result<()> {
         let image = Self::render_tree_to_image(tree, ctx, root)?;
-        if self.print_image_robustly(&image).is_err() {
-            self.enqueue_image(&image)?;
-        }
+        self.print_image(&image)?;
         Ok(())
     }
 

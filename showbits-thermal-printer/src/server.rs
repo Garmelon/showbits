@@ -13,9 +13,12 @@ use serde::Deserialize;
 use showbits_common::widgets::DitherAlgorithm;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::drawer::{
-    CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
-    PhotoDrawing, TextDrawing, TicTacToeDrawing, TypstDrawing,
+use crate::{
+    documents::Text,
+    drawer::{
+        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
+        NewTypstDrawing, PhotoDrawing, TextDrawing, TicTacToeDrawing, TypstDrawing,
+    },
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
@@ -36,6 +39,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/text", post(post_text))
         .route("/tictactoe", post(post_tictactoe))
         .route("/typst", post(post_typst).fallback(get_static_file))
+        .route("/test", post(post_test).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -220,5 +224,14 @@ async fn post_typst(server: State<Server>, request: Form<PostTypstForm>) {
     let _ = server
         .tx
         .send(Command::draw(TypstDrawing(request.0.source)))
+        .await;
+}
+
+// /test
+
+async fn post_test(server: State<Server>, request: Form<Text>) {
+    let _ = server
+        .tx
+        .send(Command::draw(NewTypstDrawing::new(request.0)))
         .await;
 }
