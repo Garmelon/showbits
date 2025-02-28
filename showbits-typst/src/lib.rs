@@ -53,19 +53,30 @@ impl FontLoader {
         }
     }
 
+    fn load_font_file(&mut self, data: &'static [u8]) {
+        // https://github.com/typst/typst/blob/be12762d942e978ddf2e0ac5c34125264ab483b7/crates/typst-cli/src/fonts.rs#L107-L121
+        let font_data = Bytes::new(data);
+        for (i, font) in Font::iter(font_data).enumerate() {
+            self.book.push(font.info().clone());
+            self.fonts.push(FontSlot {
+                path: PathBuf::new(),
+                index: i as u32,
+                font: OnceLock::from(Some(font)),
+            });
+        }
+    }
+
     fn load_embedded_fonts(&mut self) {
         // https://github.com/typst/typst/blob/be12762d942e978ddf2e0ac5c34125264ab483b7/crates/typst-cli/src/fonts.rs#L107-L121
         for font_file in typst_assets::fonts() {
-            let font_data = Bytes::new(font_file);
-            for (i, font) in Font::iter(font_data).enumerate() {
-                self.book.push(font.info().clone());
-                self.fonts.push(FontSlot {
-                    path: PathBuf::new(),
-                    index: i as u32,
-                    font: OnceLock::from(Some(font)),
-                });
-            }
+            self.load_font_file(font_file);
         }
+    }
+
+    fn load_unifonts(&mut self) {
+        self.load_font_file(showbits_assets::UNIFONT);
+        self.load_font_file(showbits_assets::UNIFONT_JP);
+        self.load_font_file(showbits_assets::UNIFONT_UPPER);
     }
 }
 
@@ -82,6 +93,7 @@ impl Typst {
     pub fn new() -> Self {
         let mut loader = FontLoader::new();
         loader.load_embedded_fonts();
+        loader.load_unifonts();
 
         Self {
             library: LazyHash::new(Library::default()),

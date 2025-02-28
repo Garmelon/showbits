@@ -2527,6 +2527,7 @@ dependencies = [
  "image",
  "serde",
  "serde_json",
+ "showbits-assets",
  "typst",
  "typst-assets",
  "typst-render",

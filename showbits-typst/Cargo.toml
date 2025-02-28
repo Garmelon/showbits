@@ -8,6 +8,7 @@ anyhow = { workspace = true }
 image = { workspace = true }
 serde = { workspace = true }
 serde_json = "1.0.139"
+showbits-assets = { workspace = true }
 typst = { workspace = true }
 typst-assets = { workspace = true }
 typst-render = { workspace = true }
