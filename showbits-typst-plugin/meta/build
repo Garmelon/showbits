@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+cargo build --release \
+    --package showbits-typst-plugin \
+    --target wasm32-unknown-unknown

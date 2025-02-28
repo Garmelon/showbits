@@ -2534,6 +2534,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "showbits-typst-plugin"
+version = "0.0.0"
+dependencies = [
+ "wasm-minimal-protocol",
+]
+
+[[package]]
 name = "signal-hook-registry"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3517,6 +3524,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "venial"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61584a325b16f97b5b25fcc852eb9550843a251057a5e3e5992d2376f3df4bb2"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
 name = "version-compare"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3609,6 +3626,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "wasm-minimal-protocol"
+version = "0.1.0"
+source = "git+https://github.com/astrale-sharp/wasm-minimal-protocol.git?rev=90336ebf2d99844fd8f8e99ea7096af96526cbf4#90336ebf2d99844fd8f8e99ea7096af96526cbf4"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "venial",
 ]
 
 [[package]]
