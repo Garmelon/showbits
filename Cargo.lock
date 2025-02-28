@@ -2519,6 +2519,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "showbits-typst"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "image",
+ "serde",
+ "serde_json",
+ "typst",
+ "typst-assets",
+ "typst-render",
+]
+
+[[package]]
 name = "signal-hook-registry"
 version = "1.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

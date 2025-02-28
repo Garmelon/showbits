@@ -1,6 +1,11 @@
 [workspace]
 resolver = "3"
-members = ["showbits-assets", "showbits-common", "showbits-thermal-printer"]
+members = [
+    "showbits-assets",
+    "showbits-common",
+    "showbits-thermal-printer",
+    "showbits-typst",
+]
 
 [workspace.package]
 version = "0.0.0"
