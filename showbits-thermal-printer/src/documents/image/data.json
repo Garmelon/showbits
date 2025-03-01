@@ -1,6 +1,6 @@
 {
-  "seamless": true,
-  "feed": true,
+  "algo": "floyd-steinberg",
   "bright": true,
-  "algo": "floyd-steinberg"
+  "seamless": true,
+  "feed": true
 }

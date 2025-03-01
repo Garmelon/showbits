@@ -15,20 +15,20 @@ use crate::{
 };
 
 #[derive(Serialize)]
-pub struct Data {
-    pub seamless: bool,
-    pub feed: bool,
-    pub bright: bool,
-    pub algo: String,
+struct Data {
+    algo: String,
+    bright: bool,
+    seamless: bool,
+    feed: bool,
 }
 
 pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
     let mut data = Data {
+        algo: "stucki".to_string(),
+        bright: true,
         seamless: false,
         feed: true,
-        bright: true,
-        algo: "floyd-steinberg".to_string(),
     };
 
     while let Some(field) = multipart.next_field().await? {
@@ -38,17 +38,17 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
                 let decoded = image::load_from_memory(&data)?.into_rgba8();
                 image = Some(decoded);
             }
+            Some("algo") => {
+                data.algo = field.text().await?;
+            }
+            Some("bright") => {
+                data.bright = !field.text().await?.is_empty();
+            }
             Some("seamless") => {
                 data.seamless = !field.text().await?.is_empty();
             }
             Some("feed") => {
                 data.feed = !field.text().await?.is_empty();
-            }
-            Some("bright") => {
-                data.bright = !field.text().await?.is_empty();
-            }
-            Some("algo") => {
-                data.algo = field.text().await?;
             }
             _ => {}
         }

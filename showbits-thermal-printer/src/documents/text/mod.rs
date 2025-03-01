@@ -6,18 +6,29 @@ use crate::{
     server::Server,
 };
 
-#[derive(Serialize, Deserialize)]
-pub struct Data {
-    pub text: String,
-    #[serde(default)]
-    pub force_wrap: bool,
-    #[serde(default)]
-    pub feed: bool,
+#[derive(Serialize)]
+struct Data {
+    text: String,
+    force_wrap: bool,
+    feed: bool,
 }
 
-pub async fn post(server: State<Server>, request: Form<Data>) {
+#[derive(Deserialize)]
+pub struct FormData {
+    pub text: String,
+    pub force_wrap: Option<bool>,
+    pub feed: Option<bool>,
+}
+
+pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
+    let data = Data {
+        text: form.text,
+        force_wrap: form.force_wrap.unwrap_or(false),
+        feed: form.feed.unwrap_or(true),
+    };
+
     let typst = super::typst_with_lib()
-        .with_json("/data.json", &request.0)
+        .with_json("/data.json", &data)
         .with_main_file(include_str!("main.typ"));
 
     let _ = server
