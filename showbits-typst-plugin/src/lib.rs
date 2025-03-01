@@ -1,26 +1,14 @@
 use std::io::Cursor;
 
 use image::{
-    ImageFormat,
+    ImageFormat, Luma, Pixel,
     imageops::{self, FilterType},
 };
 use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
-use palette::{FromColor, IntoColor, LinLumaa, LinSrgb, Srgba};
+use palette::LinSrgb;
 use wasm_minimal_protocol::{initiate_protocol, wasm_func};
 
 initiate_protocol!();
-
-// Palette <-> image color conversions
-
-fn image_to_palette(color: image::Rgba<u8>) -> Srgba {
-    let [r, g, b, a] = color.0;
-    Srgba::new(r, g, b, a).into_format()
-}
-
-fn palette_to_image(color: Srgba) -> image::Rgba<u8> {
-    let color = color.into_format::<u8, u8>();
-    image::Rgba([color.red, color.green, color.blue, color.alpha])
-}
 
 // Typst type conversions
 
@@ -88,9 +76,11 @@ pub fn dither(
 
     if bright {
         for pixel in image.pixels_mut() {
-            let mut color = LinLumaa::from_color(image_to_palette(*pixel));
-            color.luma = 1.0 - 0.4 * (1.0 - color.luma);
-            *pixel = palette_to_image(color.into_color());
+            let [l] = pixel.to_luma().0;
+            let l = l as f32 / 255.0; // Convert to [0, 1]
+            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
+            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
+            *pixel = Luma([l]).to_rgba();
         }
     }
 
