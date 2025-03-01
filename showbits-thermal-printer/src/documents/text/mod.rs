@@ -1,8 +1,13 @@
+use axum::{Form, extract::State};
 use serde::{Deserialize, Serialize};
-use showbits_typst::Typst;
+
+use crate::{
+    drawer::{Command, NewTypstDrawing},
+    server::Server,
+};
 
 #[derive(Serialize, Deserialize)]
-pub struct Text {
+pub struct Data {
     pub text: String,
     #[serde(default)]
     pub force_wrap: bool,
@@ -10,10 +15,13 @@ pub struct Text {
     pub feed: bool,
 }
 
-impl From<Text> for Typst {
-    fn from(value: Text) -> Self {
-        super::typst_with_lib()
-            .with_json("/data.json", &value)
-            .with_main_file(include_str!("main.typ"))
-    }
+pub async fn post(server: State<Server>, request: Form<Data>) {
+    let typst = super::typst_with_lib()
+        .with_json("/data.json", &request.0)
+        .with_main_file(include_str!("main.typ"));
+
+    let _ = server
+        .tx
+        .send(Command::draw(NewTypstDrawing::new(typst)))
+        .await;
 }

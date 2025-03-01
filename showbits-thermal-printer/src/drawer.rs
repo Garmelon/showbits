@@ -6,7 +6,6 @@ mod egg;
 mod image;
 mod new_typst;
 mod photo;
-mod text;
 mod tictactoe;
 mod typst;
 
@@ -18,8 +17,8 @@ use crate::persistent_printer::PersistentPrinter;
 pub use self::{
     backlog::BacklogDrawing, calendar::CalendarDrawing, cells::CellsDrawing,
     chat_message::ChatMessageDrawing, egg::EggDrawing, image::ImageDrawing,
-    new_typst::NewTypstDrawing, photo::PhotoDrawing, text::TextDrawing,
-    tictactoe::TicTacToeDrawing, typst::TypstDrawing,
+    new_typst::NewTypstDrawing, photo::PhotoDrawing, tictactoe::TicTacToeDrawing,
+    typst::TypstDrawing,
 };
 
 pub const FEED: f32 = 96.0;

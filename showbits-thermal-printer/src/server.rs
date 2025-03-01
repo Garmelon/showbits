@@ -14,18 +14,18 @@ use showbits_common::widgets::DitherAlgorithm;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
-    documents::{Image, Text},
+    documents::{self, Image},
     drawer::{
         CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
-        NewTypstDrawing, PhotoDrawing, TextDrawing, TicTacToeDrawing, TypstDrawing,
+        NewTypstDrawing, PhotoDrawing, TicTacToeDrawing, TypstDrawing,
     },
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
 
 #[derive(Clone)]
-struct Server {
-    tx: mpsc::Sender<Command>,
+pub struct Server {
+    pub tx: mpsc::Sender<Command>,
 }
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
@@ -36,10 +36,12 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/egg", post(post_egg).fallback(get_static_file))
         .route("/image", post(post_image).fallback(get_static_file))
         .route("/photo", post(post_photo).fallback(get_static_file))
-        .route("/text", post(post_text))
+        .route(
+            "/text",
+            post(documents::text::post).fallback(get_static_file),
+        )
         .route("/tictactoe", post(post_tictactoe))
         .route("/typst", post(post_typst).fallback(get_static_file))
-        .route("/test", post(post_test).fallback(get_static_file))
         .route("/test2", post(post_test2).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
@@ -194,20 +196,6 @@ async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow:
     Ok(Redirect::to("photo").into_response())
 }
 
-// /text
-
-#[derive(Deserialize)]
-struct PostTextForm {
-    text: String,
-}
-
-async fn post_text(server: State<Server>, request: Form<PostTextForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(TextDrawing(request.0.text)))
-        .await;
-}
-
 // /tictactoe
 
 async fn post_tictactoe(server: State<Server>) {
@@ -225,15 +213,6 @@ async fn post_typst(server: State<Server>, request: Form<PostTypstForm>) {
     let _ = server
         .tx
         .send(Command::draw(TypstDrawing(request.0.source)))
-        .await;
-}
-
-// /test
-
-async fn post_test(server: State<Server>, request: Form<Text>) {
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(request.0)))
         .await;
 }
 

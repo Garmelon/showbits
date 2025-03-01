@@ -3,11 +3,11 @@
 
 #let data = json("data.json")
 
-#if data.at("force_wrap", default: false) {
+#if data.force_wrap {
   show regex("."): it => it + sym.zws
   data.text
 } else { data.text }
 
-#if data.at("feed", default: false) {
+#if data.feed {
   lib.feed
 }
