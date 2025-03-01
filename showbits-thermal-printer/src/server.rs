@@ -14,7 +14,7 @@ use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
     documents,
-    drawer::{ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing, TypstDrawing},
+    drawer::{ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing},
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
@@ -46,7 +46,6 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
             post(documents::text::post).fallback(get_static_file),
         )
         .route("/tictactoe", post(post_tictactoe))
-        .route("/typst", post(post_typst).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -113,18 +112,4 @@ async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow:
 
 async fn post_tictactoe(server: State<Server>) {
     let _ = server.tx.send(Command::draw(TicTacToeDrawing)).await;
-}
-
-// /typst
-
-#[derive(Deserialize)]
-struct PostTypstForm {
-    source: String,
-}
-
-async fn post_typst(server: State<Server>, request: Form<PostTypstForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(TypstDrawing(request.0.source)))
-        .await;
 }
