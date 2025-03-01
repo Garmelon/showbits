@@ -1,5 +1,6 @@
 use showbits_typst::Typst;
 
+pub mod egg;
 pub mod image;
 pub mod text;
 

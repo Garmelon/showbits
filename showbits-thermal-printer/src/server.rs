@@ -15,8 +15,8 @@ use tokio::{net::TcpListener, sync::mpsc};
 use crate::{
     documents,
     drawer::{
-        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, PhotoDrawing,
-        TicTacToeDrawing, TypstDrawing,
+        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing,
+        TypstDrawing,
     },
 };
 
@@ -32,7 +32,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/calendar", post(post_calendar))
         .route("/cells", post(post_cells))
         .route("/chat_message", post(post_chat_message))
-        .route("/egg", post(post_egg).fallback(get_static_file))
+        .route("/egg", post(documents::egg::post).fallback(get_static_file))
         .route(
             "/image",
             post(documents::image::post).fallback(get_static_file),
@@ -107,13 +107,6 @@ async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageF
             content: request.0.content,
         }))
         .await;
-}
-
-// /egg
-
-async fn post_egg(server: State<Server>) -> impl IntoResponse {
-    let _ = server.tx.send(Command::draw(EggDrawing)).await;
-    Redirect::to("egg")
 }
 
 // /photo

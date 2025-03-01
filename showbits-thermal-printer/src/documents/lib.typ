@@ -1,6 +1,8 @@
+#let width = 384pt
+
 #let init(it) = {
   set page(
-    width: 384pt,
+    width: width,
     height: auto,
     margin: (x: 0pt, y: 4pt),
   )
