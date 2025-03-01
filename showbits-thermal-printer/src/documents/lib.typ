@@ -26,8 +26,18 @@
 
 #import plugin("plugin.wasm") as p
 
-#let dither(path) = {
-  let bytes = read(path, encoding: none)
-  let dithered = p.dither(bytes)
-  image(dithered)
+#let _length_to_bytes(len) = {
+  let len = len.pt()
+  let n = if len > 10000 { -1 } else { int(len) }
+  n.to-bytes(size: 8)
 }
+
+#let dither(path) = layout(size => {
+  let bytes = read(path, encoding: none)
+  let dithered = p.dither(
+    bytes,
+    _length_to_bytes(size.width),
+    _length_to_bytes(size.height),
+  )
+  image(dithered)
+})
