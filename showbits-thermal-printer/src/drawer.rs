@@ -1,5 +1,4 @@
 mod backlog;
-mod calendar;
 mod chat_message;
 mod new_typst;
 mod photo;
@@ -12,9 +11,8 @@ use tokio::sync::mpsc;
 use crate::persistent_printer::PersistentPrinter;
 
 pub use self::{
-    backlog::BacklogDrawing, calendar::CalendarDrawing, chat_message::ChatMessageDrawing,
-    new_typst::NewTypstDrawing, photo::PhotoDrawing, tictactoe::TicTacToeDrawing,
-    typst::TypstDrawing,
+    backlog::BacklogDrawing, chat_message::ChatMessageDrawing, new_typst::NewTypstDrawing,
+    photo::PhotoDrawing, tictactoe::TicTacToeDrawing, typst::TypstDrawing,
 };
 
 pub const FEED: f32 = 96.0;

@@ -14,9 +14,7 @@ use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
     documents,
-    drawer::{
-        CalendarDrawing, ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing, TypstDrawing,
-    },
+    drawer::{ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing, TypstDrawing},
 };
 
 use self::{r#static::get_static_file, statuscode::status_code};
@@ -28,7 +26,10 @@ pub struct Server {
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
-        .route("/calendar", post(post_calendar))
+        .route(
+            "/calendar",
+            post(documents::calendar::post).fallback(get_static_file),
+        )
         .route(
             "/cells",
             post(documents::cells::post).fallback(get_static_file),
@@ -53,24 +54,6 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
     let listener = TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
-}
-
-// /calendar
-
-#[derive(Deserialize)]
-struct PostCalendarForm {
-    year: i16,
-    month: i8,
-}
-
-async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(CalendarDrawing {
-            year: request.0.year,
-            month: request.0.month,
-        }))
-        .await;
 }
 
 // /chat_message

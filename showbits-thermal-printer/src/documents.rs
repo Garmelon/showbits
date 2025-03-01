@@ -1,5 +1,6 @@
 use showbits_typst::Typst;
 
+pub mod calendar;
 pub mod cells;
 pub mod egg;
 pub mod image;
