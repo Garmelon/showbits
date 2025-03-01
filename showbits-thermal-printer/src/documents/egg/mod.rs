@@ -1,10 +1,7 @@
 use axum::{Form, extract::State};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    drawer::{Command, NewTypstDrawing},
-    server::Server,
-};
+use crate::server::Server;
 
 #[derive(Serialize)]
 struct Data {
@@ -57,8 +54,5 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
         typst.add_file(format!("/egg_bad/pattern_{i:02}.png"), *pattern);
     }
 
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(typst)))
-        .await;
+    server.print_typst(typst).await;
 }

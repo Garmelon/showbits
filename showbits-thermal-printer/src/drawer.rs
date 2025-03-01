@@ -1,22 +1,11 @@
-mod backlog;
-mod new_typst;
-
+use showbits_typst::Typst;
 use tokio::sync::mpsc;
 
 use crate::persistent_printer::PersistentPrinter;
 
-pub use self::{backlog::BacklogDrawing, new_typst::NewTypstDrawing};
-
-pub trait Drawing {
-    fn draw(&self, printer: &mut PersistentPrinter) -> anyhow::Result<()>;
-}
-
-pub struct Command(Box<dyn Drawing + Send>);
-
-impl Command {
-    pub fn draw<D: Drawing + Send + 'static>(drawing: D) -> Self {
-        Self(Box::new(drawing))
-    }
+pub enum Command {
+    Backlog,
+    Typst(Typst),
 }
 
 pub struct Drawer {
@@ -31,7 +20,20 @@ impl Drawer {
 
     pub fn run(&mut self) -> anyhow::Result<()> {
         while let Some(command) = self.rx.blocking_recv() {
-            command.0.draw(&mut self.printer)?;
+            self.run_cmd(command)?;
+        }
+        Ok(())
+    }
+
+    fn run_cmd(&mut self, command: Command) -> anyhow::Result<()> {
+        match command {
+            Command::Backlog => {
+                self.printer.print_backlog()?;
+            }
+            Command::Typst(typst) => {
+                let image = typst.render()?;
+                self.printer.print_image(&image)?;
+            }
         }
         Ok(())
     }

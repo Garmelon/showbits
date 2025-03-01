@@ -7,6 +7,7 @@ use axum::{
     extract::DefaultBodyLimit,
     routing::{get, post},
 };
+use showbits_typst::Typst;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{documents, drawer::Command};
@@ -15,7 +16,13 @@ use self::r#static::get_static_file;
 
 #[derive(Clone)]
 pub struct Server {
-    pub tx: mpsc::Sender<Command>,
+    tx: mpsc::Sender<Command>,
+}
+
+impl Server {
+    pub async fn print_typst(&self, typst: Typst) {
+        let _ = self.tx.send(Command::Typst(typst)).await;
+    }
 }
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {

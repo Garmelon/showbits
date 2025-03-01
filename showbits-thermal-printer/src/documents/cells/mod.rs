@@ -6,7 +6,6 @@ use image::{ImageFormat, Rgba, RgbaImage, imageops};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    drawer::{Command, NewTypstDrawing},
     printer::Printer,
     server::{Server, somehow},
 };
@@ -101,10 +100,6 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         .with_file("/image.png", bytes)
         .with_main_file(include_str!("main.typ"));
 
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(typst)))
-        .await;
-
+    server.print_typst(typst).await;
     Ok(())
 }

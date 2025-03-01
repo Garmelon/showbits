@@ -8,7 +8,7 @@ mod server;
 use std::{path::PathBuf, time::Duration};
 
 use clap::Parser;
-use drawer::{BacklogDrawing, Command};
+use drawer::Command;
 use tokio::{runtime::Runtime, sync::mpsc};
 
 use self::{drawer::Drawer, persistent_printer::PersistentPrinter};
@@ -44,7 +44,7 @@ fn main() -> anyhow::Result<()> {
     runtime.spawn(server::run(tx.clone(), args.addr));
     runtime.spawn(async move {
         loop {
-            let _ = tx.send(Command::draw(BacklogDrawing)).await;
+            let _ = tx.send(Command::Backlog).await;
             tokio::time::sleep(Duration::from_secs(1)).await;
         }
     });

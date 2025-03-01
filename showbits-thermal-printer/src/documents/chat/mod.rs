@@ -1,10 +1,7 @@
 use axum::{Form, extract::State};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    drawer::{Command, NewTypstDrawing},
-    server::Server,
-};
+use crate::server::Server;
 
 #[derive(Serialize)]
 struct Data {
@@ -31,8 +28,5 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
         .with_json("/data.json", &data)
         .with_main_file(include_str!("main.typ"));
 
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(typst)))
-        .await;
+    server.print_typst(typst).await;
 }

@@ -9,10 +9,7 @@ use axum::{
 use image::ImageFormat;
 use serde::Serialize;
 
-use crate::{
-    drawer::{Command, NewTypstDrawing},
-    server::{Server, somehow, statuscode::status_code},
-};
+use crate::server::{Server, somehow, statuscode::status_code};
 
 #[derive(Serialize)]
 struct Data {
@@ -79,10 +76,6 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         .with_file("/image.png", bytes)
         .with_main_file(include_str!("main.typ"));
 
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(typst)))
-        .await;
-
+    server.print_typst(typst).await;
     Ok(Redirect::to("image").into_response())
 }
