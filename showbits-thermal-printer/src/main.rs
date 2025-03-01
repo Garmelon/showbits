@@ -1,3 +1,4 @@
+mod color;
 mod documents;
 mod drawer;
 mod persistent_printer;

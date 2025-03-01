@@ -2,7 +2,7 @@ use showbits_typst::Typst;
 
 use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::Drawing;
 
 pub struct NewTypstDrawing(pub Typst);
 
@@ -13,7 +13,7 @@ impl NewTypstDrawing {
 }
 
 impl Drawing for NewTypstDrawing {
-    fn draw(&self, printer: &mut PersistentPrinter, _ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter) -> anyhow::Result<()> {
         let image = self.0.render()?;
         printer.print_image(&image)?;
         Ok(())

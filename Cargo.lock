@@ -2740,11 +2740,11 @@ dependencies = [
  "image",
  "jiff",
  "mime_guess",
+ "palette",
  "rand 0.9.0",
  "rust-embed",
  "serde",
  "showbits-assets",
- "showbits-common",
  "showbits-typst",
  "tokio",
 ]

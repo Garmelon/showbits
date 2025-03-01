@@ -8,7 +8,8 @@ use escpos::{
     utils::{GS, PageCode, Protocol},
 };
 use image::{Rgba, RgbaImage};
-use showbits_common::color;
+
+use crate::color;
 
 pub struct Printer {
     printer: Option<EPrinter<FileDriver>>,
@@ -143,7 +144,7 @@ impl Printer {
     /// Instead of doing the physically accurate thing, I do what makes the most
     /// sense visually.
     fn pixel_to_bit(pixel: Rgba<u8>) -> bool {
-        let color = color::from_image_color(pixel);
+        let color = color::image_to_palette(pixel);
         let avg = (color.red + color.green + color.blue) / 3.0;
         avg < 0.5 // true == black
     }

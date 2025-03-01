@@ -1,11 +1,11 @@
 use crate::persistent_printer::PersistentPrinter;
 
-use super::{Context, Drawing};
+use super::Drawing;
 
 pub struct BacklogDrawing;
 
 impl Drawing for BacklogDrawing {
-    fn draw(&self, printer: &mut PersistentPrinter, _ctx: &mut Context) -> anyhow::Result<()> {
+    fn draw(&self, printer: &mut PersistentPrinter) -> anyhow::Result<()> {
         printer.print_backlog()?;
         Ok(())
     }
