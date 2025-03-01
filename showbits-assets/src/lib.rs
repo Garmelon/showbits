@@ -65,4 +65,5 @@ pub const EGG_PATTERNS: &[&[u8]] = &[
     include_bytes!("../data/egg/pattern_37.png"),
     include_bytes!("../data/egg/pattern_38.png"),
     include_bytes!("../data/egg/pattern_39.png"),
+    include_bytes!("../data/egg/pattern_40.png"),
 ];
