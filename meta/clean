@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+cargo clean
+pushd showbits-typst-plugin
+cargo clean

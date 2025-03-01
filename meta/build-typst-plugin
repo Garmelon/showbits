@@ -1,0 +1,22 @@
+#!/usr/bin/env fish
+
+set_color --bold yellow
+echo "#############"
+echo "## Prepare ##"
+echo "#############"
+set_color
+
+rustup target add wasm32-unknown-unknown
+
+pushd showbits-typst-plugin
+
+echo
+
+set_color --bold yellow
+echo "###########"
+echo "## Build ##"
+echo "###########"
+set_color
+
+cargo build --release --target wasm32-unknown-unknown
+or return 1
