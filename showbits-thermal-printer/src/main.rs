@@ -1,8 +1,8 @@
+mod documents;
 mod drawer;
 mod persistent_printer;
 mod printer;
 mod server;
-mod documents;
 
 use std::{path::PathBuf, time::Duration};
 

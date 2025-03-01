@@ -14,7 +14,7 @@ use showbits_common::widgets::DitherAlgorithm;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
-    documents::Text,
+    documents::{Image, Text},
     drawer::{
         CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
         NewTypstDrawing, PhotoDrawing, TextDrawing, TicTacToeDrawing, TypstDrawing,
@@ -40,6 +40,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/tictactoe", post(post_tictactoe))
         .route("/typst", post(post_typst).fallback(get_static_file))
         .route("/test", post(post_test).fallback(get_static_file))
+        .route("/test2", post(post_test2).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -234,4 +235,34 @@ async fn post_test(server: State<Server>, request: Form<Text>) {
         .tx
         .send(Command::draw(NewTypstDrawing::new(request.0)))
         .await;
+}
+
+// /test2
+
+async fn post_test2(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
+    let mut image = None;
+
+    while let Some(field) = multipart.next_field().await? {
+        match field.name() {
+            Some("image") => {
+                let data = field.bytes().await?;
+                let decoded = image::load_from_memory(&data)?.into_rgba8();
+                image = Some(decoded);
+            }
+            _ => {}
+        }
+    }
+
+    let Some(image) = image else {
+        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
+    };
+
+    let image = Image { image }.into_typst().map_err(somehow::Error)?;
+
+    let _ = server
+        .tx
+        .send(Command::draw(NewTypstDrawing::new(image)))
+        .await;
+
+    Ok(().into_response())
 }

@@ -1544,11 +1544,11 @@ dependencies = [
 [[package]]
 name = "mark"
 version = "0.0.0"
-source = "git+https://github.com/Garmelon/mark.git#2345d80d803e0e9590681a49743491c477d28126"
+source = "git+https://github.com/Garmelon/mark.git?rev=2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4#2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4"
 dependencies = [
  "image",
  "palette",
- "rand 0.8.5",
+ "rand 0.9.0",
 ]
 
 [[package]]
@@ -2537,6 +2537,9 @@ dependencies = [
 name = "showbits-typst-plugin"
 version = "0.0.0"
 dependencies = [
+ "image",
+ "mark",
+ "palette",
  "wasm-minimal-protocol",
 ]
 

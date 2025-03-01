@@ -18,9 +18,8 @@ axum = "0.8.1"
 clap = { version = "4.5.30", features = ["derive", "deprecated"] }
 cosmic-text = "0.12.1"
 escpos = "0.15.0"
-image = "0.25.5"
+image = { version = "0.25.5", default-features = false }
 jiff = "0.2.1"
-mark.git = "https://github.com/Garmelon/mark.git"
 mime_guess = "2.0.5"
 palette = "0.7.6"
 paste = "1.0.15"
@@ -39,6 +38,10 @@ typst-render = "0.13.0"
 version = "0.7.6"
 default-features = false
 features = ["std", "taffy_tree", "flexbox", "grid", "block_layout"]
+
+[workspace.dependencies.mark]
+git = "https://github.com/Garmelon/mark.git"
+rev = "2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4"
 
 [workspace.dependencies.wasm-minimal-protocol]
 git = "https://github.com/astrale-sharp/wasm-minimal-protocol.git"

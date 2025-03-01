@@ -20,4 +20,14 @@
 // the same size after tearing off the paper.
 #let feed = v(64pt + 32pt)
 
-#import plugin("plugin.wasm") as plugin
+////////////
+// Plugin //
+////////////
+
+#import plugin("plugin.wasm") as p
+
+#let dither(path) = {
+  let bytes = read(path, encoding: none)
+  let dithered = p.dither(bytes)
+  image(dithered)
+}
