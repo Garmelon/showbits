@@ -15,8 +15,7 @@ use tokio::{net::TcpListener, sync::mpsc};
 use crate::{
     documents,
     drawer::{
-        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing,
-        TypstDrawing,
+        CalendarDrawing, ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing, TypstDrawing,
     },
 };
 
@@ -30,7 +29,10 @@ pub struct Server {
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
         .route("/calendar", post(post_calendar))
-        .route("/cells", post(post_cells))
+        .route(
+            "/cells",
+            post(documents::cells::post).fallback(get_static_file),
+        )
         .route("/chat_message", post(post_chat_message))
         .route("/egg", post(documents::egg::post).fallback(get_static_file))
         .route(
@@ -67,26 +69,6 @@ async fn post_calendar(server: State<Server>, request: Form<PostCalendarForm>) {
         .send(Command::draw(CalendarDrawing {
             year: request.0.year,
             month: request.0.month,
-        }))
-        .await;
-}
-
-// /cells
-
-#[derive(Deserialize)]
-struct PostCellsForm {
-    rule: u8,
-    rows: Option<u32>,
-    scale: Option<u32>,
-}
-
-async fn post_cells(server: State<Server>, request: Form<PostCellsForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(CellsDrawing {
-            rule: request.0.rule,
-            rows: request.0.rows.unwrap_or(32).min(512),
-            scale: request.0.scale.unwrap_or(4),
         }))
         .await;
 }
