@@ -3,8 +3,6 @@ use std::{fs, io::ErrorKind, path::PathBuf};
 use anyhow::{Context, bail};
 use image::RgbaImage;
 use jiff::Timestamp;
-use showbits_common::Tree;
-use taffy::{AvailableSpace, NodeId, Size};
 
 use crate::printer::Printer;
 
@@ -28,20 +26,6 @@ impl PersistentPrinter {
             queue_dir,
             printer: None,
         }
-    }
-
-    fn render_tree_to_image<C>(
-        tree: &mut Tree<C>,
-        ctx: &mut C,
-        root: NodeId,
-    ) -> anyhow::Result<RgbaImage> {
-        let available = Size {
-            width: AvailableSpace::Definite(Printer::WIDTH as f32),
-            // TODO Maybe MinContent? If not, why not?
-            height: AvailableSpace::MaxContent,
-        };
-
-        tree.render(ctx, root, available)
     }
 
     fn print_image_immediately(&mut self, image: &RgbaImage) -> anyhow::Result<()> {
@@ -90,17 +74,6 @@ impl PersistentPrinter {
         if self.print_image_robustly(image).is_err() {
             self.enqueue_image(image)?;
         }
-        Ok(())
-    }
-
-    pub fn print_tree<C>(
-        &mut self,
-        tree: &mut Tree<C>,
-        ctx: &mut C,
-        root: NodeId,
-    ) -> anyhow::Result<()> {
-        let image = Self::render_tree_to_image(tree, ctx, root)?;
-        self.print_image(&image)?;
         Ok(())
     }
 

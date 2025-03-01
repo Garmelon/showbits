@@ -3,17 +3,13 @@ mod r#static;
 pub mod statuscode;
 
 use axum::{
-    Form, Router,
-    extract::{DefaultBodyLimit, State},
+    Router,
+    extract::DefaultBodyLimit,
     routing::{get, post},
 };
-use serde::Deserialize;
 use tokio::{net::TcpListener, sync::mpsc};
 
-use crate::{
-    documents,
-    drawer::{ChatMessageDrawing, Command},
-};
+use crate::{documents, drawer::Command};
 
 use self::r#static::get_static_file;
 
@@ -32,7 +28,10 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
             "/cells",
             post(documents::cells::post).fallback(get_static_file),
         )
-        .route("/chat_message", post(post_chat_message))
+        .route(
+            "/chat",
+            post(documents::chat::post).fallback(get_static_file),
+        )
         .route("/egg", post(documents::egg::post).fallback(get_static_file))
         .route(
             "/image",
@@ -53,22 +52,4 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
     let listener = TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;
     Ok(())
-}
-
-// /chat_message
-
-#[derive(Deserialize)]
-struct PostChatMessageForm {
-    username: String,
-    content: String,
-}
-
-async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageForm>) {
-    let _ = server
-        .tx
-        .send(Command::draw(ChatMessageDrawing {
-            username: request.0.username,
-            content: request.0.content,
-        }))
-        .await;
 }

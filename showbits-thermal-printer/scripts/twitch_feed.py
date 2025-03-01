@@ -99,7 +99,7 @@ class Room:
                 time.sleep(10)
 
     def join(self):
-        nick = f"justinfan{  random.randint(1, 99999)}"
+        nick = f"justinfan{random.randint(1, 99999)}"
         print(f"Joining #{self.channel} as {nick}")
         self.ws.send("CAP REQ :twitch.tv/tags twitch.tv/commands")
         self.ws.send("PASS SCHMOOPIIE")  # What the web ui does
@@ -120,7 +120,7 @@ class Room:
 
             print("Posting", data)
             try:
-                requests.post(f"http://{self.addr}/chat_message", data=data)
+                requests.post(f"http://{self.addr}/chat", data=data)
             except Exception as e:
                 print("Oop:", e)
 

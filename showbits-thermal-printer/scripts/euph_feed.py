@@ -1,6 +1,5 @@
 import argparse
 import json
-import re
 import time
 
 import requests
@@ -93,7 +92,7 @@ class Room:
 
         print("Posting", data)
         try:
-            requests.post(f"http://{self.addr}/chat_message", data=data)
+            requests.post(f"http://{self.addr}/chat", data=data)
         except Exception as e:
             print("Oop:", e)
 

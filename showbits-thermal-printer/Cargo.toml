@@ -17,7 +17,6 @@ serde = { workspace = true }
 showbits-assets = { workspace = true }
 showbits-common = { workspace = true }
 showbits-typst = { workspace = true }
-taffy = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 
 [lints]

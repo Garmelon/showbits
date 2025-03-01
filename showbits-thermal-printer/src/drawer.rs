@@ -1,5 +1,4 @@
 mod backlog;
-mod chat_message;
 mod new_typst;
 
 use showbits_common::widgets::{FontStuff, HasFontStuff};
@@ -7,9 +6,7 @@ use tokio::sync::mpsc;
 
 use crate::persistent_printer::PersistentPrinter;
 
-pub use self::{
-    backlog::BacklogDrawing, chat_message::ChatMessageDrawing, new_typst::NewTypstDrawing,
-};
+pub use self::{backlog::BacklogDrawing, new_typst::NewTypstDrawing};
 
 #[derive(Default)]
 pub struct Context {

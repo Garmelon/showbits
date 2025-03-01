@@ -2,6 +2,7 @@ use showbits_typst::Typst;
 
 pub mod calendar;
 pub mod cells;
+pub mod chat;
 pub mod egg;
 pub mod image;
 pub mod text;

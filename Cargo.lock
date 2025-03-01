@@ -2746,7 +2746,6 @@ dependencies = [
  "showbits-assets",
  "showbits-common",
  "showbits-typst",
- "taffy",
  "tokio",
 ]
 
