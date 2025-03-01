@@ -1,10 +1,10 @@
-#import "lib.typ";
+#import "lib/main.typ" as lib;
 #show: it => lib.init(it)
 
 #let data = json("data.json")
 
 #let dithered = lib.dither(
-  "image.png",
+  read("image.png", encoding: none),
   bright: data.bright,
   algorithm: data.algo,
 )

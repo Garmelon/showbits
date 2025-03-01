@@ -6,6 +6,9 @@ pub mod text;
 
 fn typst_with_lib() -> Typst {
     Typst::new()
-        .with_file("/lib.typ", include_str!("documents/lib.typ"))
-        .with_file("/plugin.wasm", include_bytes!("documents/plugin.wasm"))
+        .with_file("/lib/main.typ", include_str!("documents/lib/main.typ"))
+        .with_file(
+            "/lib/plugin.wasm",
+            include_bytes!("documents/lib/plugin.wasm"),
+        )
 }

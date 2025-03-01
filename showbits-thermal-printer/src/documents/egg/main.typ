@@ -1,6 +1,6 @@
 #import "@preview/oxifmt:0.2.1": strfmt
 #import "@preview/suiji:0.3.0": *
-#import "lib.typ";
+#import "lib/main.typ" as lib;
 #show: it => lib.init(it)
 
 #let data = json("data.json")

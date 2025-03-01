@@ -43,11 +43,10 @@
 }
 
 #let dither(
-  path,
+  data,
   bright: true,
   algorithm: "floyd-steinberg",
 ) = layout(size => {
-  let data = read(path, encoding: none)
   let dithered = p.dither(
     data,
     _length_to_bytes(size.width),
