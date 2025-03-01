@@ -1,0 +1,5 @@
+#!/usr/bin/env fish
+
+cargo clippy
+pushd showbits-typst-plugin
+cargo clippy
