@@ -4,18 +4,42 @@ use image::{
     ImageFormat,
     imageops::{self, FilterType},
 };
-use mark::dither::{AlgoFloydSteinberg, Algorithm, DiffEuclid, Palette};
-use palette::LinSrgb;
+use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
+use palette::{FromColor, IntoColor, LinLumaa, LinSrgb, Srgba};
 use wasm_minimal_protocol::{initiate_protocol, wasm_func};
 
 initiate_protocol!();
+
+// Palette <-> image color conversions
+
+fn image_to_palette(color: image::Rgba<u8>) -> Srgba {
+    let [r, g, b, a] = color.0;
+    Srgba::new(r, g, b, a).into_format()
+}
+
+fn palette_to_image(color: Srgba) -> image::Rgba<u8> {
+    let color = color.into_format::<u8, u8>();
+    image::Rgba([color.red, color.green, color.blue, color.alpha])
+}
+
+// Typst type conversions
 
 fn i64_from_bytes(bytes: &[u8]) -> Result<i64, String> {
     let bytes: [u8; 8] = bytes.try_into().map_err(|it| format!("{it}"))?;
     Ok(i64::from_le_bytes(bytes))
 }
 
-fn size_from_i64(size: i64) -> Result<Option<u32>, String> {
+fn bool_from_bytes(bytes: &[u8]) -> Result<bool, String> {
+    Ok(i64_from_bytes(bytes)? != 0)
+}
+
+fn str_from_bytes(bytes: &[u8]) -> Result<&str, String> {
+    std::str::from_utf8(bytes).map_err(|it| format!("{it}"))
+}
+
+fn size_from_bytes(bytes: &[u8]) -> Result<Option<u32>, String> {
+    let size = i64_from_bytes(bytes)?;
+
     if size < 0 {
         return Ok(None); // Unlimited width
     }
@@ -24,10 +48,20 @@ fn size_from_i64(size: i64) -> Result<Option<u32>, String> {
     Ok(Some(size))
 }
 
+// Typst methods
+
 #[wasm_func]
-pub fn dither(image: &[u8], max_width: &[u8], max_height: &[u8]) -> Result<Vec<u8>, String> {
-    let max_width = size_from_i64(i64_from_bytes(max_width)?)?;
-    let max_height = size_from_i64(i64_from_bytes(max_height)?)?;
+pub fn dither(
+    image: &[u8],
+    max_width: &[u8],
+    max_height: &[u8],
+    bright: &[u8],
+    algorithm: &[u8],
+) -> Result<Vec<u8>, String> {
+    let max_width = size_from_bytes(max_width)?;
+    let max_height = size_from_bytes(max_height)?;
+    let bright = bool_from_bytes(bright)?;
+    let algorithm = str_from_bytes(algorithm)?;
 
     let mut image = image::load_from_memory(image)
         .map_err(|it| format!("Failed to read image: {it:?}"))?
@@ -52,12 +86,26 @@ pub fn dither(image: &[u8], max_width: &[u8], max_height: &[u8]) -> Result<Vec<u
         image = imageops::resize(&image, target_width, target_height, FilterType::CatmullRom);
     }
 
+    if bright {
+        for pixel in image.pixels_mut() {
+            let mut color = LinLumaa::from_color(image_to_palette(*pixel));
+            color.luma = 1.0 - 0.4 * (1.0 - color.luma);
+            *pixel = palette_to_image(color.into_color());
+        }
+    }
+
     let palette = Palette::new(vec![
         LinSrgb::new(0.0, 0.0, 0.0),
         LinSrgb::new(1.0, 1.0, 1.0),
     ]);
 
-    let dithered = <AlgoFloydSteinberg as Algorithm<LinSrgb, DiffEuclid>>::run(image, &palette);
+    let dithered = match algorithm {
+        "floyd-steinberg" => {
+            <AlgoFloydSteinberg as Algorithm<LinSrgb, DiffEuclid>>::run(image, &palette)
+        }
+        "stucki" => <AlgoStucki as Algorithm<LinSrgb, DiffEuclid>>::run(image, &palette),
+        it => Err(format!("Unknown algorithm: {it}"))?,
+    };
 
     let mut bytes: Vec<u8> = Vec::new();
     dithered
@@ -65,17 +113,4 @@ pub fn dither(image: &[u8], max_width: &[u8], max_height: &[u8]) -> Result<Vec<u
         .map_err(|it| format!("Failed to write image: {it:?}"))?;
 
     Ok(bytes)
-}
-
-#[wasm_func]
-pub fn debug(value: &[u8]) -> Result<Vec<u8>, String> {
-    // let value: [u8; 4] = value
-    //     .try_into()
-    //     .map_err(|it| format!("incorrect number of bytes: {it}"))?;
-
-    // let be = u32::from_be_bytes(value);
-    // let le = u32::from_le_bytes(value);
-
-    // Ok(format!("be: {be}, le: {le}").into_bytes())
-    Ok(format!("{value:?}").into_bytes())
 }

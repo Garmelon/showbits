@@ -1,8 +1,6 @@
 use showbits_typst::Typst;
 
-pub use self::image::*;
-
-mod image;
+pub mod image;
 pub mod text;
 
 fn typst_with_lib() -> Typst {

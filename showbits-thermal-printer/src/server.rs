@@ -1,6 +1,6 @@
-mod somehow;
+pub mod somehow;
 mod r#static;
-mod statuscode;
+pub mod statuscode;
 
 use axum::{
     Form, Router,
@@ -10,14 +10,13 @@ use axum::{
     routing::{get, post},
 };
 use serde::Deserialize;
-use showbits_common::widgets::DitherAlgorithm;
 use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
-    documents::{self, Image},
+    documents,
     drawer::{
-        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, ImageDrawing,
-        NewTypstDrawing, PhotoDrawing, TicTacToeDrawing, TypstDrawing,
+        CalendarDrawing, CellsDrawing, ChatMessageDrawing, Command, EggDrawing, PhotoDrawing,
+        TicTacToeDrawing, TypstDrawing,
     },
 };
 
@@ -34,7 +33,10 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/cells", post(post_cells))
         .route("/chat_message", post(post_chat_message))
         .route("/egg", post(post_egg).fallback(get_static_file))
-        .route("/image", post(post_image).fallback(get_static_file))
+        .route(
+            "/image",
+            post(documents::image::post).fallback(get_static_file),
+        )
         .route("/photo", post(post_photo).fallback(get_static_file))
         .route(
             "/text",
@@ -42,7 +44,6 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         )
         .route("/tictactoe", post(post_tictactoe))
         .route("/typst", post(post_typst).fallback(get_static_file))
-        .route("/test2", post(post_test2).fallback(get_static_file))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -115,52 +116,6 @@ async fn post_egg(server: State<Server>) -> impl IntoResponse {
     Redirect::to("egg")
 }
 
-// /image
-
-async fn post_image(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
-    let mut image = None;
-    let mut bright = false;
-    let mut algo = DitherAlgorithm::FloydSteinberg;
-    let mut scale = 1_u32;
-
-    while let Some(field) = multipart.next_field().await? {
-        match field.name() {
-            Some("image") => {
-                let data = field.bytes().await?;
-                let decoded = image::load_from_memory(&data)?.into_rgba8();
-                image = Some(decoded);
-            }
-            Some("bright") => {
-                bright = true;
-            }
-            Some("algo") => match &field.text().await? as &str {
-                "floyd-steinberg" => algo = DitherAlgorithm::FloydSteinberg,
-                "stucki" => algo = DitherAlgorithm::Stucki,
-                _ => {}
-            },
-            Some("scale") => {
-                scale = field.text().await?.parse::<u32>()?;
-            }
-            _ => {}
-        }
-    }
-
-    let Some(image) = image else {
-        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
-    };
-
-    let _ = server
-        .tx
-        .send(Command::draw(ImageDrawing {
-            image,
-            bright,
-            algo,
-            scale,
-        }))
-        .await;
-    Ok(Redirect::to("image").into_response())
-}
-
 // /photo
 
 async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
@@ -214,34 +169,4 @@ async fn post_typst(server: State<Server>, request: Form<PostTypstForm>) {
         .tx
         .send(Command::draw(TypstDrawing(request.0.source)))
         .await;
-}
-
-// /test2
-
-async fn post_test2(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
-    let mut image = None;
-
-    while let Some(field) = multipart.next_field().await? {
-        match field.name() {
-            Some("image") => {
-                let data = field.bytes().await?;
-                let decoded = image::load_from_memory(&data)?.into_rgba8();
-                image = Some(decoded);
-            }
-            _ => {}
-        }
-    }
-
-    let Some(image) = image else {
-        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
-    };
-
-    let image = Image { image }.into_typst().map_err(somehow::Error)?;
-
-    let _ = server
-        .tx
-        .send(Command::draw(NewTypstDrawing::new(image)))
-        .await;
-
-    Ok(().into_response())
 }

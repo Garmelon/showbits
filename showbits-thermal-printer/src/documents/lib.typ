@@ -26,18 +26,32 @@
 
 #import plugin("plugin.wasm") as p
 
-#let _length_to_bytes(len) = {
-  let len = len.pt()
-  let n = if len > 10000 { -1 } else { int(len) }
-  n.to-bytes(size: 8)
+#let _number_to_bytes(n) = int(n).to-bytes(size: 8)
+
+#let _bool_to_bytes(b) = _number_to_bytes(if b { 1 } else { 0 })
+
+#let _str_to_bytes(s) = {
+  bytes(s)
 }
 
-#let dither(path) = layout(size => {
-  let bytes = read(path, encoding: none)
+#let _length_to_bytes(l) = {
+  let l = l.pt()
+  let n = if l > 10000 { -1 } else { int(l) }
+  _number_to_bytes(n)
+}
+
+#let dither(
+  path,
+  bright: true,
+  algorithm: "floyd-steinberg",
+) = layout(size => {
+  let data = read(path, encoding: none)
   let dithered = p.dither(
-    bytes,
+    data,
     _length_to_bytes(size.width),
     _length_to_bytes(size.height),
+    _bool_to_bytes(bright),
+    _str_to_bytes(algorithm),
   )
   image(dithered)
 })

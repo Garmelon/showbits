@@ -3,7 +3,6 @@ mod calendar;
 mod cells;
 mod chat_message;
 mod egg;
-mod image;
 mod new_typst;
 mod photo;
 mod tictactoe;
@@ -16,9 +15,8 @@ use crate::persistent_printer::PersistentPrinter;
 
 pub use self::{
     backlog::BacklogDrawing, calendar::CalendarDrawing, cells::CellsDrawing,
-    chat_message::ChatMessageDrawing, egg::EggDrawing, image::ImageDrawing,
-    new_typst::NewTypstDrawing, photo::PhotoDrawing, tictactoe::TicTacToeDrawing,
-    typst::TypstDrawing,
+    chat_message::ChatMessageDrawing, egg::EggDrawing, new_typst::NewTypstDrawing,
+    photo::PhotoDrawing, tictactoe::TicTacToeDrawing, typst::TypstDrawing,
 };
 
 pub const FEED: f32 = 96.0;

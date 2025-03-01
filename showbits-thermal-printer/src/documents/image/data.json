@@ -1,0 +1,6 @@
+{
+  "seamless": true,
+  "feed": true,
+  "bright": true,
+  "algo": "floyd-steinberg"
+}

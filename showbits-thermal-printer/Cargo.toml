@@ -11,7 +11,6 @@ escpos = { workspace = true }
 image = { workspace = true, default-features = true }
 jiff = { workspace = true }
 mime_guess = { workspace = true }
-palette = { workspace = true }
 rand = { workspace = true }
 rust-embed = { workspace = true }
 serde = { workspace = true }
