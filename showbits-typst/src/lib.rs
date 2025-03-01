@@ -13,10 +13,14 @@ use typst::{
     diag::{FileError, FileResult},
     foundations::{Bytes, Datetime},
     layout::{Abs, PagedDocument},
-    syntax::{FileId, Source, VirtualPath},
+    syntax::{FileId, Source, VirtualPath, package::PackageSpec},
     text::{Font, FontBook},
     utils::LazyHash,
     visualize::Color,
+};
+use typst_kit::{
+    download::{Downloader, ProgressSink},
+    package::PackageStorage,
 };
 
 // The logic for detecting and loading fonts was ripped straight from:
@@ -85,6 +89,7 @@ pub struct Typst {
     book: LazyHash<FontBook>,
     fonts: Vec<FontSlot>,
     files: HashMap<String, Vec<u8>>,
+    packages: PackageStorage,
 }
 
 impl Typst {
@@ -100,6 +105,14 @@ impl Typst {
             book: LazyHash::new(loader.book),
             fonts: loader.fonts,
             files: HashMap::new(),
+            packages: PackageStorage::new(
+                None,
+                None,
+                Downloader::new(format!(
+                    "showbits-thermal-printer/{}",
+                    env!("CARGO_PKG_VERSION")
+                )),
+            ),
         }
     }
 
@@ -163,6 +176,19 @@ impl Typst {
 
         Ok(bytes)
     }
+
+    fn get_package_file_bytes(
+        &self,
+        spec: &PackageSpec,
+        vpath: &'static VirtualPath,
+    ) -> FileResult<Vec<u8>> {
+        let dir = self.packages.prepare_package(spec, &mut ProgressSink)?;
+        let path = vpath.resolve(&dir).ok_or(FileError::AccessDenied)?;
+        if path.is_dir() {
+            Err(FileError::IsDirectory)?;
+        }
+        fs::read(&path).map_err(|it| FileError::from_io(it, &path))
+    }
 }
 
 impl Default for Typst {
@@ -192,13 +218,13 @@ impl World for Typst {
         // TODO Remove debug logging
         println!("Accessing source {id:?}");
 
-        // TODO Do we need to handle packages ourselves?
-        if id.package().is_some() {
-            Err(FileError::AccessDenied)?
-        }
+        let bytes = if let Some(spec) = id.package() {
+            self.get_package_file_bytes(spec, id.vpath())?
+        } else {
+            let path = id.vpath().as_rooted_path();
+            self.get_file_bytes(path)?.to_vec()
+        };
 
-        let path = id.vpath().as_rooted_path();
-        let bytes = self.get_file_bytes(path)?.to_vec();
         let text = String::from_utf8(bytes).map_err(|_| FileError::InvalidUtf8)?;
         Ok(Source::new(id, text))
     }
@@ -207,13 +233,13 @@ impl World for Typst {
         // TODO Remove debug logging
         println!("Accessing file {id:?}");
 
-        // TODO Do we need to handle packages ourselves?
-        if id.package().is_some() {
-            Err(FileError::AccessDenied)?
-        }
+        let bytes = if let Some(spec) = id.package() {
+            self.get_package_file_bytes(spec, id.vpath())?
+        } else {
+            let path = id.vpath().as_rooted_path();
+            self.get_file_bytes(path)?.to_vec()
+        };
 
-        let path = id.vpath().as_rooted_path();
-        let bytes = self.get_file_bytes(path)?.to_vec();
         Ok(Bytes::new(bytes))
     }
 
