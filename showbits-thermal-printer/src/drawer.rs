@@ -1,7 +1,6 @@
 mod backlog;
 mod chat_message;
 mod new_typst;
-mod tictactoe;
 
 use showbits_common::widgets::{FontStuff, HasFontStuff};
 use tokio::sync::mpsc;
@@ -10,10 +9,7 @@ use crate::persistent_printer::PersistentPrinter;
 
 pub use self::{
     backlog::BacklogDrawing, chat_message::ChatMessageDrawing, new_typst::NewTypstDrawing,
-    tictactoe::TicTacToeDrawing,
 };
-
-pub const FEED: f32 = 96.0;
 
 #[derive(Default)]
 pub struct Context {

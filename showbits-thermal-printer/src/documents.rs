@@ -5,6 +5,7 @@ pub mod cells;
 pub mod egg;
 pub mod image;
 pub mod text;
+pub mod tictactoe;
 
 fn typst_with_lib() -> Typst {
     Typst::new()

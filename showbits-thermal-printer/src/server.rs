@@ -12,7 +12,7 @@ use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
     documents,
-    drawer::{ChatMessageDrawing, Command, TicTacToeDrawing},
+    drawer::{ChatMessageDrawing, Command},
 };
 
 use self::r#static::get_static_file;
@@ -42,7 +42,10 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
             "/text",
             post(documents::text::post).fallback(get_static_file),
         )
-        .route("/tictactoe", post(post_tictactoe))
+        .route(
+            "/tictactoe",
+            post(documents::tictactoe::post).fallback(get_static_file),
+        )
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });
@@ -68,10 +71,4 @@ async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageF
             content: request.0.content,
         }))
         .await;
-}
-
-// /tictactoe
-
-async fn post_tictactoe(server: State<Server>) {
-    let _ = server.tx.send(Command::draw(TicTacToeDrawing)).await;
 }
