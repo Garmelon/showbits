@@ -4,9 +4,7 @@ pub mod statuscode;
 
 use axum::{
     Form, Router,
-    extract::{DefaultBodyLimit, Multipart, State},
-    http::StatusCode,
-    response::{IntoResponse, Redirect, Response},
+    extract::{DefaultBodyLimit, State},
     routing::{get, post},
 };
 use serde::Deserialize;
@@ -14,10 +12,10 @@ use tokio::{net::TcpListener, sync::mpsc};
 
 use crate::{
     documents,
-    drawer::{ChatMessageDrawing, Command, PhotoDrawing, TicTacToeDrawing},
+    drawer::{ChatMessageDrawing, Command, TicTacToeDrawing},
 };
 
-use self::{r#static::get_static_file, statuscode::status_code};
+use self::r#static::get_static_file;
 
 #[derive(Clone)]
 pub struct Server {
@@ -40,7 +38,6 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
             "/image",
             post(documents::image::post).fallback(get_static_file),
         )
-        .route("/photo", post(post_photo).fallback(get_static_file))
         .route(
             "/text",
             post(documents::text::post).fallback(get_static_file),
@@ -71,41 +68,6 @@ async fn post_chat_message(server: State<Server>, request: Form<PostChatMessageF
             content: request.0.content,
         }))
         .await;
-}
-
-// /photo
-
-async fn post_photo(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
-    let mut image = None;
-    let mut title = None;
-
-    while let Some(field) = multipart.next_field().await? {
-        match field.name() {
-            Some("image") => {
-                let data = field.bytes().await?;
-                let decoded = image::load_from_memory(&data)?.into_rgba8();
-                image = Some(decoded);
-            }
-            Some("title") => {
-                title = Some(field.text().await?);
-            }
-            _ => {}
-        }
-    }
-
-    let Some(image) = image else {
-        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
-    };
-
-    let Some(title) = title else {
-        return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
-    };
-
-    let _ = server
-        .tx
-        .send(Command::draw(PhotoDrawing { image, title }))
-        .await;
-    Ok(Redirect::to("photo").into_response())
 }
 
 // /tictactoe

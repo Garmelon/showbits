@@ -3,17 +3,25 @@
 
 #let data = json("data.json")
 
-#let dithered = lib.dither(
+#show: it => if data.seamless {
+  set page(margin: 0pt)
+  it
+} else { it }
+
+#if data.title != none {
+  align(center, text(size: 32pt, data.title))
+}
+
+#lib.dither(
   read("image.png", encoding: none),
   bright: data.bright,
   algorithm: data.algo,
 )
 
-#if data.seamless {
-  set page(margin: 0pt)
-  dithered
-  if data.feed { lib.feed }
-} else {
-  dithered
-  if data.feed { lib.feed }
+#if data.caption != none {
+  align(center, text(size: 32pt, data.caption))
+}
+
+#if data.feed {
+  lib.feed
 }

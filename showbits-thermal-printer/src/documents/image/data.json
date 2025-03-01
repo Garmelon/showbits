@@ -1,4 +1,6 @@
 {
+  "title": "Moon",
+  "caption": "(on the moon)",
   "algo": "stucki",
   "bright": false,
   "seamless": false,

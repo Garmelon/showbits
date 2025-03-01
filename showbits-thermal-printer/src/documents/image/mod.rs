@@ -16,6 +16,8 @@ use crate::{
 
 #[derive(Serialize)]
 struct Data {
+    title: Option<String>,
+    caption: Option<String>,
     algo: String,
     bright: bool,
     seamless: bool,
@@ -25,6 +27,8 @@ struct Data {
 pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
     let mut data = Data {
+        title: None,
+        caption: None,
         algo: "stucki".to_string(),
         bright: true,
         seamless: false,
@@ -37,6 +41,12 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
                 let data = field.bytes().await?;
                 let decoded = image::load_from_memory(&data)?.into_rgba8();
                 image = Some(decoded);
+            }
+            Some("title") => {
+                data.title = Some(field.text().await?);
+            }
+            Some("caption") => {
+                data.caption = Some(field.text().await?);
             }
             Some("algo") => {
                 data.algo = field.text().await?;

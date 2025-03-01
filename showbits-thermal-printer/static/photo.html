@@ -137,9 +137,9 @@
         canvas.toBlob((blob) => {
           const form = new FormData();
           form.append("image", blob);
-          form.append("title", new Date().toLocaleString());
+          form.append("caption", new Date().toLocaleString());
 
-          fetch("photo", { method: "POST", body: form }).catch((error) => {
+          fetch("image", { method: "POST", body: form }).catch((error) => {
             console.error("Error uploading image:", error);
           });
         });
