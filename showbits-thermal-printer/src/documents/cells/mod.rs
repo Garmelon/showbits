@@ -86,12 +86,12 @@ fn is_interesting(image: &RgbaImage) -> bool {
     true
 }
 
-fn generate_interesting_image(rows: u32, cols: u32) -> RgbaImage {
+fn generate_interesting_image(rows: u32, cols: u32) -> (u8, RgbaImage) {
     loop {
         let rule = rand::random();
         let image = generate_image(rows, cols, rule);
         if is_interesting(&image) {
-            break image;
+            break (rule, image);
         }
         println!("Uninteresting automaton, generating a new one");
     }
@@ -99,11 +99,13 @@ fn generate_interesting_image(rows: u32, cols: u32) -> RgbaImage {
 
 #[derive(Serialize)]
 struct Data {
+    rule: Option<u8>,
     feed: bool,
 }
 
 #[derive(Deserialize)]
 pub struct FormData {
+    pub show_rule: Option<bool>,
     pub rule: Option<u8>,
     pub rows: Option<u32>,
     pub scale: Option<u32>,
@@ -111,16 +113,13 @@ pub struct FormData {
 }
 
 pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow::Result<()> {
-    let data = Data {
-        feed: form.feed.unwrap_or(true),
-    };
-
+    let show_rule = form.show_rule.unwrap_or(true);
     let scale = form.scale.unwrap_or(4).clamp(1, 16);
     let rows = form.rows.unwrap_or(128 * 4 / scale).clamp(1, 1024 / scale);
     let cols = Printer::WIDTH / scale;
 
-    let image = match form.rule {
-        Some(rule) => generate_image(rows, cols, rule),
+    let (rule, image) = match form.rule {
+        Some(rule) => (rule, generate_image(rows, cols, rule)),
         None => generate_interesting_image(rows, cols),
     };
 
@@ -130,6 +129,11 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         image.height() * scale,
         imageops::Nearest,
     );
+
+    let data = Data {
+        rule: Some(rule).filter(|_| show_rule),
+        feed: form.feed.unwrap_or(true),
+    };
 
     let mut bytes: Vec<u8> = Vec::new();
     image
