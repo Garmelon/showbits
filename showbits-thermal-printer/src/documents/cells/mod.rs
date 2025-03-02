@@ -1,4 +1,4 @@
-use std::io::Cursor;
+use std::{collections::VecDeque, io::Cursor};
 
 use anyhow::Context;
 use axum::{Form, extract::State};
@@ -43,6 +43,60 @@ fn apply_rule(rule: u8, neighbors: [bool; 3]) -> bool {
     rule & (1 << index) != 0
 }
 
+fn generate_image(rows: u32, cols: u32, rule: u8) -> RgbaImage {
+    let mut image: image::ImageBuffer<Rgba<u8>, Vec<u8>> = RgbaImage::new(cols, rows);
+
+    // Initialize first line randomly
+    for x in 0..image.width() {
+        image.put_pixel(x, 0, b2c(rand::random()));
+    }
+
+    // Calculate next rows
+    for y in 1..image.height() {
+        for x in 0..image.width() {
+            let neighbors = neighbors_at(&image, x, y - 1);
+            let state = apply_rule(rule, neighbors);
+            image.put_pixel(x, y, b2c(state));
+        }
+    }
+
+    image
+}
+
+fn read_row(image: &RgbaImage, y: u32) -> Vec<bool> {
+    let mut result = Vec::with_capacity(image.width() as usize);
+    for x in 0..image.width() {
+        result.push(c2b(*image.get_pixel(x, y)));
+    }
+    result
+}
+
+fn is_interesting(image: &RgbaImage) -> bool {
+    let mut last_rows = VecDeque::new();
+    for y in 0..image.height() {
+        let row = read_row(image, y);
+        if last_rows.contains(&row) {
+            return false;
+        }
+        last_rows.push_back(row);
+        while last_rows.len() > 5 {
+            last_rows.pop_front();
+        }
+    }
+    true
+}
+
+fn generate_interesting_image(rows: u32, cols: u32) -> RgbaImage {
+    loop {
+        let rule = rand::random();
+        let image = generate_image(rows, cols, rule);
+        if is_interesting(&image) {
+            break image;
+        }
+        println!("Uninteresting automaton, generating a new one");
+    }
+}
+
 #[derive(Serialize)]
 struct Data {
     feed: bool,
@@ -61,26 +115,14 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         feed: form.feed.unwrap_or(true),
     };
 
-    let rule = form.rule.unwrap_or_else(rand::random);
     let scale = form.scale.unwrap_or(4).clamp(1, 16);
     let rows = form.rows.unwrap_or(128 * 4 / scale).clamp(1, 1024 / scale);
     let cols = Printer::WIDTH / scale;
 
-    let mut image: image::ImageBuffer<Rgba<u8>, Vec<u8>> = RgbaImage::new(cols, rows);
-
-    // Initialize first line randomly
-    for x in 0..image.width() {
-        image.put_pixel(x, 0, b2c(rand::random()));
-    }
-
-    // Calculate next rows
-    for y in 1..image.height() {
-        for x in 0..image.width() {
-            let neighbors = neighbors_at(&image, x, y - 1);
-            let state = apply_rule(rule, neighbors);
-            image.put_pixel(x, y, b2c(state));
-        }
-    }
+    let image = match form.rule {
+        Some(rule) => generate_image(rows, cols, rule),
+        None => generate_interesting_image(rows, cols),
+    };
 
     let image = imageops::resize(
         &image,
