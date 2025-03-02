@@ -10,9 +10,19 @@ export default tseslint.config(
 
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
 
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+        extraFileExtensions: ["vue"],
+      },
+    },
+  },
+
   eslint.configs.recommended,
-  ...tseslint.configs.strict,
-  ...tseslint.configs.stylistic,
+  ...tseslint.configs.strictTypeChecked,
+  ...tseslint.configs.stylisticTypeChecked,
   ...vue.configs["flat/recommended"],
   prettier,
 
