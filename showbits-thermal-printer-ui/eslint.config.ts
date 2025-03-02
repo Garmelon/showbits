@@ -37,7 +37,37 @@ export default tseslint.config(
       eqeqeq: "error",
 
       // https://typescript-eslint.io/rules/
-      "@typescript-eslint/explicit-function-return-type": "error",
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/naming-convention": [
+        "warn",
+        // Default settings
+        // https://typescript-eslint.io/rules/naming-convention/#options
+        {
+          selector: "default",
+          format: ["camelCase"],
+          leadingUnderscore: "allow",
+          trailingUnderscore: "allow",
+        },
+        {
+          selector: "import",
+          format: ["camelCase", "PascalCase"],
+        },
+        {
+          selector: "variable",
+          format: ["camelCase", "UPPER_CASE"],
+          leadingUnderscore: "allow",
+          trailingUnderscore: "allow",
+        },
+        {
+          selector: "typeLike",
+          format: ["PascalCase"],
+        },
+        // Prevent warnings in some specific cases
+        {
+          selector: "objectLiteralProperty",
+          format: null,
+        },
+      ],
 
       // https://eslint.vuejs.org/rules/
       "vue/block-lang": ["error", { script: { lang: "ts" } }],
