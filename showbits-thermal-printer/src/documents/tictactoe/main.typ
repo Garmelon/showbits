@@ -4,6 +4,9 @@
 
 #let data = json("data.json")
 
+#align(center)[= Tic Tac Toe]
+#v(16pt)
+
 #cetz.canvas(
   length: lib.width,
   {
