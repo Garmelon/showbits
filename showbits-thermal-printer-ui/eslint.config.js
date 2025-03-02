@@ -20,4 +20,21 @@ export default tseslint.config(
     files: ["**/*.vue"],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
   },
+
+  {
+    rules: {
+      // https://eslint.org/docs/latest/rules/
+      eqeqeq: "error",
+
+      // https://typescript-eslint.io/rules/
+      "@typescript-eslint/explicit-function-return-type": "error",
+
+      // https://eslint.vuejs.org/rules/
+      "vue/block-lang": ["error", { script: { lang: "ts" } }],
+      "vue/block-order": ["error", { order: ["script", "template", "style"] }],
+      "vue/component-api-style": ["error", ["script-setup"]],
+      "vue/eqeqeq": "error",
+      "vue/v-for-delimiter-style": ["error", "of"],
+    },
+  },
 );
