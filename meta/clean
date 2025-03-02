@@ -1,5 +1,10 @@
 #!/usr/bin/env fish
 
 cargo clean
+
 pushd showbits-typst-plugin
 cargo clean
+popd
+
+rm -rf node_modules
+rm -rf showbits-thermal-printer-ui/node_modules

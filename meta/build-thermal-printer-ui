@@ -1,0 +1,11 @@
+#!/usr/bin/env fish
+
+pnpm install --recursive
+or return 1
+
+pushd showbits-thermal-printer-ui
+
+pnpm build
+or return 1
+
+popd

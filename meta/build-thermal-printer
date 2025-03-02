@@ -1,0 +1,8 @@
+#!/usr/bin/env fish
+
+pushd showbits-thermal-printer
+
+cargo build --release
+or return 1
+
+popd

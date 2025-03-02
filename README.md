@@ -2,6 +2,13 @@
 
 Displaying pixel-perfect images on esoteric devices.
 
+## Developing
+
+After cloning the repo, run `meta/build-all` once. Some parts of the project use
+files from other parts of the project (e.g. the thermal printer includes the
+typst plugin wasm file in its binary). The build script produces these
+intermediate artifacts.
+
 ## Thermal printer ideas
 
 - Appointments, tasks for the day

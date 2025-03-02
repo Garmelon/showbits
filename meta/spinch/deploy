@@ -6,7 +6,13 @@ set_color --bold yellow
 echo "###########"
 echo "## Build ##"
 echo "###########"
-set_color
+set_color normal
+
+./meta/build-typst-plugin
+or return 1
+
+./meta/build-thermal-printer-ui
+or return 1
 
 cross build --release \
     --package showbits-thermal-printer \
@@ -19,7 +25,7 @@ set_color --bold yellow
 echo "############"
 echo "## Upload ##"
 echo "############"
-set_color
+set_color normal
 
 rsync -vP \
     meta/spinch/showbits-thermal-printer.service \
@@ -34,7 +40,7 @@ set_color --bold yellow
 echo "#############"
 echo "## Restart ##"
 echo "#############"
-set_color
+set_color normal
 
 ssh root@spinch "\
 systemctl daemon-reload \
