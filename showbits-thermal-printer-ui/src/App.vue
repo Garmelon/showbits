@@ -1,18 +1,10 @@
+<script setup lang="ts">
+import CSegment from "./components/CSegment.vue";
+</script>
+
 <template>
-  <div class="glow">
-    <div class="strip">
-      <h2>Thing</h2>
-      Hello World
-      <br />
-      World Hello
-      <br />
-      <input type="file" />
-      <input />
-      <br />
-      <button>Foo</button>
-      <button>Foo</button>
-      <button>Foo</button>
-    </div>
+  <div class="strip">
+    <CSegment />
   </div>
 </template>
 
@@ -23,12 +15,6 @@
   padding: 32px;
 
   background-color: white;
-  mask: conic-gradient(from 100deg at top, #000 160deg, #0000 160deg)
-    center/64px;
-}
-
-.glow {
-  filter: drop-shadow(0 0 50px rgb(255, 238, 214));
 }
 </style>
 
@@ -53,6 +39,7 @@
   padding: 0;
 }
 
+h1,
 h2 {
   font-size: 32px;
 }
