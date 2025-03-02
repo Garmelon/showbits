@@ -1,5 +1,9 @@
 #!/usr/bin/env fish
 
 cargo fmt
+
 pushd showbits-typst-plugin
 cargo fmt
+popd
+
+pnpm fmt
