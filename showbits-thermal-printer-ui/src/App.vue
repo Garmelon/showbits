@@ -1,30 +1,70 @@
-<script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
-</script>
-
 <template>
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="glow">
+    <div class="strip">
+      <h2>Thing</h2>
+      Hello World
+      <br />
+      World Hello
+      <br />
+      <input type="file" />
+      <input />
+      <br />
+      <button>Foo</button>
+      <button>Foo</button>
+      <button>Foo</button>
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.strip {
+  box-sizing: content-box;
+  width: 384px;
+  padding: 32px;
+
+  background-color: white;
+  mask: conic-gradient(from 100deg at top, #000 160deg, #0000 160deg)
+    center/64px;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.glow {
+  filter: drop-shadow(0 0 50px rgb(255, 238, 214));
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+</style>
+
+<style>
+@font-face {
+  font-family: "Unifont";
+  src: url("/fonts/unifont-15.1.05.otf") format("opentype");
+}
+@font-face {
+  font-family: "Unifont-JP";
+  src: url("/fonts/unifont_jp-15.1.05.otf") format("opentype");
+}
+@font-face {
+  font-family: "Unifont Upper";
+  src: url("/fonts/unifont_upper-15.1.05.otf") format("opentype");
+}
+
+* {
+  font-family: "Unifont", "Unifont-JP", "Unifont Upper", monospace;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-size: 32px;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+
+  background-color: black;
 }
 </style>

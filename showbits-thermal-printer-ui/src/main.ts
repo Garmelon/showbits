@@ -1,5 +1,4 @@
 import { createApp } from "vue";
-import "./style.css";
 import App from "./App.vue";
 
 // The type of App contains any in its type parameters, according to vscode.
