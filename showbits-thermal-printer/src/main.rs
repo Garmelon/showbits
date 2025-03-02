@@ -15,11 +15,12 @@ use self::{drawer::Drawer, persistent_printer::PersistentPrinter};
 
 #[derive(Parser)]
 struct Args {
-    /// Address the web server will listen at.
-    addr: String,
-
     /// Path to the queue directory.
     queue: PathBuf,
+
+    /// Address the web server will listen at.
+    #[arg(long, short, default_value = "localhost:8080")]
+    address: String,
 
     /// Path to the printer's USB device file.
     ///
@@ -41,7 +42,7 @@ fn main() -> anyhow::Result<()> {
     let mut drawer = Drawer::new(rx, printer);
 
     let runtime = Runtime::new()?;
-    runtime.spawn(server::run(tx.clone(), args.addr));
+    runtime.spawn(server::run(tx.clone(), args.address));
     runtime.spawn(async move {
         loop {
             let _ = tx.send(Command::Backlog).await;

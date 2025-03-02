@@ -1,0 +1,27 @@
+#!/usr/bin/env fish
+
+argparse h/help p/print r/release -- $argv
+and not set -ql _flag_help
+or begin
+    echo "Usage:" (status filename) "[OPTIONS]"
+    echo
+    echo "Options:"
+    echo "  -h, --help      Show this help"
+    echo "  -p, --print     Attach to printer at /dev/usb/lp0"
+    echo "  -r, --release   Use 'cargo run --release'"
+    return
+end
+
+set -l arg_release
+if set -ql _flag_release
+    set arg_release --release
+end
+
+set -l arg_print
+if set -ql _flag_print
+    set arg_print -p /dev/usb/lp0
+end
+
+cargo run $arg_release \
+    --package showbits-thermal-printer \
+    -- target/queue -e target/image.png $arg_print

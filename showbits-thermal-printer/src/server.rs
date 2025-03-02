@@ -27,31 +27,13 @@ impl Server {
 
 pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
     let app = Router::new()
-        .route(
-            "/calendar",
-            post(documents::calendar::post).fallback(get_static_file),
-        )
-        .route(
-            "/cells",
-            post(documents::cells::post).fallback(get_static_file),
-        )
-        .route(
-            "/chat",
-            post(documents::chat::post).fallback(get_static_file),
-        )
-        .route("/egg", post(documents::egg::post).fallback(get_static_file))
-        .route(
-            "/image",
-            post(documents::image::post).fallback(get_static_file),
-        )
-        .route(
-            "/text",
-            post(documents::text::post).fallback(get_static_file),
-        )
-        .route(
-            "/tictactoe",
-            post(documents::tictactoe::post).fallback(get_static_file),
-        )
+        .route("/api/calendar", post(documents::calendar::post))
+        .route("/api/cells", post(documents::cells::post))
+        .route("/api/chat", post(documents::chat::post))
+        .route("/api/egg", post(documents::egg::post))
+        .route("/api/image", post(documents::image::post))
+        .route("/api/text", post(documents::text::post))
+        .route("/api/tictactoe", post(documents::tictactoe::post))
         .fallback(get(get_static_file))
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });

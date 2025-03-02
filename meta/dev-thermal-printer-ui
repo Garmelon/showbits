@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+
+pushd showbits-thermal-printer-ui
+pnpm dev
