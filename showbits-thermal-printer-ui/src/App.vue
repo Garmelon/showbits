@@ -3,12 +3,23 @@ import CSegment from "./components/CSegment.vue";
 </script>
 
 <template>
-  <div class="strip">
-    <CSegment />
+  <div class="scroll">
+    <div class="strip">
+      <CSegment />
+    </div>
   </div>
 </template>
 
 <style scoped>
+.scroll {
+  height: 100dvh;
+  overflow: auto;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+}
+
 .strip {
   box-sizing: content-box;
   width: 384px;
@@ -45,13 +56,6 @@ h2 {
 }
 
 body {
-  margin: 0;
-  min-height: 100dvh;
-
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: center;
-
   background-color: black;
 }
 </style>
