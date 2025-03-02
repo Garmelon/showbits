@@ -4,5 +4,6 @@
   "[toml]": { "editor.defaultFormatter": "tamasfe.even-better-toml" },
   "[typst]": { "editor.defaultFormatter": "myriad-dreamin.tinymist" },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.workingDirectories": ["showbits-thermal-printer-ui"],
   "tinymist.fontPaths": ["showbits-assets/data"]
 }
