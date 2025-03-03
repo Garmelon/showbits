@@ -5,14 +5,18 @@ import CSegmentEgg from "./CSegmentEgg.vue";
 import CSegmentText from "./CSegmentText.vue";
 import CSegmentTictactoe from "./CSegmentTictactoe.vue";
 import CSegmentCells from "./CSegmentCells.vue";
+import CSegmentChat from "./CSegmentChat.vue";
 
-const mode = ref<"calendar" | "cells" | "egg" | "text" | "tictactoe">();
+const mode = ref<
+  "calendar" | "chat" | "cells" | "egg" | "text" | "tictactoe"
+>();
 </script>
 
 <template>
   <div class="outer">
     <button v-if="mode" class="close" @click="mode = undefined">X</button>
     <CSegmentCalendar v-if="mode === 'calendar'" />
+    <CSegmentChat v-if="mode === 'chat'" />
     <CSegmentCells v-if="mode === 'cells'" />
     <CSegmentEgg v-if="mode === 'egg'" />
     <CSegmentText v-if="mode === 'text'" />
@@ -23,7 +27,7 @@ const mode = ref<"calendar" | "cells" | "egg" | "text" | "tictactoe">();
       <div class="list">
         <button @click="mode = 'calendar'">Calendar</button>
         <button @click="mode = 'cells'">Cellular Automaton</button>
-        <button @click="mode = 'text'">Chat Message</button>
+        <button @click="mode = 'chat'">Chat Message</button>
         <button @click="mode = 'egg'">Easter Egg</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
