@@ -39,19 +39,19 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         .with_main_file(include_str!("main.typ"));
 
     for (i, cover) in showbits_assets::EGG_COVERS.iter().enumerate() {
-        typst.add_file(format!("/egg/cover_{i:02}.png"), *cover);
+        typst.add_file(format!("/eggs/good/cover_{i:02}.png"), *cover);
     }
 
     for (i, pattern) in showbits_assets::EGG_PATTERNS.iter().enumerate() {
-        typst.add_file(format!("/egg/pattern_{i:02}.png"), *pattern);
+        typst.add_file(format!("/eggs/good/pattern_{i:02}.png"), *pattern);
     }
 
     for (i, cover) in showbits_assets::EGG_BAD_COVERS.iter().enumerate() {
-        typst.add_file(format!("/egg_bad/cover_{i:02}.png"), *cover);
+        typst.add_file(format!("/eggs/bad/cover_{i:02}.png"), *cover);
     }
 
     for (i, pattern) in showbits_assets::EGG_BAD_PATTERNS.iter().enumerate() {
-        typst.add_file(format!("/egg_bad/pattern_{i:02}.png"), *pattern);
+        typst.add_file(format!("/eggs/bad/pattern_{i:02}.png"), *pattern);
     }
 
     server.print_typst(typst).await

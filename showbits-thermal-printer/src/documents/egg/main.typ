@@ -8,10 +8,10 @@
 
 #let file_series(n, fmt) = array.range(n).map(n => strfmt(fmt, n))
 
-#let good_covers = file_series(data.covers, "egg/cover_{:02}.png")
-#let good_patterns = file_series(data.patterns, "egg/pattern_{:02}.png")
-#let bad_covers = file_series(data.bad_covers, "egg_bad/cover_{:02}.png")
-#let bad_patterns = file_series(data.bad_patterns, "egg_bad/pattern_{:02}.png")
+#let good_covers = file_series(data.covers, "eggs/good/cover_{:02}.png")
+#let good_patterns = file_series(data.patterns, "eggs/good/pattern_{:02}.png")
+#let bad_covers = file_series(data.bad_covers, "eggs/bad/cover_{:02}.png")
+#let bad_patterns = file_series(data.bad_patterns, "eggs/bad/pattern_{:02}.png")
 
 // Always generate random value to so that egg looks the same whether we chose
 // the mode directly or randomly.
