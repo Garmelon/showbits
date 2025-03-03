@@ -35,11 +35,9 @@ function submit() {
   <form ref="form" @submit.prevent="submit">
     <h2>Text</h2>
 
-    <!-- For some reason one col = 2 characters. -->
     <textarea
       v-model="text"
       rows="10"
-      cols="24"
       :style="textareaStyle"
       :disabled
       @keypress="textareaKeypress"
@@ -67,11 +65,11 @@ form {
 
 textarea {
   align-self: center;
-  width: fit-content;
+  width: 384px;
 
   /* Prevent manual resizing from changing the width. */
-  min-width: fit-content;
-  max-width: fit-content;
+  min-width: 384px;
+  max-width: 384px;
 }
 
 .wide {

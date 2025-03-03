@@ -43,12 +43,10 @@ function submit() {
     </label>
 
     <label for="content">Content:</label>
-    <!-- For some reason one col = 2 characters. -->
     <textarea
       id="content"
       v-model="content"
       rows="10"
-      cols="24"
       :disabled
       @keypress="textareaKeypress"
     ></textarea>
@@ -71,11 +69,11 @@ textarea {
   margin-top: -16px;
 
   align-self: center;
-  width: fit-content;
+  width: 384px;
 
   /* Prevent manual resizing from changing the width. */
-  min-width: fit-content;
-  max-width: fit-content;
+  min-width: 384px;
+  max-width: 384px;
 
   /* Emulate how typst wraps text. */
   overflow-wrap: normal;
