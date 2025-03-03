@@ -1,33 +1,96 @@
 use std::io::Cursor;
 
-use anyhow::Context;
+use anyhow::{Context, anyhow, bail};
 use axum::{
     extract::{Multipart, State},
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use image::ImageFormat;
+use image::{ImageFormat, Luma, Pixel, RgbaImage, imageops};
+use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
+use palette::LinSrgb;
 use serde::Serialize;
 
 use crate::server::{Server, somehow, statuscode::status_code};
+
+pub fn dither(
+    mut image: RgbaImage,
+    max_width: Option<u32>,
+    max_height: Option<u32>,
+    bright: bool,
+    algorithm: &str,
+) -> anyhow::Result<RgbaImage> {
+    let image_width = image.width();
+    let image_height = image.height();
+
+    let scale_factor = match (max_width, max_height) {
+        (None, None) => 1.0,
+        (None, Some(height)) => height as f32 / image_height as f32,
+        (Some(width), None) => width as f32 / image_width as f32,
+        (Some(width), Some(height)) => {
+            (width as f32 / image_width as f32).min(height as f32 / image_height as f32)
+        }
+    };
+
+    let target_width = (image_width as f32 * scale_factor) as u32;
+    let target_height = (image_height as f32 * scale_factor) as u32;
+
+    if image_width != target_width || image_height != target_height {
+        image = imageops::resize(&image, target_width, target_height, imageops::CatmullRom);
+    }
+
+    if bright {
+        for pixel in image.pixels_mut() {
+            let [l] = pixel.to_luma().0;
+            let l = l as f32 / 255.0; // Convert to [0, 1]
+            let l = 1.0 - (0.4 * (1.0 - l)); // Lerp to [0.6, 1]
+            let l = (l.clamp(0.0, 1.0) * 255.0) as u8; // Convert back to [0, 255]
+            *pixel = Luma([l]).to_rgba();
+        }
+    }
+
+    let palette = Palette::new(vec![
+        LinSrgb::new(0.0, 0.0, 0.0),
+        LinSrgb::new(1.0, 1.0, 1.0),
+    ]);
+
+    let dithered = match algorithm {
+        "floyd-steinberg" => {
+            <AlgoFloydSteinberg as Algorithm<LinSrgb, DiffEuclid>>::run(image, &palette)
+        }
+        "stucki" => <AlgoStucki as Algorithm<LinSrgb, DiffEuclid>>::run(image, &palette),
+        it => bail!("Unknown dithering algorithm: {it}"),
+    };
+
+    Ok(dithered)
+}
+
+fn bool_from_str(s: &str) -> somehow::Result<bool> {
+    match s {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        _ => Err(somehow::Error(anyhow!(
+            "invalid boolean value {s:?}, must be true or false"
+        ))),
+    }
+}
 
 #[derive(Serialize)]
 struct Data {
     title: Option<String>,
     caption: Option<String>,
-    algo: String,
-    bright: bool,
     seamless: bool,
     feed: bool,
 }
 
 pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
+    let mut algo = "stucki".to_string();
+    let mut bright = true;
+
     let mut data = Data {
         title: None,
         caption: None,
-        algo: "stucki".to_string(),
-        bright: true,
         seamless: false,
         feed: true,
     };
@@ -40,22 +103,22 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
                 image = Some(decoded);
             }
             Some("title") => {
-                data.title = Some(field.text().await?);
+                data.title = Some(field.text().await?).filter(|it| !it.is_empty());
             }
             Some("caption") => {
-                data.caption = Some(field.text().await?);
+                data.caption = Some(field.text().await?).filter(|it| !it.is_empty());
             }
             Some("algo") => {
-                data.algo = field.text().await?;
+                algo = field.text().await?;
             }
             Some("bright") => {
-                data.bright = !field.text().await?.is_empty();
+                bright = !field.text().await?.is_empty();
             }
             Some("seamless") => {
                 data.seamless = !field.text().await?.is_empty();
             }
             Some("feed") => {
-                data.feed = !field.text().await?.is_empty();
+                data.feed = bool_from_str(&field.text().await?)?;
             }
             _ => {}
         }
@@ -64,6 +127,10 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
     let Some(image) = image else {
         return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
     };
+
+    let max_width = Some(384);
+    let max_height = Some(1024);
+    let image = dither(image, max_width, max_height, bright, &algo).map_err(somehow::Error)?;
 
     let mut bytes: Vec<u8> = Vec::new();
     image

@@ -26,6 +26,10 @@ typst-assets = { version = "0.13.0", features = ["fonts"] }
 typst-kit = "0.13.0"
 typst-render = "0.13.0"
 
+[workspace.dependencies.mark]
+git = "https://github.com/Garmelon/mark.git"
+rev = "2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4"
+
 [workspace.lints]
 rust.unsafe_code = { level = "forbid", priority = 1 }
 # Lint groups

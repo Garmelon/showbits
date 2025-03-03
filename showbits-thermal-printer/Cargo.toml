@@ -10,6 +10,7 @@ clap = { workspace = true }
 escpos = { workspace = true }
 image = { workspace = true }
 jiff = { workspace = true }
+mark = { workspace = true }
 mime_guess = { workspace = true }
 palette = { workspace = true }
 rand = { workspace = true }

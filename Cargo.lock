@@ -1585,6 +1585,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "mark"
+version = "0.0.0"
+source = "git+https://github.com/Garmelon/mark.git?rev=2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4#2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4"
+dependencies = [
+ "image",
+ "palette",
+ "rand 0.9.0",
+]
+
+[[package]]
 name = "matchit"
 version = "0.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2601,6 +2611,7 @@ dependencies = [
  "escpos",
  "image",
  "jiff",
+ "mark",
  "mime_guess",
  "palette",
  "rand 0.9.0",
