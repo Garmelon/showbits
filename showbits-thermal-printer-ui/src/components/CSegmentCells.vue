@@ -40,17 +40,32 @@ function submit() {
 
     <label class="wide">
       Rows:
-      <input v-model="rows" type="number" min="1" max="1024" :disabled />
+      <input
+        v-model="rows"
+        type="number"
+        min="1"
+        max="1024"
+        required
+        :disabled
+      />
     </label>
 
     <label class="wide">
       Scale:
-      <input v-model="scale" type="number" min="1" max="16" :disabled />
+      <input
+        v-model="scale"
+        type="number"
+        min="1"
+        max="16"
+        required
+        :disabled
+      />
     </label>
 
     <div class="wide">
       <label>
-        <input v-model="showRule" type="checkbox" :disabled /> Show rule
+        <input v-model="showRule" type="checkbox" :disabled />
+        Show rule
       </label>
       <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
     </div>

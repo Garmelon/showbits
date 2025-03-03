@@ -25,12 +25,26 @@ function submit() {
 
     <label class="wide">
       Year:
-      <input v-model="year" type="number" :disabled />
+      <input
+        v-model="year"
+        type="number"
+        min="-9999"
+        max="9999"
+        required
+        :disabled
+      />
     </label>
 
     <label class="wide">
       Month:
-      <input v-model="month" type="number" min="1" max="12" :disabled />
+      <input
+        v-model="month"
+        type="number"
+        min="1"
+        max="12"
+        required
+        :disabled
+      />
     </label>
 
     <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>

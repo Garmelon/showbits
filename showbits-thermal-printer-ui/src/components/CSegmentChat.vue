@@ -35,9 +35,10 @@ function submit() {
       <input
         v-model="username"
         type="text"
-        required
         minlength="1"
         maxlength="32"
+        required
+        :disabled
       />
     </label>
 
