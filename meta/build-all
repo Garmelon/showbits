@@ -1,17 +1,6 @@
 #!/usr/bin/env fish
 
 set_color --bold yellow
-echo "##################"
-echo "## typst plugin ##"
-echo "##################"
-set_color normal
-
-./meta/build-typst-plugin
-or return 1
-
-echo
-
-set_color --bold yellow
 echo "########################"
 echo "## thermal printer ui ##"
 echo "########################"

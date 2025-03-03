@@ -2,10 +2,6 @@
 
 cargo clippy
 
-pushd showbits-typst-plugin
-cargo clippy
-popd
-
 pushd showbits-thermal-printer-ui
 pnpm check
 popd
