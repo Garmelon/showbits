@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { useApiRequest } from "@/apiRequest";
 import { computed, ref, type StyleValue, useTemplateRef } from "vue";
 import CSegmentError from "./CSegmentError.vue";
 
+const { disabled, error, makeRequest } = useApiRequest();
 const form = useTemplateRef<HTMLFormElement>("form");
-const disabled = ref(false);
-const error = ref<string>();
 
 const text = ref("");
 const forceWrap = ref(false);
@@ -22,35 +22,12 @@ function textareaKeypress(ev: KeyboardEvent): void {
   }
 }
 
-async function waitAtLeast(duration: number, since: number): Promise<void> {
-  const now = Date.now();
-  const wait = duration - (now - since);
-  if (wait > 0) {
-    await new Promise((resolve) => setTimeout(resolve, wait));
-  }
-}
-
-async function submit(): Promise<void> {
-  const start = Date.now();
-  disabled.value = true;
-
-  try {
-    const data = new URLSearchParams();
-    data.append("text", text.value);
-    data.append("force_wrap", String(forceWrap.value));
-    data.append("feed", String(feed.value));
-    const response = await fetch("/api/text", { method: "POST", body: data });
-    if (!response.ok) {
-      const status = `${response.status.toFixed()} ${response.statusText}`;
-      const text = await response.text();
-      error.value = text.length > 0 ? `${status}: ${text}` : status;
-    }
-  } catch (err) {
-    error.value = String(err);
-  }
-
-  await waitAtLeast(500, start);
-  disabled.value = false;
+function submit() {
+  const data = new URLSearchParams();
+  data.append("text", text.value);
+  data.append("force_wrap", String(forceWrap.value));
+  data.append("feed", String(feed.value));
+  void makeRequest("/api/text", data);
 }
 </script>
 

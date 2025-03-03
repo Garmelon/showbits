@@ -37,7 +37,6 @@ export default tseslint.config(
       eqeqeq: "error",
 
       // https://typescript-eslint.io/rules/
-      "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/naming-convention": [
         "warn",
         // Default settings
