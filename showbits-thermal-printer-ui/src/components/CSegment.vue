@@ -37,19 +37,10 @@ const mode = ref<"calendar" | "egg" | "text">();
   position: absolute;
   top: 0;
   right: 0;
-
-  width: 24px;
-  height: 24px;
-
   color: white;
   background-color: black;
-
   border: 2px solid black;
-  border-radius: 100px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 0 4px;
 }
 
 .close:hover {
