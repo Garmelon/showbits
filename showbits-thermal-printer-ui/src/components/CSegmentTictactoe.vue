@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useApiRequest } from "@/apiRequest";
-import { ref, useTemplateRef } from "vue";
+import { ref } from "vue";
 import CSegmentError from "./CSegmentError.vue";
 
 const { disabled, error, makeRequest } = useApiRequest();
-const form = useTemplateRef<HTMLFormElement>("form");
 
 const feed = ref(true);
 
@@ -16,7 +15,7 @@ function submit() {
 </script>
 
 <template>
-  <form ref="form" @submit.prevent="submit">
+  <form @submit.prevent="submit">
     <h2>Tic Tac Toe</h2>
     <svg viewBox="0 0 384 384">
       <path
