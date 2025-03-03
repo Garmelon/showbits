@@ -3,8 +3,9 @@ import { ref } from "vue";
 import CSegmentCalendar from "./CSegmentCalendar.vue";
 import CSegmentEgg from "./CSegmentEgg.vue";
 import CSegmentText from "./CSegmentText.vue";
+import CSegmentTictactoe from "./CSegmentTictactoe.vue";
 
-const mode = ref<"calendar" | "egg" | "text">();
+const mode = ref<"calendar" | "egg" | "text" | "tictactoe">();
 </script>
 
 <template>
@@ -13,6 +14,7 @@ const mode = ref<"calendar" | "egg" | "text">();
     <CSegmentCalendar v-if="mode === 'calendar'" />
     <CSegmentEgg v-if="mode === 'egg'" />
     <CSegmentText v-if="mode === 'text'" />
+    <CSegmentTictactoe v-if="mode === 'tictactoe'" />
     <hr v-if="mode !== undefined" />
     <section>
       <p>What do you want to print?</p>
@@ -22,7 +24,7 @@ const mode = ref<"calendar" | "egg" | "text">();
         <button @click="mode = 'text'">Chat Message</button>
         <button @click="mode = 'egg'">Easter Egg</button>
         <button @click="mode = 'text'">Text</button>
-        <button @click="mode = 'text'">Tic Tac Toe</button>
+        <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
       </div>
     </section>
   </div>
