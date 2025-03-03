@@ -34,6 +34,7 @@ const mode = ref<
         <button @click="mode = 'image'">Image</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
+        <a href="/photo.html">Take a photo</a>
       </div>
     </section>
   </div>
@@ -75,6 +76,7 @@ p {
 .list {
   display: flex;
   flex-wrap: wrap;
+  align-items: baseline;
   gap: 1ch;
 }
 </style>

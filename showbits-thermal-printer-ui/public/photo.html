@@ -139,7 +139,7 @@
           form.append("image", blob);
           form.append("caption", new Date().toLocaleString());
 
-          fetch("image", { method: "POST", body: form }).catch((error) => {
+          fetch("/api/image", { method: "POST", body: form }).catch((error) => {
             console.error("Error uploading image:", error);
           });
         });
