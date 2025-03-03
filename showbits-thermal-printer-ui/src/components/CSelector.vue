@@ -49,10 +49,13 @@ const mode = ref<
   position: absolute;
   top: 0;
   right: 0;
+
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 0 4px;
+
   color: white;
   background-color: black;
-  border: 2px solid black;
-  padding: 0 4px;
 }
 
 .close:hover {
