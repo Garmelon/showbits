@@ -8,3 +8,4 @@ popd
 
 rm -rf node_modules
 rm -rf showbits-thermal-printer-ui/node_modules
+rm -rf showbits-thermal-printer-ui/dist
