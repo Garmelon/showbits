@@ -1,8 +1,10 @@
 pub const UNIFONT: &[u8] = include_bytes!("../data/unifont-15.1.05.otf");
 pub const UNIFONT_JP: &[u8] = include_bytes!("../data/unifont_jp-15.1.05.otf");
 pub const UNIFONT_UPPER: &[u8] = include_bytes!("../data/unifont_upper-15.1.05.otf");
-pub const UNIFONT_NAME: &str = "Unifont";
-pub const UNIFONT_SIZE: f32 = 16.0;
+
+pub const UNIFONT_NAME: &str = "unifont-15.1.05.otf";
+pub const UNIFONT_JP_NAME: &str = "unifont_jp-15.1.05.otf";
+pub const UNIFONT_UPPER_NAME: &str = "unifont_upper-15.1.05.otf";
 
 pub const EGG_BAD_COVERS: &[&[u8]] = &[include_bytes!("../data/egg_bad/cover_00.png")];
 pub const EGG_BAD_PATTERNS: &[&[u8]] = &[

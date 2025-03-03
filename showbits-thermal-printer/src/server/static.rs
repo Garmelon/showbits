@@ -1,62 +1,53 @@
 use axum::{
-    http::{StatusCode, Uri, header},
+    extract::Path,
+    http::{StatusCode, header},
     response::{IntoResponse, Response},
 };
 use rust_embed::RustEmbed;
+use showbits_assets::{
+    UNIFONT, UNIFONT_JP, UNIFONT_JP_NAME, UNIFONT_NAME, UNIFONT_UPPER, UNIFONT_UPPER_NAME,
+};
 
 use super::statuscode::status_code;
 
 #[derive(RustEmbed)]
-#[folder = "static"]
-struct StaticFiles;
+#[folder = "dist/assets"]
+struct Assets;
 
-struct StaticFile(String);
-
-fn look_up_path(path: &str) -> Option<Response> {
-    let path = path.trim_start_matches('/');
-    let file = StaticFiles::get(path)?;
-    let mime = mime_guess::from_path(path).first_or_octet_stream();
-    let response = ([(header::CONTENT_TYPE, mime.as_ref())], file.data).into_response();
-    Some(response)
-}
-
-impl IntoResponse for StaticFile {
-    fn into_response(self) -> Response {
-        let mut path = self.0;
-        if path.is_empty() {
-            path.push('/')
-        };
-
-        if path.ends_with(".html") {
-            // A file `/foo/bar.html` should not be accessible directly, only
-            // indirectly at `/foo/bar`.
-            return status_code(StatusCode::NOT_FOUND);
+pub async fn get_asset(Path(path): Path<String>) -> impl IntoResponse {
+    match Assets::get(&path) {
+        None => status_code(StatusCode::NOT_FOUND),
+        Some(content) => {
+            let mime = mime_guess::from_path(&path).first_or_octet_stream();
+            ([(header::CONTENT_TYPE, mime.as_ref())], content.data).into_response()
         }
-
-        if path.ends_with("/index") {
-            // A file `/foo/index.html` should not be accessible directly, only
-            // indirectly at `/foo/`.
-            return status_code(StatusCode::NOT_FOUND);
-        }
-
-        if path.ends_with('/') {
-            path.push_str("index");
-        }
-
-        if let Some(response) = look_up_path(&path) {
-            return response;
-        }
-
-        path.push_str(".html");
-
-        if let Some(response) = look_up_path(&path) {
-            return response;
-        }
-
-        status_code(StatusCode::NOT_FOUND)
     }
 }
 
-pub async fn get_static_file(uri: Uri) -> impl IntoResponse {
-    StaticFile(uri.path().to_string())
+pub async fn get_font(Path(path): Path<String>) -> Response {
+    let font = if path == UNIFONT_NAME {
+        UNIFONT
+    } else if path == UNIFONT_JP_NAME {
+        UNIFONT_JP
+    } else if path == UNIFONT_UPPER_NAME {
+        UNIFONT_UPPER
+    } else {
+        return status_code(StatusCode::NOT_FOUND);
+    };
+
+    ([(header::CONTENT_TYPE, "font/otf")], font).into_response()
+}
+
+pub async fn get_index() -> impl IntoResponse {
+    (
+        [(header::CONTENT_TYPE, "text/html; charset=utf-8")],
+        include_str!("../../dist/index.html"),
+    )
+}
+
+pub async fn get_photo() -> impl IntoResponse {
+    (
+        [(header::CONTENT_TYPE, "text/html; charset=utf-8")],
+        include_str!("../../dist/photo.html"),
+    )
 }
