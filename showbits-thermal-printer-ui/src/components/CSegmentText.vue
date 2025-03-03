@@ -3,6 +3,7 @@ import { computed, ref, type StyleValue, useTemplateRef } from "vue";
 
 const form = useTemplateRef<HTMLFormElement>("form");
 const disabled = ref(false);
+const error = ref<string>();
 
 const text = ref("");
 const forceWrap = ref(false);
@@ -38,9 +39,13 @@ async function submit(): Promise<void> {
     data.append("force_wrap", String(forceWrap.value));
     data.append("feed", String(feed.value));
     const response = await fetch("/api/text", { method: "POST", body: data });
-    console.log("POST succeeded:", await response.text());
+    if (!response.ok) {
+      const status = `${response.status.toFixed()} ${response.statusText}`;
+      const text = await response.text();
+      error.value = text.length > 0 ? `${status}: ${text}` : status;
+    }
   } catch (err) {
-    console.log("POST failed:", err);
+    error.value = String(err);
   }
 
   await waitAtLeast(500, start);
@@ -68,6 +73,7 @@ async function submit(): Promise<void> {
       <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
     </fieldset>
     <button :disabled>Print</button>
+    <p v-if="error" class="error">{{ error }}</p>
   </form>
 </template>
 
@@ -91,5 +97,11 @@ fieldset {
   display: flex;
   flex-direction: column;
   border: none;
+}
+
+.error {
+  background-color: #fdd;
+  color: #400;
+  padding: 0 2px;
 }
 </style>
