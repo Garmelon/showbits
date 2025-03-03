@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useApiRequest } from "@/apiRequest";
 import { computed, ref, type StyleValue, useTemplateRef } from "vue";
-import CSegmentError from "./CSegmentError.vue";
+import CError from "./CError.vue";
 
 const { disabled, error, makeRequest } = useApiRequest();
 const form = useTemplateRef<HTMLFormElement>("form");
@@ -54,7 +54,7 @@ function submit() {
     </div>
 
     <button :disabled>Print</button>
-    <CSegmentError :message="error" />
+    <CError :message="error" />
   </form>
 </template>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useApiRequest } from "@/apiRequest";
 import { ref } from "vue";
-import CSegmentError from "./CSegmentError.vue";
+import CError from "./CError.vue";
 
 const { disabled, error, makeRequest } = useApiRequest();
 
@@ -29,7 +29,7 @@ function submit() {
     <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
 
     <button :disabled>Print</button>
-    <CSegmentError :message="error" />
+    <CError :message="error" />
   </form>
 </template>
 

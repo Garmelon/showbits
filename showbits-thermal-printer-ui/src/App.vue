@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import CSegment from "./components/CSegment.vue";
+import CSelector from "./components/CSelector.vue";
 </script>
 
 <template>
   <div class="scroll">
     <div class="strip">
-      <CSegment />
+      <CSelector />
     </div>
   </div>
 </template>

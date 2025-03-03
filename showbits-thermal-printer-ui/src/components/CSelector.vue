@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import CSegmentCalendar from "./CSegmentCalendar.vue";
-import CSegmentEgg from "./CSegmentEgg.vue";
-import CSegmentText from "./CSegmentText.vue";
-import CSegmentTictactoe from "./CSegmentTictactoe.vue";
-import CSegmentCells from "./CSegmentCells.vue";
-import CSegmentChat from "./CSegmentChat.vue";
-import CSegmentImage from "./CSegmentImage.vue";
+import CDocumentCalendar from "./CDocumentCalendar.vue";
+import CDocumentCells from "./CDocumentCells.vue";
+import CDocumentChat from "./CDocumentChat.vue";
+import CDocumentEgg from "./CDocumentEgg.vue";
+import CDocumentImage from "./CDocumentImage.vue";
+import CDocumentText from "./CDocumentText.vue";
+import CDocumentTictactoe from "./CDocumentTictactoe.vue";
 
 const mode = ref<
   "calendar" | "chat" | "cells" | "egg" | "image" | "text" | "tictactoe"
@@ -16,13 +16,13 @@ const mode = ref<
 <template>
   <div class="outer">
     <button v-if="mode" class="close" @click="mode = undefined">X</button>
-    <CSegmentCalendar v-if="mode === 'calendar'" />
-    <CSegmentChat v-if="mode === 'chat'" />
-    <CSegmentCells v-if="mode === 'cells'" />
-    <CSegmentEgg v-if="mode === 'egg'" />
-    <CSegmentImage v-if="mode === 'image'" />
-    <CSegmentText v-if="mode === 'text'" />
-    <CSegmentTictactoe v-if="mode === 'tictactoe'" />
+    <CDocumentCalendar v-if="mode === 'calendar'" />
+    <CDocumentChat v-if="mode === 'chat'" />
+    <CDocumentCells v-if="mode === 'cells'" />
+    <CDocumentEgg v-if="mode === 'egg'" />
+    <CDocumentImage v-if="mode === 'image'" />
+    <CDocumentText v-if="mode === 'text'" />
+    <CDocumentTictactoe v-if="mode === 'tictactoe'" />
     <hr v-if="mode !== undefined" />
     <section>
       <p>What do you want to print?</p>
