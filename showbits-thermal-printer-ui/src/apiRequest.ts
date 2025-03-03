@@ -14,6 +14,7 @@ export function useApiRequest() {
 
   async function makeRequest(url: string, data: URLSearchParams | FormData) {
     const start = Date.now();
+    error.value = undefined;
     disabled.value = true;
 
     try {
