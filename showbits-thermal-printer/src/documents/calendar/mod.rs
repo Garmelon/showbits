@@ -2,7 +2,7 @@ use axum::{Form, extract::State};
 use jiff::Zoned;
 use serde::{Deserialize, Serialize};
 
-use crate::server::{Server, somehow};
+use crate::server::Server;
 
 #[derive(Serialize)]
 struct Data {
@@ -18,7 +18,7 @@ pub struct FormData {
     pub feed: Option<bool>,
 }
 
-pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow::Result<()> {
+pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
     let date = Zoned::now().date();
 
     let data = Data {
@@ -32,5 +32,4 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         .with_main_file(include_str!("main.typ"));
 
     server.print_typst(typst).await;
-    Ok(())
 }
