@@ -26,10 +26,28 @@ import CSegment from "./components/CSegment.vue";
   padding: 32px;
 
   background-color: white;
+  box-shadow: inset 0 0 32px #0003;
+
+  position: relative;
+}
+
+/* This construction makes the outside shadow/glow look like the strip of paper
+ * extends below the screen. Otherwise, the glow at the bottom would look
+ * thinner, which looks weird. */
+.strip::after {
+  content: " ";
+  z-index: -1;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: calc(100% + 500px);
+
   box-shadow:
-    0 0 16px #0006,
-    0 0 500px #ffff,
-    inset 0 0 32px #0003;
+    0 0 16px #0006 /* for contrast */,
+    0 0 500px -10px #fffa;
 }
 </style>
 
