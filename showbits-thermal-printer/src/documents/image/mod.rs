@@ -4,7 +4,7 @@ use anyhow::Context;
 use axum::{
     extract::{Multipart, State},
     http::StatusCode,
-    response::{IntoResponse, Redirect, Response},
+    response::{IntoResponse, Response},
 };
 use image::ImageFormat;
 use serde::Serialize;
@@ -77,5 +77,5 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         .with_main_file(include_str!("main.typ"));
 
     server.print_typst(typst).await;
-    Ok(Redirect::to("image").into_response())
+    Ok(().into_response())
 }

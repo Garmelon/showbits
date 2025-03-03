@@ -6,9 +6,10 @@ import CSegmentText from "./CSegmentText.vue";
 import CSegmentTictactoe from "./CSegmentTictactoe.vue";
 import CSegmentCells from "./CSegmentCells.vue";
 import CSegmentChat from "./CSegmentChat.vue";
+import CSegmentImage from "./CSegmentImage.vue";
 
 const mode = ref<
-  "calendar" | "chat" | "cells" | "egg" | "text" | "tictactoe"
+  "calendar" | "chat" | "cells" | "egg" | "image" | "text" | "tictactoe"
 >();
 </script>
 
@@ -19,6 +20,7 @@ const mode = ref<
     <CSegmentChat v-if="mode === 'chat'" />
     <CSegmentCells v-if="mode === 'cells'" />
     <CSegmentEgg v-if="mode === 'egg'" />
+    <CSegmentImage v-if="mode === 'image'" />
     <CSegmentText v-if="mode === 'text'" />
     <CSegmentTictactoe v-if="mode === 'tictactoe'" />
     <hr v-if="mode !== undefined" />
@@ -29,6 +31,7 @@ const mode = ref<
         <button @click="mode = 'cells'">Cellular Automaton</button>
         <button @click="mode = 'chat'">Chat Message</button>
         <button @click="mode = 'egg'">Easter Egg</button>
+        <button @click="mode = 'image'">Image</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
       </div>
