@@ -17,6 +17,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <h2>Tic Tac Toe</h2>
+
     <svg viewBox="0 0 384 384">
       <path
         stroke="#000"
@@ -24,7 +25,9 @@ function submit() {
         d="M128,0V384 M256,0V384 M0,128H384 M0,256H384"
       />
     </svg>
+
     <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
+
     <button :disabled>Print</button>
     <CSegmentError :message="error" />
   </form>

@@ -25,6 +25,7 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <h2>Cellular Automaton</h2>
+
     <label class="wide">
       Rule:
       <input
@@ -36,20 +37,24 @@ function submit() {
         :disabled
       />
     </label>
+
     <label class="wide">
       Rows:
       <input v-model="rows" type="number" min="1" max="1024" :disabled />
     </label>
+
     <label class="wide">
       Scale:
       <input v-model="scale" type="number" min="1" max="16" :disabled />
     </label>
+
     <div class="wide">
       <label>
         <input v-model="showRule" type="checkbox" :disabled /> Show rule
       </label>
       <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
     </div>
+
     <button :disabled>Print</button>
     <CSegmentError :message="error" />
   </form>

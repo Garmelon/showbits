@@ -22,15 +22,19 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <h2>Calendar</h2>
+
     <label class="wide">
       Year:
-      <input v-model="year" type="number" />
+      <input v-model="year" type="number" :disabled />
     </label>
+
     <label class="wide">
       Month:
-      <input v-model="month" type="number" min="1" max="12" />
+      <input v-model="month" type="number" min="1" max="12" :disabled />
     </label>
+
     <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
+
     <button :disabled>Print</button>
     <CSegmentError :message="error" />
   </form>

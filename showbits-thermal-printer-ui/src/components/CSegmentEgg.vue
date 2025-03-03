@@ -21,12 +21,14 @@ function submit() {
 <template>
   <form @submit.prevent="submit">
     <h2>Easter Egg</h2>
+
     <svg viewBox="-2 0 4 6">
       <path
         fill="#000"
         d="M0,0 C1,0,2,2,2,3.5 S1,6,0,6 S-2,5,-2,3.5 S-1,0,0,0"
       />
     </svg>
+
     <label class="wide">
       Seed:
       <input
@@ -36,17 +38,21 @@ function submit() {
         max="9223372036854775807"
         step="1"
         placeholder="random"
+        :disabled
       />
     </label>
+
     <label class="wide">
       Mode:
-      <select v-model="mode">
+      <select v-model="mode" :disabled>
         <option value="random">Random</option>
         <option value="good">Good</option>
         <option value="bad">Bad</option>
       </select>
     </label>
+
     <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
+
     <button :disabled>Print</button>
     <CSegmentError :message="error" />
   </form>

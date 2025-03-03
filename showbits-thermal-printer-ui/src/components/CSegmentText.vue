@@ -34,6 +34,7 @@ function submit() {
 <template>
   <form ref="form" @submit.prevent="submit">
     <h2>Text</h2>
+
     <!-- For some reason one col = 2 characters. -->
     <textarea
       v-model="text"
@@ -43,13 +44,15 @@ function submit() {
       :disabled
       @keypress="textareaKeypress"
     ></textarea>
-    <fieldset class="wide">
+
+    <div class="wide">
       <label>
         <input v-model="forceWrap" type="checkbox" :disabled />
         Force-Wrap
       </label>
       <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
-    </fieldset>
+    </div>
+
     <button :disabled>Print</button>
     <CSegmentError :message="error" />
   </form>
@@ -74,9 +77,5 @@ textarea {
 .wide {
   display: flex;
   flex-direction: column;
-}
-
-fieldset {
-  border: none;
 }
 </style>
