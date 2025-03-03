@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import CSegmentCalendar from "./CSegmentCalendar.vue";
+import CSegmentEgg from "./CSegmentEgg.vue";
 import CSegmentText from "./CSegmentText.vue";
 
-const mode = ref<"calendar" | "text">();
+const mode = ref<"calendar" | "egg" | "text">();
 </script>
 
 <template>
   <div class="outer">
     <button v-if="mode" class="close" @click="mode = undefined">X</button>
     <CSegmentCalendar v-if="mode === 'calendar'" />
+    <CSegmentEgg v-if="mode === 'egg'" />
     <CSegmentText v-if="mode === 'text'" />
     <hr v-if="mode !== undefined" />
     <section>
@@ -18,7 +20,7 @@ const mode = ref<"calendar" | "text">();
         <button @click="mode = 'calendar'">Calendar</button>
         <button @click="mode = 'text'">Cellular Automaton</button>
         <button @click="mode = 'text'">Chat Message</button>
-        <button @click="mode = 'text'">Easter Egg</button>
+        <button @click="mode = 'egg'">Easter Egg</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'text'">Tic Tac Toe</button>
       </div>
