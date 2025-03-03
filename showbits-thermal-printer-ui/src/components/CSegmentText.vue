@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, type StyleValue, useTemplateRef } from "vue";
+import CSegmentError from "./CSegmentError.vue";
 
 const form = useTemplateRef<HTMLFormElement>("form");
 const disabled = ref(false);
@@ -73,7 +74,7 @@ async function submit(): Promise<void> {
       <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
     </fieldset>
     <button :disabled>Print</button>
-    <p v-if="error" class="error">{{ error }}</p>
+    <CSegmentError :message="error" />
   </form>
 </template>
 
@@ -97,11 +98,5 @@ fieldset {
   display: flex;
   flex-direction: column;
   border: none;
-}
-
-.error {
-  background-color: #fdd;
-  color: #400;
-  padding: 0 2px;
 }
 </style>
