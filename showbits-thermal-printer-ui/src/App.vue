@@ -26,6 +26,10 @@ import CSegment from "./components/CSegment.vue";
   padding: 32px;
 
   background-color: white;
+  box-shadow:
+    0 0 16px #0006,
+    0 0 500px #ffff,
+    inset 0 0 32px #0003;
 }
 </style>
 
