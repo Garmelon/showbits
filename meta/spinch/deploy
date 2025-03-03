@@ -8,9 +8,6 @@ echo "## Build ##"
 echo "###########"
 set_color normal
 
-./meta/build-typst-plugin
-or return 1
-
 ./meta/build-thermal-printer-ui
 or return 1
 

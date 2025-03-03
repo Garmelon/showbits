@@ -10,7 +10,7 @@ const feed = ref(true);
 function submit() {
   const data = new URLSearchParams();
   data.append("feed", String(feed.value));
-  void makeRequest("/api/tictactoe", data);
+  void makeRequest("api/tictactoe", data);
 }
 </script>
 

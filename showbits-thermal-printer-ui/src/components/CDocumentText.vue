@@ -27,7 +27,7 @@ function submit() {
   data.append("text", text.value);
   data.append("force_wrap", String(forceWrap.value));
   data.append("feed", String(feed.value));
-  void makeRequest("/api/text", data);
+  void makeRequest("api/text", data);
 }
 </script>
 

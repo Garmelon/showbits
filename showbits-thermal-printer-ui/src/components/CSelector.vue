@@ -34,7 +34,7 @@ const mode = ref<
         <button @click="mode = 'image'">Image</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
-        <a href="/photo.html">Take a photo</a>
+        <a href="photo.html">Take a photo</a>
       </div>
     </section>
   </div>

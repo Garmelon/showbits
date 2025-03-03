@@ -15,7 +15,7 @@ function submit() {
   data.append("year", String(year.value));
   data.append("month", String(month.value));
   data.append("feed", String(feed.value));
-  void makeRequest("/api/calendar", data);
+  void makeRequest("api/calendar", data);
 }
 </script>
 

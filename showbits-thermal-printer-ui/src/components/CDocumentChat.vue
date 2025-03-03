@@ -22,7 +22,7 @@ function submit() {
   data.append("username", username.value);
   data.append("content", content.value);
   data.append("feed", String(feed.value));
-  void makeRequest("/api/chat", data);
+  void makeRequest("api/chat", data);
 }
 </script>
 

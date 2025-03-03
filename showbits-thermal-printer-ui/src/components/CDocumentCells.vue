@@ -18,7 +18,7 @@ function submit() {
   data.append("rows", rows.value.toFixed());
   data.append("scale", scale.value.toFixed());
   data.append("feed", String(feed.value));
-  void makeRequest("/api/cells", data);
+  void makeRequest("api/cells", data);
 }
 </script>
 

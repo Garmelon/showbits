@@ -25,7 +25,7 @@ function submit() {
   data.append("bright", String(bright.value));
   data.append("seamless", String(seamless.value));
   data.append("feed", String(feed.value));
-  void makeRequest("/api/image", data);
+  void makeRequest("api/image", data);
 }
 </script>
 

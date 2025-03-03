@@ -3,7 +3,7 @@ Description=Showbits Thermal Printer
 
 [Service]
 Type=simple
-ExecStart=/home/bondrucker/showbits-thermal-printer 0.0.0.0:8001 queue -p /dev/usb/lp0
+ExecStart=/home/bondrucker/showbits-thermal-printer queue -a 0.0.0.0:8001 -p /dev/usb/lp0
 Restart=on-failure
 
 User=bondrucker

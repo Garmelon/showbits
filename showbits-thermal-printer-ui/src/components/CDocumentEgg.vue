@@ -14,7 +14,7 @@ function submit() {
   if (typeof seed.value === "number") data.append("seed", seed.value.toFixed());
   data.append("mode", mode.value);
   data.append("feed", String(feed.value));
-  void makeRequest("/api/egg", data);
+  void makeRequest("api/egg", data);
 }
 </script>
 
