@@ -28,7 +28,7 @@ function submit() {
         d="M0,0 C1,0,2,2,2,3.5 S1,6,0,6 S-2,5,-2,3.5 S-1,0,0,0"
       />
     </svg>
-    <label>
+    <label class="wide">
       Seed:
       <input
         v-model="seed"
@@ -39,7 +39,7 @@ function submit() {
         placeholder="random"
       />
     </label>
-    <label>
+    <label class="wide">
       Mode:
       <select v-model="mode">
         <option value="random">Random</option>
@@ -60,19 +60,13 @@ form {
   gap: 16px;
 }
 
-input[type="number"] {
-  box-sizing: border-box;
-  width: 100%;
-}
-
 svg {
   width: 50%;
   margin: auto;
 }
 
-fieldset {
+.wide {
   display: flex;
   flex-direction: column;
-  border: none;
 }
 </style>

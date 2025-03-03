@@ -43,7 +43,7 @@ function submit() {
       :disabled
       @keypress="textareaKeypress"
     ></textarea>
-    <fieldset>
+    <fieldset class="wide">
       <label>
         <input v-model="forceWrap" type="checkbox" :disabled />
         Force-Wrap
@@ -71,9 +71,12 @@ textarea {
   max-width: fit-content;
 }
 
-fieldset {
+.wide {
   display: flex;
   flex-direction: column;
+}
+
+fieldset {
   border: none;
 }
 </style>

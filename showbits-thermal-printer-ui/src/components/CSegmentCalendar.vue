@@ -23,8 +23,11 @@ function submit() {
 <template>
   <form ref="form" @submit.prevent="submit">
     <h2>Calendar</h2>
-    <label>Year: <input v-model="year" type="number" /></label>
-    <label>
+    <label class="wide">
+      Year:
+      <input v-model="year" type="number" />
+    </label>
+    <label class="wide">
       Month:
       <input v-model="month" type="number" min="1" max="12" />
     </label>
@@ -41,14 +44,8 @@ form {
   gap: 16px;
 }
 
-input[type="number"] {
-  box-sizing: border-box;
-  width: 100%;
-}
-
-fieldset {
+.wide {
   display: flex;
   flex-direction: column;
-  border: none;
 }
 </style>
