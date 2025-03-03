@@ -8,7 +8,10 @@ use axum::{
     routing::{get, post},
 };
 use showbits_typst::Typst;
-use tokio::{net::TcpListener, sync::mpsc};
+use tokio::{
+    net::TcpListener,
+    sync::{mpsc, oneshot},
+};
 
 use crate::{documents, drawer::Command};
 
@@ -18,8 +21,10 @@ pub struct Server {
 }
 
 impl Server {
-    pub async fn print_typst(&self, typst: Typst) {
-        let _ = self.tx.send(Command::Typst(typst)).await;
+    pub async fn print_typst(&self, typst: Typst) -> somehow::Result<()> {
+        let (tx, rx) = oneshot::channel();
+        let _ = self.tx.send(Command::Typst(typst, tx)).await;
+        rx.await?.map_err(somehow::Error)
     }
 }
 

@@ -1,11 +1,11 @@
 use showbits_typst::Typst;
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, oneshot};
 
 use crate::persistent_printer::PersistentPrinter;
 
 pub enum Command {
     Backlog,
-    Typst(Typst),
+    Typst(Typst, oneshot::Sender<anyhow::Result<()>>),
 }
 
 pub struct Drawer {
@@ -30,11 +30,16 @@ impl Drawer {
             Command::Backlog => {
                 self.printer.print_backlog()?;
             }
-            Command::Typst(typst) => {
-                let image = typst.render()?;
-                self.printer.print_image(&image)?;
+            Command::Typst(typst, tx) => {
+                let _ = tx.send(self.run_cmd_typst(typst));
             }
         }
+        Ok(())
+    }
+
+    fn run_cmd_typst(&mut self, typst: Typst) -> anyhow::Result<()> {
+        let image = typst.render()?;
+        self.printer.print_image(&image)?;
         Ok(())
     }
 }

@@ -1,7 +1,7 @@
 use axum::{Form, extract::State};
 use serde::{Deserialize, Serialize};
 
-use crate::server::Server;
+use crate::server::{Server, somehow};
 
 #[derive(Serialize)]
 struct Data {
@@ -21,7 +21,7 @@ pub struct FormData {
     pub feed: Option<bool>,
 }
 
-pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
+pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow::Result<()> {
     let seed = form.seed.unwrap_or_else(rand::random);
 
     let data = Data {
@@ -54,5 +54,5 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
         typst.add_file(format!("/egg_bad/pattern_{i:02}.png"), *pattern);
     }
 
-    server.print_typst(typst).await;
+    server.print_typst(typst).await
 }

@@ -1,7 +1,7 @@
 use axum::{Form, extract::State};
 use serde::{Deserialize, Serialize};
 
-use crate::server::Server;
+use crate::server::{Server, somehow};
 
 #[derive(Serialize)]
 struct Data {
@@ -17,7 +17,7 @@ pub struct FormData {
     pub feed: Option<bool>,
 }
 
-pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
+pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow::Result<()> {
     let data = Data {
         text: form.text,
         force_wrap: form.force_wrap.unwrap_or(false),
@@ -28,5 +28,5 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) {
         .with_json("/data.json", &data)
         .with_main_file(include_str!("main.typ"));
 
-    server.print_typst(typst).await;
+    server.print_typst(typst).await
 }

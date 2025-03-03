@@ -22,6 +22,5 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         .with_json("/data.json", &data)
         .with_main_file(include_str!("main.typ"));
 
-    server.print_typst(typst).await;
-    Ok(())
+    server.print_typst(typst).await
 }

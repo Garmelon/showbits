@@ -76,6 +76,6 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         .with_file("/image.png", bytes)
         .with_main_file(include_str!("main.typ"));
 
-    server.print_typst(typst).await;
+    server.print_typst(typst).await?;
     Ok(().into_response())
 }
