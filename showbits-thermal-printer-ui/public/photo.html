@@ -87,11 +87,25 @@
       #flip:active path {
         fill: #000;
       }
+
+      #cover {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        transition: background-color 100ms linear;
+      }
+
+      #cover.hidden {
+        background-color: transparent;
+        pointer-events: none;
+      }
     </style>
     <script type="module">
       const video = document.getElementById("video");
       const button = document.getElementById("button");
       const flip = document.getElementById("flip");
+      const cover = document.getElementById("cover");
 
       const facing = new URLSearchParams(window.location.search).get("facing");
 
@@ -125,6 +139,14 @@
 
       await initStream(facing);
 
+      async function waitAtLeast(duration, since) {
+        const now = Date.now();
+        const wait = duration - (now - since);
+        if (wait > 0) {
+          await new Promise((resolve) => setTimeout(resolve, wait));
+        }
+      }
+
       button.addEventListener("click", () => {
         const canvas = document.createElement("canvas");
         const scale = 384 / video.videoWidth;
@@ -134,14 +156,20 @@
           .getContext("2d")
           .drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        canvas.toBlob((blob) => {
+        canvas.toBlob(async (blob) => {
           const form = new FormData();
           form.append("image", blob);
           form.append("caption", new Date().toLocaleString());
 
-          fetch("/api/image", { method: "POST", body: form }).catch((error) => {
-            console.error("Error uploading image:", error);
-          });
+          const start = Date.now();
+          cover.classList.remove("hidden");
+          try {
+            await fetch("/api/image", { method: "POST", body: form });
+          } catch (e) {
+            console.error("Error uploading image:", e);
+          }
+          await waitAtLeast(500, start);
+          cover.classList.add("hidden");
         });
       });
     </script>
@@ -156,5 +184,6 @@
         <path fill="#fff" stroke="none" d="M3,4h1v-4h1v4h1l-1.5,2"></path>
       </svg>
     </a>
+    <div id="cover" class="hidden"></div>
   </body>
 </html>
