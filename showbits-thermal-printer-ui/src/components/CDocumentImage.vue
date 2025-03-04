@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useApiRequest } from "@/apiRequest";
-import { ref, useTemplateRef } from "vue";
+import { ref, useTemplateRef, watchEffect } from "vue";
 import CError from "./CError.vue";
 
 const { disabled, error, makeRequest } = useApiRequest();
 const image = useTemplateRef<HTMLInputElement>("image");
 
+const file = ref<File>();
 const title = ref("");
 const caption = ref("");
 const algo = ref("stucki");
@@ -13,12 +14,22 @@ const bright = ref(true);
 const seamless = ref(false);
 const feed = ref(true);
 
-function submit() {
+const fileAsUrl = ref<string>();
+watchEffect(() => {
+  if (file.value === undefined) return;
+  fileAsUrl.value = undefined;
+  const reader = new FileReader();
+  reader.addEventListener("loadend", () => {
+    if (typeof reader.result !== "string") return;
+    fileAsUrl.value = reader.result;
+  });
+  reader.readAsDataURL(file.value);
+});
+
+function onFormSubmit() {
+  if (file.value === undefined) return;
   const data = new FormData();
-
-  const file = image.value?.files?.[0];
-  if (file !== undefined) data.append("image", file);
-
+  data.append("image", file.value);
   if (title.value) data.append("title", title.value);
   if (caption.value) data.append("caption", caption.value);
   data.append("algo", algo.value);
@@ -27,13 +38,37 @@ function submit() {
   data.append("feed", String(feed.value));
   void makeRequest("api/image", data);
 }
+
+function onFormPaste(e: ClipboardEvent) {
+  const items = e.clipboardData?.items;
+  if (items === undefined) return;
+  for (const item of items) {
+    const theFile = item.getAsFile();
+    if (theFile === null) continue;
+    if (!theFile.type.startsWith("image/")) continue;
+    file.value = theFile;
+    break;
+  }
+}
+
+function onImageChange() {
+  const theFile = image.value?.files?.[0];
+  if (theFile === undefined) return;
+  if (!theFile.type.startsWith("image/")) return;
+  file.value = theFile;
+}
 </script>
 
 <template>
-  <form @submit.prevent="submit">
+  <form @submit.prevent="onFormSubmit" @paste="onFormPaste">
     <h2>Image</h2>
 
-    <input ref="image" type="file" accept="image/*" required :disabled />
+    <img v-if="fileAsUrl !== undefined" :src="fileAsUrl" />
+
+    <label class="image">
+      Select or paste an image.
+      <input ref="image" type="file" accept="image/*" @change="onImageChange" />
+    </label>
 
     <label class="wide">
       Title:
@@ -72,6 +107,19 @@ form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.image {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.image:hover {
+  text-shadow: 0px 0px 10px #aaa;
+}
+
+.image input {
+  display: none;
 }
 
 .wide {
