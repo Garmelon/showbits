@@ -164,7 +164,7 @@
           const start = Date.now();
           cover.classList.remove("hidden");
           try {
-            await fetch("/api/image", { method: "POST", body: form });
+            await fetch("api/image", { method: "POST", body: form });
           } catch (e) {
             console.error("Error uploading image:", e);
           }
