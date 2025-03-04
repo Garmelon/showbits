@@ -38,3 +38,8 @@ Implemented:
 - Chat messages (euph, twitch)
 - Instant camera
 - Procedural easter egg generator
+
+## Todos
+
+- [ ] Sensible limits on all string inputs
+- [ ] Better debug logging

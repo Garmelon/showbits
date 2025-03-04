@@ -215,7 +215,6 @@ impl World for Typst {
     }
 
     fn source(&self, id: FileId) -> FileResult<Source> {
-        // TODO Remove debug logging
         println!("Accessing source {id:?}");
 
         let bytes = if let Some(spec) = id.package() {
@@ -230,7 +229,6 @@ impl World for Typst {
     }
 
     fn file(&self, id: FileId) -> FileResult<Bytes> {
-        // TODO Remove debug logging
         println!("Accessing file {id:?}");
 
         let bytes = if let Some(spec) = id.package() {
