@@ -7,16 +7,16 @@ version = "0.0.0"
 edition = "2024"
 
 [workspace.dependencies]
-anyhow = "1.0.96"
+anyhow = "1.0.97"
 axum = "0.8.1"
-clap = { version = "4.5.30", features = ["derive", "deprecated"] }
+clap = { version = "4.5.31", features = ["derive", "deprecated"] }
 escpos = "0.15.0"
 image = "0.25.5"
 jiff = "0.2.1"
 mime_guess = "2.0.5"
 palette = "0.7.6"
 rand = "0.9.0"
-rust-embed = "8.5.0"
+rust-embed = "8.6.0"
 serde = { version = "1.0.218", features = ["derive"] }
 showbits-assets.path = "./showbits-assets"
 showbits-typst.path = "./showbits-typst"
