@@ -6,7 +6,10 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use image::{ImageFormat, Luma, Pixel, RgbaImage, imageops};
+use image::{
+    DynamicImage, EncodableLayout, ImageDecoder, ImageFormat, ImageReader, Luma, Pixel, RgbaImage,
+    imageops,
+};
 use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
 use palette::LinSrgb;
 use serde::Serialize;
@@ -99,8 +102,16 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         match field.name() {
             Some("image") => {
                 let data = field.bytes().await?;
-                let decoded = image::load_from_memory(&data)?.into_rgba8();
-                image = Some(decoded);
+
+                // https://github.com/image-rs/image/issues/2392#issuecomment-2547393362
+                let mut decoder = ImageReader::new(Cursor::new(data.as_bytes()))
+                    .with_guessed_format()?
+                    .into_decoder()?;
+                let orientation = decoder.orientation()?;
+                let mut decoded = DynamicImage::from_decoder(decoder)?;
+                decoded.apply_orientation(orientation);
+
+                image = Some(decoded.to_rgba8());
             }
             Some("title") => {
                 data.title = Some(field.text().await?).filter(|it| !it.is_empty());
