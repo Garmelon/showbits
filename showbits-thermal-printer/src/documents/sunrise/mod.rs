@@ -1,5 +1,5 @@
 use axum::{Form, extract::State};
-use jiff::{Timestamp, ToSpan, Zoned, civil};
+use jiff::{Timestamp, ToSpan, Zoned, civil, tz::TimeZone};
 use serde::{Deserialize, Serialize};
 
 use crate::server::{Server, somehow};
@@ -22,9 +22,10 @@ pub struct FormData {
 }
 
 pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow::Result<()> {
-    let now = Zoned::now().date();
-    let year = form.year.unwrap_or(now.year());
-    let month = form.month.unwrap_or(now.month());
+    let now = Zoned::now();
+    let now_date_utc = now.with_time_zone(TimeZone::UTC).date();
+    let year = form.year.unwrap_or(now_date_utc.year());
+    let month = form.month.unwrap_or(now_date_utc.month());
 
     let first = civil::Date::new(year, month, 1)?;
     let mut times = vec![];
@@ -37,8 +38,17 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
             date.month() as u32,
             date.day() as u32,
         );
-        let rise = Timestamp::new(rise, 0)?.strftime("%H:%M").to_string();
-        let set = Timestamp::new(set, 0)?.strftime("%H:%M").to_string();
+
+        let rise = Timestamp::new(rise, 0)?
+            .to_zoned(now.time_zone().clone())
+            .strftime("%H:%M")
+            .to_string();
+
+        let set = Timestamp::new(set, 0)?
+            .to_zoned(now.time_zone().clone())
+            .strftime("%H:%M")
+            .to_string();
+
         times.push((rise, set));
     }
 
