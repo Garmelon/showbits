@@ -20,6 +20,7 @@ rust-embed = "8.6.0"
 serde = { version = "1.0.218", features = ["derive"] }
 showbits-assets.path = "./showbits-assets"
 showbits-typst.path = "./showbits-typst"
+sunrise = "1.0.1"
 tokio = "1.43.0"
 typst = "0.13.0"
 typst-assets = { version = "0.13.0", features = ["fonts"] }

@@ -41,6 +41,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/api/chat", post(documents::chat::post))
         .route("/api/egg", post(documents::egg::post))
         .route("/api/image", post(documents::image::post))
+        .route("/api/sunrise", post(documents::sunrise::post))
         .route("/api/text", post(documents::text::post))
         .route("/api/tictactoe", post(documents::tictactoe::post))
         // Rest

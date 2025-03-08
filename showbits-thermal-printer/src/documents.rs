@@ -5,6 +5,7 @@ pub mod cells;
 pub mod chat;
 pub mod egg;
 pub mod image;
+pub mod sunrise;
 pub mod text;
 pub mod tictactoe;
 
