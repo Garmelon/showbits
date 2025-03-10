@@ -20,10 +20,12 @@ intermediate artifacts.
 - Large image using multiple strips
 - Live graph (a new row of pixels every few seconds)
 - Measuring tape
+- Personal finances in the form of a receipt
 - QR codes
 - Quote (`fortune`, maybe `cowsay`)
 - RSS feeds (live?)
 - SSH login attempts (live)
+- Stats in the form of a receipt
 - Sudoku
 - Sunrise, sunset
 - Text banner (text flows parallel to paper)
