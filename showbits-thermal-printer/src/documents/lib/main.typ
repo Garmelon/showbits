@@ -12,8 +12,8 @@
     fallback: false,
   )
   set par(
-    leading: 8pt, // Between lines
-    spacing: 26pt, // Between paragraphs
+    leading: 6pt, // Between lines
+    spacing: 22pt, // Between paragraphs
   )
   show heading: set text(size: 32pt)
   show heading: set block(above: 8pt, below: 8pt)
