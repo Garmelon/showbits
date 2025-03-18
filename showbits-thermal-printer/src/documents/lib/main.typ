@@ -23,3 +23,8 @@
 // Determined by experiments so that the top and bottom white border are roughly
 // the same size after tearing off the paper.
 #let feed = v(64pt + 32pt)
+
+#let chain(..args) = {
+  assert(args.pos().len() > 0, message: "args required")
+  args.pos().slice(0, -1).rev().fold(args.pos().at(-1), (x, f) => f(x))
+}
