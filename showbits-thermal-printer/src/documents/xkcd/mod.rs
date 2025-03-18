@@ -24,12 +24,15 @@ struct Data {
     number: u32,
     title: String,
     alt: String,
+    dither: bool,
     feed: bool,
 }
 
 #[derive(Deserialize)]
 pub struct FormData {
     pub number: Option<u32>,
+    pub dither: Option<bool>,
+    pub bright: Option<bool>,
     pub feed: Option<bool>,
 }
 
@@ -46,19 +49,28 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
     let info = client.get(url).send().await?.json::<ComicInfo>().await?;
 
     let image_data = client.get(&info.img).send().await?.bytes().await?;
-    let image = image::load_from_memory(&image_data)?.into_rgba8();
-
-    let max_width = Some(384);
-    let max_height = Some(1024);
-    let image = super::image::dither(image, max_width, max_height, false, "stucki")
-        .map_err(somehow::Error)?;
+    let mut image = image::load_from_memory(&image_data)?.into_rgba8();
 
     let data = Data {
         number: info.num,
         title: info.title,
         alt: info.alt,
+        dither: form.dither.unwrap_or(true),
         feed: form.feed.unwrap_or(true),
     };
+
+    if data.dither {
+        let max_width = Some(384);
+        let max_height = Some(1024);
+        image = super::image::dither(
+            image,
+            max_width,
+            max_height,
+            form.bright.unwrap_or(false),
+            "stucki",
+        )
+        .map_err(somehow::Error)?;
+    }
 
     let mut bytes: Vec<u8> = Vec::new();
     image

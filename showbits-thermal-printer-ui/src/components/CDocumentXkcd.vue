@@ -7,12 +7,16 @@ const { disabled, error, makeRequest } = useApiRequest();
 const form = useTemplateRef<HTMLFormElement>("form");
 
 const number = ref<number>();
+const dither = ref(true);
+const bright = ref(false);
 const feed = ref(true);
 
 function submit() {
   const data = new URLSearchParams();
   if (typeof number.value === "number")
     data.append("number", number.value.toFixed());
+  data.append("dither", String(dither.value));
+  data.append("bright", String(bright.value));
   data.append("feed", String(feed.value));
   void makeRequest("api/xkcd", data);
 }
@@ -33,7 +37,18 @@ function submit() {
       />
     </label>
 
-    <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
+    <div class="wide">
+      <label><input v-model="dither" type="checkbox" :disabled /> Dither</label>
+      <label
+        ><input
+          v-model="bright"
+          type="checkbox"
+          :disabled="disabled || !dither"
+        />
+        Bright</label
+      >
+      <label><input v-model="feed" type="checkbox" :disabled /> Feed</label>
+    </div>
 
     <button :disabled>Print</button>
     <CError :message="error" />
