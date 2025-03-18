@@ -13,6 +13,8 @@ use tokio::{runtime::Runtime, sync::mpsc};
 
 use self::{drawer::Drawer, persistent_printer::PersistentPrinter};
 
+const USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"));
+
 #[derive(Parser)]
 struct Args {
     /// Path to the queue directory.

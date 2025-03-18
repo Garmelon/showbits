@@ -44,6 +44,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/api/sunrise", post(documents::sunrise::post))
         .route("/api/text", post(documents::text::post))
         .route("/api/tictactoe", post(documents::tictactoe::post))
+        .route("/api/xkcd", post(documents::xkcd::post))
         // Rest
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(Server { tx });

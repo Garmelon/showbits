@@ -8,6 +8,7 @@ import CDocumentImage from "./CDocumentImage.vue";
 import CDocumentSunrise from "./CDocumentSunrise.vue";
 import CDocumentText from "./CDocumentText.vue";
 import CDocumentTictactoe from "./CDocumentTictactoe.vue";
+import CDocumentXkcd from "./CDocumentXkcd.vue";
 
 const mode = ref<
   | "calendar"
@@ -18,6 +19,7 @@ const mode = ref<
   | "sunrise"
   | "text"
   | "tictactoe"
+  | "xkcd"
 >();
 </script>
 
@@ -32,6 +34,7 @@ const mode = ref<
     <CDocumentSunrise v-if="mode === 'sunrise'" />
     <CDocumentText v-if="mode === 'text'" />
     <CDocumentTictactoe v-if="mode === 'tictactoe'" />
+    <CDocumentXkcd v-if="mode === 'xkcd'" />
     <hr v-if="mode !== undefined" />
     <section>
       <p>What do you want to print?</p>
@@ -44,6 +47,7 @@ const mode = ref<
         <button @click="mode = 'sunrise'">Sunrise and Sunset</button>
         <button @click="mode = 'text'">Text</button>
         <button @click="mode = 'tictactoe'">Tic Tac Toe</button>
+        <button @click="mode = 'xkcd'">xkcd</button>
         <a href="photo.html">Take a photo</a>
       </div>
     </section>
