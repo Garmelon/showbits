@@ -66,7 +66,7 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
             image,
             max_width,
             max_height,
-            form.bright.unwrap_or(false),
+            form.bright.unwrap_or(true),
             "stucki",
         )
         .map_err(somehow::Error)?;

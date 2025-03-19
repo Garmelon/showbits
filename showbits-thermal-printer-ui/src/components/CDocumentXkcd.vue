@@ -8,7 +8,7 @@ const form = useTemplateRef<HTMLFormElement>("form");
 
 const number = ref<number>();
 const dither = ref(true);
-const bright = ref(false);
+const bright = ref(true);
 const feed = ref(true);
 
 function submit() {
