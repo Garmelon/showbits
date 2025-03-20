@@ -32,7 +32,7 @@ function submit() {
         v-model="rule"
         type="number"
         min="0"
-        max="127"
+        max="255"
         placeholder="random"
         :disabled
       />
