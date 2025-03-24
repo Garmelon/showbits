@@ -29,7 +29,7 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
 
     let first = civil::Date::new(year, month, 1)?;
     let mut times = vec![];
-    for day in 1..=first.days_in_month() {
+    for day in 0..first.days_in_month() {
         let date = first + day.days();
         let (rise, set) = sunrise::sunrise_sunset(
             form.latitude,
