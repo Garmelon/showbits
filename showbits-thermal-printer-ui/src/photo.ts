@@ -1,5 +1,5 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "./AppPhoto.vue";
 
 // The type of App contains any in its type parameters, according to vscode.
 // Presumably, this is what triggers the lint.
