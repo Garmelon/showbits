@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@remixicon/vue": "^4.6.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {
