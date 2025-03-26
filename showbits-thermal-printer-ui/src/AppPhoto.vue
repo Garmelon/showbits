@@ -7,7 +7,7 @@ import { assert } from "./lib/assert";
 
 const video = useTemplateRef<HTMLVideoElement>("video");
 
-const live = ref(false);
+const stream = ref<MediaStream>();
 const facing = ref<string>();
 const mirrored = computed(() => facing.value === "user");
 const covered = ref(false);
@@ -20,16 +20,27 @@ function getFacingModeFromStream(stream: MediaStream): string | undefined {
 }
 
 async function initStream(facingMode?: string) {
-  const stream = await navigator.mediaDevices.getUserMedia({
+  assert(video.value !== null);
+  const video_ = video.value;
+
+  // If the tracks are not all stopped, getUserMedia throws an exception.
+  if (stream.value !== undefined) {
+    for (const track of stream.value.getTracks()) {
+      track.stop();
+    }
+  }
+
+  stream.value = undefined;
+  facing.value = undefined;
+  video_.srcObject = null;
+
+  stream.value = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: { ideal: facingMode } },
   });
 
-  // Display stream as video
-  assert(video.value !== null);
-  video.value.srcObject = stream;
+  facing.value = getFacingModeFromStream(stream.value);
 
-  live.value = true;
-  facing.value = getFacingModeFromStream(stream);
+  video_.srcObject = stream.value;
 }
 
 async function waitAtLeast(duration: number, since: number) {
@@ -88,8 +99,11 @@ onMounted(async () => {
   <video ref="video" :class="{ mirrored }" autoplay playsinline></video>
   <div class="buttons">
     <CPhotoButtonGallery style="visibility: hidden" />
-    <CPhotoButtonRecord :disabled="!live" @click="onRecord" />
-    <CPhotoButtonFlip :disabled="facing === undefined" @click="onFlip" />
+    <CPhotoButtonRecord :disabled="stream === undefined" @click="onRecord" />
+    <CPhotoButtonFlip
+      :disabled="stream === undefined || facing === undefined"
+      @click="onFlip"
+    />
   </div>
   <div class="cover" :class="{ hidden: !covered }"></div>
 </template>
