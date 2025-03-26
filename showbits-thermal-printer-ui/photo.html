@@ -137,39 +137,39 @@
         flip.setAttribute("href", `?facing=${facingOpposite}`);
       }
 
-      await initStream(facing);
-
-      async function waitAtLeast(duration, since) {
-        const now = Date.now();
-        const wait = duration - (now - since);
-        if (wait > 0) {
-          await new Promise((resolve) => setTimeout(resolve, wait));
-        }
-      }
-
-      button.addEventListener("click", () => {
-        const canvas = document.createElement("canvas");
-        const scale = 384 / video.videoWidth;
-        canvas.width = video.videoWidth * scale;
-        canvas.height = video.videoHeight * scale;
-        canvas
-          .getContext("2d")
-          .drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        canvas.toBlob(async (blob) => {
-          const form = new FormData();
-          form.append("image", blob);
-          form.append("caption", new Date().toLocaleString());
-
-          const start = Date.now();
-          cover.classList.remove("hidden");
-          try {
-            await fetch("api/image", { method: "POST", body: form });
-          } catch (e) {
-            console.error("Error uploading image:", e);
+      initStream(facing).then(() => {
+        async function waitAtLeast(duration, since) {
+          const now = Date.now();
+          const wait = duration - (now - since);
+          if (wait > 0) {
+            await new Promise((resolve) => setTimeout(resolve, wait));
           }
-          await waitAtLeast(500, start);
-          cover.classList.add("hidden");
+        }
+
+        button.addEventListener("click", () => {
+          const canvas = document.createElement("canvas");
+          const scale = 384 / video.videoWidth;
+          canvas.width = video.videoWidth * scale;
+          canvas.height = video.videoHeight * scale;
+          canvas
+            .getContext("2d")
+            .drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          canvas.toBlob(async (blob) => {
+            const form = new FormData();
+            form.append("image", blob);
+            form.append("caption", new Date().toLocaleString());
+
+            const start = Date.now();
+            cover.classList.remove("hidden");
+            try {
+              await fetch("api/image", { method: "POST", body: form });
+            } catch (e) {
+              console.error("Error uploading image:", e);
+            }
+            await waitAtLeast(500, start);
+            cover.classList.add("hidden");
+          });
         });
       });
     </script>
