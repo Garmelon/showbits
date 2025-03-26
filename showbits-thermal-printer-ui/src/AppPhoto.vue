@@ -19,20 +19,20 @@ function getFacingModeFromStream(stream: MediaStream): string | undefined {
   return video?.getSettings().facingMode;
 }
 
+function deinitStream() {
+  if (stream.value === undefined) return;
+  for (const track of stream.value.getTracks()) {
+    track.stop();
+  }
+  stream.value = undefined;
+}
+
 async function initStream(facingMode?: string) {
   assert(video.value !== null);
   const video_ = video.value;
 
   // If the tracks are not all stopped, getUserMedia throws an exception.
-  if (stream.value !== undefined) {
-    for (const track of stream.value.getTracks()) {
-      track.stop();
-    }
-  }
-
-  stream.value = undefined;
-  facing.value = undefined;
-  video_.srcObject = null;
+  deinitStream();
 
   stream.value = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: { ideal: facingMode } },
@@ -69,6 +69,7 @@ async function postImage(image: Blob | File) {
 
 async function onGallery(file: File) {
   await postImage(file);
+  await initStream(facing.value);
 }
 
 async function onRecord() {
