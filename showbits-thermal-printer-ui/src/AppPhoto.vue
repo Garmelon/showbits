@@ -51,27 +51,9 @@ async function waitAtLeast(duration: number, since: number) {
   }
 }
 
-async function onRecord() {
-  assert(video.value !== null);
-
-  const canvas = document.createElement("canvas");
-
-  const scale = 384 / video.value.videoWidth;
-  canvas.width = video.value.videoWidth * scale;
-  canvas.height = video.value.videoHeight * scale;
-
-  const ctx = canvas.getContext("2d");
-  assert(ctx !== null);
-
-  ctx.drawImage(video.value, 0, 0, canvas.width, canvas.height);
-
-  const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve);
-  });
-  assert(blob !== null);
-
+async function postImage(image: Blob | File) {
   const form = new FormData();
-  form.append("image", blob);
+  form.append("image", image);
   form.append("caption", new Date().toLocaleString());
 
   const start = Date.now();
@@ -83,6 +65,31 @@ async function onRecord() {
   }
   await waitAtLeast(500, start);
   covered.value = false;
+}
+
+async function onGallery(file: File) {
+  await postImage(file);
+}
+
+async function onRecord() {
+  assert(video.value !== null);
+  const video_ = video.value;
+
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  assert(ctx !== null);
+
+  const scale = 384 / video_.videoWidth;
+  canvas.width = video_.videoWidth * scale; // Yes, slightly redundant
+  canvas.height = video_.videoHeight * scale;
+  ctx.drawImage(video_, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise<Blob | null>((resolve) => {
+    canvas.toBlob(resolve);
+  });
+  assert(blob !== null);
+
+  await postImage(blob);
 }
 
 async function onFlip() {
@@ -98,7 +105,7 @@ onMounted(async () => {
 <template>
   <video ref="video" :class="{ mirrored }" autoplay playsinline></video>
   <div class="buttons">
-    <CPhotoButtonGallery style="visibility: hidden" />
+    <CPhotoButtonGallery @click="onGallery" />
     <CPhotoButtonRecord :disabled="stream === undefined" @click="onRecord" />
     <CPhotoButtonFlip
       :disabled="stream === undefined || facing === undefined"
