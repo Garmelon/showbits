@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RiLoader4Fill } from "@remixicon/vue";
 import { computed, onMounted, ref, useTemplateRef } from "vue";
 import CPhotoButtonFlip from "./components/CPhotoButtonFlip.vue";
 import CPhotoButtonGallery from "./components/CPhotoButtonGallery.vue";
@@ -113,7 +114,9 @@ onMounted(async () => {
       @click="onFlip"
     />
   </div>
-  <div class="cover" :class="{ hidden: !covered }"></div>
+  <div class="cover" :class="{ hidden: !covered }">
+    <RiLoader4Fill size="48px" />
+  </div>
 </template>
 
 <style>
@@ -150,11 +153,25 @@ video.mirrored {
   width: 100%;
   height: 100%;
   background-color: white;
-  transition: background-color 100ms linear;
+  transition: opacity 100ms linear;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .cover.hidden {
-  background-color: transparent;
+  opacity: 0;
   pointer-events: none;
+}
+
+.cover svg {
+  animation: spinner 2s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
