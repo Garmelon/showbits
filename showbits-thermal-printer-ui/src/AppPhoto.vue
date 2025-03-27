@@ -69,8 +69,11 @@ async function postImage(image: Blob | File) {
 }
 
 async function onGallery(file: File) {
-  await postImage(file);
-  await initStream(facing.value);
+  try {
+    await postImage(file);
+  } finally {
+    await initStream(facing.value);
+  }
 }
 
 async function onRecord() {
