@@ -6,6 +6,7 @@ edition = { workspace = true }
 [dependencies]
 anyhow = { workspace = true }
 axum = { workspace = true, features = ["multipart"] }
+chrono = {workspace = true}
 clap = { workspace = true }
 escpos = { workspace = true }
 image = { workspace = true }

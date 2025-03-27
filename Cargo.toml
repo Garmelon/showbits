@@ -9,6 +9,7 @@ edition = "2024"
 [workspace.dependencies]
 anyhow = "1.0.97"
 axum = "0.8.1"
+chrono = "0.4.40"
 clap = { version = "4.5.33", features = ["derive", "deprecated"] }
 escpos = "0.15.0"
 image = "0.25.6"
