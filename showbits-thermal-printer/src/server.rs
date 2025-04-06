@@ -2,6 +2,8 @@ pub mod somehow;
 mod r#static;
 pub mod statuscode;
 
+use std::path::PathBuf;
+
 use axum::{
     Router,
     extract::DefaultBodyLimit,
@@ -18,6 +20,7 @@ use crate::{documents, drawer::Command};
 #[derive(Clone)]
 pub struct Server {
     tx: mpsc::Sender<Command>,
+    pub originals: Option<PathBuf>,
 }
 
 impl Server {
@@ -28,7 +31,11 @@ impl Server {
     }
 }
 
-pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> {
+pub async fn run(
+    tx: mpsc::Sender<Command>,
+    addr: String,
+    originals: Option<PathBuf>,
+) -> anyhow::Result<()> {
     let app = Router::new()
         // Files
         .route("/", get(r#static::get_index))
@@ -47,7 +54,7 @@ pub async fn run(tx: mpsc::Sender<Command>, addr: String) -> anyhow::Result<()> 
         .route("/api/xkcd", post(documents::xkcd::post))
         // Rest
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
-        .with_state(Server { tx });
+        .with_state(Server { tx, originals });
 
     let listener = TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;

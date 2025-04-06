@@ -1,4 +1,4 @@
-use std::io::Cursor;
+use std::{fs, io::Cursor};
 
 use anyhow::{Context, anyhow, bail};
 use axum::{
@@ -10,6 +10,7 @@ use image::{
     DynamicImage, EncodableLayout, ImageDecoder, ImageFormat, ImageReader, Luma, Pixel, RgbaImage,
     imageops,
 };
+use jiff::Timestamp;
 use mark::dither::{AlgoFloydSteinberg, AlgoStucki, Algorithm, DiffEuclid, Palette};
 use palette::LinSrgb;
 use serde::Serialize;
@@ -101,17 +102,7 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
     while let Some(field) = multipart.next_field().await? {
         match field.name() {
             Some("image") => {
-                let data = field.bytes().await?;
-
-                // https://github.com/image-rs/image/issues/2392#issuecomment-2547393362
-                let mut decoder = ImageReader::new(Cursor::new(data.as_bytes()))
-                    .with_guessed_format()?
-                    .into_decoder()?;
-                let orientation = decoder.orientation()?;
-                let mut decoded = DynamicImage::from_decoder(decoder)?;
-                decoded.apply_orientation(orientation);
-
-                image = Some(decoded.to_rgba8());
+                image = Some(field.bytes().await?);
             }
             Some("title") => {
                 data.title = Some(field.text().await?).filter(|it| !it.is_empty());
@@ -139,10 +130,31 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         return Ok(status_code(StatusCode::UNPROCESSABLE_ENTITY));
     };
 
+    // Export original image if requested
+    if let Some(dir) = &server.originals {
+        fs::create_dir_all(dir)?;
+        let path = dir.join(Timestamp::now().as_millisecond().to_string());
+        fs::write(path, &image)?;
+    }
+
+    // Decode image data
+    let image = {
+        // https://github.com/image-rs/image/issues/2392#issuecomment-2547393362
+        let mut decoder = ImageReader::new(Cursor::new(image.as_bytes()))
+            .with_guessed_format()?
+            .into_decoder()?;
+        let orientation = decoder.orientation()?;
+        let mut decoded = DynamicImage::from_decoder(decoder)?;
+        decoded.apply_orientation(orientation);
+        decoded.to_rgba8()
+    };
+
+    // Dither image
     let max_width = Some(384);
     let max_height = Some(1024);
     let image = dither(image, max_width, max_height, bright, &algo).map_err(somehow::Error)?;
 
+    // Encode dithered image for typst
     let mut bytes: Vec<u8> = Vec::new();
     image
         .write_to(&mut Cursor::new(&mut bytes), ImageFormat::Png)

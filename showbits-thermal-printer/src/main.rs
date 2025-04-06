@@ -33,6 +33,11 @@ struct Args {
     /// Export an image of whatever is printed here.
     #[arg(long, short)]
     export: Option<PathBuf>,
+
+    /// Export the original images printed by the image document, before
+    /// dithering or other manipulation.
+    #[arg(long, short)]
+    originals: Option<PathBuf>,
 }
 
 fn main() -> anyhow::Result<()> {
@@ -44,7 +49,7 @@ fn main() -> anyhow::Result<()> {
     let mut drawer = Drawer::new(rx, printer);
 
     let runtime = Runtime::new()?;
-    runtime.spawn(server::run(tx.clone(), args.address));
+    runtime.spawn(server::run(tx.clone(), args.address, args.originals));
     runtime.spawn(async move {
         loop {
             let _ = tx.send(Command::Backlog).await;

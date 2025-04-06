@@ -1,14 +1,15 @@
 #!/usr/bin/env fish
 
-argparse h/help p/print r/release -- $argv
+argparse h/help p/print o/originals r/release -- $argv
 and not set -ql _flag_help
 or begin
     echo "Usage:" (status filename) "[OPTIONS]"
     echo
     echo "Options:"
-    echo "  -h, --help      Show this help"
-    echo "  -p, --print     Attach to printer at /dev/usb/lp0"
-    echo "  -r, --release   Use 'cargo run --release'"
+    echo "  -h, --help       Show this help"
+    echo "  -p, --print      Attach to printer at /dev/usb/lp0"
+    echo "  -o, --originals  Export original images"
+    echo "  -r, --release    Use 'cargo run --release'"
     return
 end
 
@@ -22,6 +23,11 @@ if set -ql _flag_print
     set arg_print -p /dev/usb/lp0
 end
 
+set -l arg_originals
+if set -ql _flag_originals
+    set arg_originals -o target/originals
+end
+
 cargo run $arg_release \
     --package showbits-thermal-printer \
-    -- target/queue -e target/image.png $arg_print
+    -- target/queue -e target/image.png $arg_print $arg_originals
