@@ -1,6 +1,10 @@
 # showbits
 
-Displaying pixel-perfect images on esoteric devices.
+Displaying pixel-perfect images on a thermal printer.
+
+![The printer in question.](images/thermal-printer.jpg)
+
+![The web ui for controlling the printer in question.](images/thermal-printer-ui.png)
 
 ## Developing
 
@@ -27,11 +31,9 @@ intermediate artifacts.
 - SSH login attempts (live)
 - Stats in the form of a receipt
 - Sudoku
-- Sunrise, sunset
 - Text banner (text flows parallel to paper)
 - Weather report
 - Wiki To Go
-- Xkcd (current, random)
 
 Implemented:
 
@@ -40,6 +42,8 @@ Implemented:
 - Chat messages (euph, twitch)
 - Instant camera
 - Procedural easter egg generator
+- Sunrise, sunset
+- Xkcd (current, random)
 
 ## Todos
 
