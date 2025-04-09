@@ -43,7 +43,7 @@ Implemented:
 - Instant camera
 - Procedural easter egg generator
 - Sunrise, sunset
-- Xkcd (current, random)
+- xkcd (current, random)
 
 ## Todos
 
