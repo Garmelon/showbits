@@ -136,12 +136,14 @@ onMounted(() => {
     <p>{{ originalsInfo }}</p>
   </div>
   <div class="buttons">
-    <CPhotoButtonGallery @click="onGallery" />
-    <CPhotoButtonRecord :disabled="stream === undefined" @click="onRecord" />
-    <CPhotoButtonFlip
-      :disabled="stream === undefined || facing === undefined"
-      @click="onFlip"
-    />
+    <div>
+      <CPhotoButtonGallery @click="onGallery" />
+      <CPhotoButtonRecord :disabled="stream === undefined" @click="onRecord" />
+      <CPhotoButtonFlip
+        :disabled="stream === undefined || facing === undefined"
+        @click="onFlip"
+      />
+    </div>
   </div>
   <div class="cover" :class="{ hidden: !covered }">
     <RiLoader4Fill size="48px" />
@@ -149,6 +151,17 @@ onMounted(() => {
 </template>
 
 <style>
+:root {
+  --button-fg: #000;
+  --button-active-fg: #fff;
+  --button-active-bg: #000;
+  --button-disabled-fg: #888;
+
+  --record-button-fg: #f00;
+  --record-button-active-fg: #800;
+  --record-button-disabled-fg: var(--button-disabled-fg);
+}
+
 body {
   margin: 0;
   background-color: black;
@@ -166,32 +179,44 @@ video.mirrored {
   scale: -1 1;
 }
 
-.originals {
+.originals,
+.buttons {
   position: absolute;
-  top: 0;
   width: 100%;
   display: flex;
   justify-content: center;
 }
+.originals {
+  top: 0;
+}
+.buttons {
+  bottom: 0;
+}
+
+.originals p,
+.buttons div {
+  border-radius: 100px;
+  background-color: #fffa;
+  backdrop-filter: blur(8px);
+}
 
 .originals p {
-  margin: 0;
-  margin-top: 20px;
-  padding: 0.2em 0.8em;
-  border-radius: 10em;
-  background-color: #fffa;
+  margin: 10px 0 0 0;
+  padding: 5px 20px;
+
   text-align: center;
 }
 
-.buttons {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  margin-bottom: 20px;
-
+.buttons div {
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
+  gap: 20px;
+
+  /* The big button has a height of 100px, the smaller one a height of 74px. This
+   * calculation ensures the border of the background element is cocentric with
+   * the smaller buttons. */
+  padding: 10px calc(10px + (100px - 74px) / 2);
+  margin-bottom: 10px;
 }
 
 .cover {

@@ -12,21 +12,20 @@ import { RiCameraSwitchFill } from "@remixicon/vue";
 button {
   padding: 8px;
 
-  color: white;
-  border: 5px solid white;
+  color: var(--button-fg);
+  border: 5px solid var(--button-fg);
   border-radius: 100px;
   background-color: transparent;
 }
 
 button:enabled:active {
-  color: black;
-  background-color: white;
+  color: var(--button-active-fg);
+  background-color: var(--button-active-bg);
 }
 
 button:disabled {
-  --disabled: #444;
-  color: var(--disabled);
-  border-color: var(--disabled);
+  color: var(--button-disabled-fg);
+  border-color: var(--button-disabled-fg);
 }
 
 svg {

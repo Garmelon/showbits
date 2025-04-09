@@ -27,16 +27,16 @@ function onImageChange() {
 label {
   padding: 8px;
 
-  border: 5px solid white;
+  border: 5px solid var(--button-fg);
   border-radius: 100px;
   background-color: transparent;
 
-  color: white;
+  color: var(--button-fg);
 }
 
 label:active {
-  background-color: white;
-  color: black;
+  color: var(--button-active-fg);
+  background-color: var(--button-active-bg);
 }
 
 svg {

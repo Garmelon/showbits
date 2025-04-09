@@ -9,7 +9,7 @@ button {
   width: 100px;
   height: 100px;
 
-  --color: red;
+  --color: var(--record-button-fg);
 
   border: 10px solid var(--color);
   border-radius: 100px;
@@ -17,11 +17,11 @@ button {
 }
 
 button:enabled:active {
-  --color: white;
+  --color: var(--record-button-active-fg);
 }
 
 button:disabled {
-  --color: #444;
+  --color: var(--record-button-disabled-fg);
 }
 
 button div {
