@@ -102,13 +102,17 @@ async function onRecord() {
   const ctx = canvas.getContext("2d");
   assert(ctx !== null);
 
-  const scale = 384 / video_.videoWidth;
+  const scale = originals.value ? 1 : 384 / video_.videoWidth;
   canvas.width = video_.videoWidth * scale; // Yes, slightly redundant
   canvas.height = video_.videoHeight * scale;
   ctx.drawImage(video_, 0, 0, canvas.width, canvas.height);
 
   const blob = await new Promise<Blob | null>((resolve) => {
-    canvas.toBlob(resolve);
+    if (originals.value) {
+      canvas.toBlob(resolve, "image/jpeg", 0.9);
+    } else {
+      canvas.toBlob(resolve);
+    }
   });
   assert(blob !== null);
 
