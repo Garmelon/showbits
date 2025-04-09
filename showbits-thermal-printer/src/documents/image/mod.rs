@@ -2,6 +2,7 @@ use std::{fs, io::Cursor};
 
 use anyhow::{Context, anyhow, bail};
 use axum::{
+    Json,
     extract::{Multipart, State},
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -168,4 +169,15 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
 
     server.print_typst(typst).await?;
     Ok(().into_response())
+}
+
+#[derive(Serialize)]
+struct Info {
+    originals: bool,
+}
+
+pub async fn get(server: State<Server>) -> impl IntoResponse {
+    Json(Info {
+        originals: server.originals.is_some(),
+    })
 }

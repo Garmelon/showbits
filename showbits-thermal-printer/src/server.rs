@@ -47,7 +47,10 @@ pub async fn run(
         .route("/api/cells", post(documents::cells::post))
         .route("/api/chat", post(documents::chat::post))
         .route("/api/egg", post(documents::egg::post))
-        .route("/api/image", post(documents::image::post))
+        .route(
+            "/api/image",
+            post(documents::image::post).get(documents::image::get),
+        )
         .route("/api/sunrise", post(documents::sunrise::post))
         .route("/api/text", post(documents::text::post))
         .route("/api/tictactoe", post(documents::tictactoe::post))

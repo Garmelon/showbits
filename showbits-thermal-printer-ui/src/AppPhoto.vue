@@ -6,12 +6,24 @@ import CPhotoButtonGallery from "./components/CPhotoButtonGallery.vue";
 import CPhotoButtonRecord from "./components/CPhotoButtonRecord.vue";
 import { assert } from "./lib/assert";
 
+const endpoint = "api/image";
 const video = useTemplateRef<HTMLVideoElement>("video");
 
 const stream = ref<MediaStream>();
 const facing = ref<string>();
 const mirrored = computed(() => facing.value === "user");
 const covered = ref(false);
+const originals = ref<boolean>();
+
+const originalsInfo = computed(() => {
+  if (originals.value === true) {
+    return "Uploaded images are saved.";
+  } else if (originals.value === false) {
+    return "Uploaded images are not saved.";
+  } else {
+    return "Uploaded images may be saved.";
+  }
+});
 
 function getFacingModeFromStream(stream: MediaStream): string | undefined {
   const videos = stream.getVideoTracks();
@@ -44,6 +56,12 @@ async function initStream(facingMode?: string) {
   video_.srcObject = stream.value;
 }
 
+async function initOriginals() {
+  const response = await fetch(endpoint);
+  const info = (await response.json()) as { originals?: boolean };
+  originals.value = info.originals ?? false;
+}
+
 async function waitAtLeast(duration: number, since: number) {
   const now = Date.now();
   const wait = duration - (now - since);
@@ -60,7 +78,7 @@ async function postImage(image: Blob | File) {
   const start = Date.now();
   covered.value = true;
   try {
-    await fetch("api/image", { method: "POST", body: form });
+    await fetch(endpoint, { method: "POST", body: form });
   } catch (e) {
     console.error("Error uploading image:", e);
   }
@@ -102,13 +120,17 @@ async function onFlip() {
   await initStream(facingOpposite);
 }
 
-onMounted(async () => {
-  await initStream();
+onMounted(() => {
+  void initStream();
+  void initOriginals();
 });
 </script>
 
 <template>
   <video ref="video" :class="{ mirrored }" autoplay playsinline></video>
+  <div class="originals">
+    <p>{{ originalsInfo }}</p>
+  </div>
   <div class="buttons">
     <CPhotoButtonGallery @click="onGallery" />
     <CPhotoButtonRecord :disabled="stream === undefined" @click="onRecord" />
@@ -138,6 +160,23 @@ video {
 
 video.mirrored {
   scale: -1 1;
+}
+
+.originals {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.originals p {
+  margin: 0;
+  margin-top: 20px;
+  padding: 0.2em 0.8em;
+  border-radius: 10em;
+  background-color: #fffa;
+  text-align: center;
 }
 
 .buttons {
