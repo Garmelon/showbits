@@ -152,10 +152,12 @@ onMounted(() => {
 
 <style>
 :root {
+  --drawer-bg: #fffa;
+
   --button-fg: #000;
   --button-active-fg: #fff;
   --button-active-bg: #000;
-  --button-disabled-fg: #888;
+  --button-disabled-fg: #888a;
 
   --record-button-fg: #f00;
   --record-button-active-fg: #800;
@@ -196,7 +198,7 @@ video.mirrored {
 .originals p,
 .buttons div {
   border-radius: 100px;
-  background-color: #fffa;
+  background-color: var(--drawer-bg);
   backdrop-filter: blur(8px);
 }
 
