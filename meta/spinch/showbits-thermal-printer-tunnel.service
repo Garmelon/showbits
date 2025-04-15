@@ -8,6 +8,7 @@ After=network-online.target
 [Service]
 Type=simple
 ExecStart=ssh plugh@plugh.de -NR 8005:localhost:8001 -o ExitOnForwardFailure=yes
+# ExecStart=ssh plugh@plugh.de -NR 1234:localhost:8001 -o ExitOnForwardFailure=yes
 Restart=on-failure
 RestartSec=1min
 
