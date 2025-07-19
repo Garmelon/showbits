@@ -43,6 +43,7 @@ pub async fn run(
         .route("/fonts/{*path}", get(r#static::get_font))
         .route("/photo.html", get(r#static::get_photo))
         // API
+        .route("/api/banner", post(documents::banner::post))
         .route("/api/calendar", post(documents::calendar::post))
         .route("/api/cells", post(documents::cells::post))
         .route("/api/chat", post(documents::chat::post))

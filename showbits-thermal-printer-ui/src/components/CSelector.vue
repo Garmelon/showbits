@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import CDocumentBanner from "./CDocumentBanner.vue";
 import CDocumentCalendar from "./CDocumentCalendar.vue";
 import CDocumentCells from "./CDocumentCells.vue";
 import CDocumentChat from "./CDocumentChat.vue";
@@ -11,6 +12,7 @@ import CDocumentTictactoe from "./CDocumentTictactoe.vue";
 import CDocumentXkcd from "./CDocumentXkcd.vue";
 
 const mode = ref<
+  | "banner"
   | "calendar"
   | "cells"
   | "chat"
@@ -26,6 +28,7 @@ const mode = ref<
 <template>
   <div class="outer">
     <button v-if="mode" class="close" @click="mode = undefined">X</button>
+    <CDocumentBanner v-if="mode === 'banner'" />
     <CDocumentCalendar v-if="mode === 'calendar'" />
     <CDocumentCells v-if="mode === 'cells'" />
     <CDocumentChat v-if="mode === 'chat'" />
@@ -39,6 +42,7 @@ const mode = ref<
     <section>
       <p>What do you want to print?</p>
       <div class="list">
+        <button @click="mode = 'banner'">Banner</button>
         <button @click="mode = 'calendar'">Calendar</button>
         <button @click="mode = 'cells'">Cellular Automaton</button>
         <button @click="mode = 'chat'">Chat Message</button>
