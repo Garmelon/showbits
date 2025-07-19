@@ -91,6 +91,7 @@ struct Data {
 pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::Result<Response> {
     let mut image = None;
     let mut algo = "stucki".to_string();
+    let mut rotate = false;
     let mut bright = true;
 
     let mut data = Data {
@@ -113,6 +114,9 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
             }
             Some("algo") => {
                 algo = field.text().await?;
+            }
+            Some("rotate") => {
+                rotate = !field.text().await?.is_empty();
             }
             Some("bright") => {
                 bright = !field.text().await?.is_empty();
@@ -139,7 +143,7 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
     }
 
     // Decode image data
-    let image = {
+    let mut image = {
         // https://github.com/image-rs/image/issues/2392#issuecomment-2547393362
         let mut decoder = ImageReader::new(Cursor::new(image.as_bytes()))
             .with_guessed_format()?
@@ -149,6 +153,11 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
         decoded.apply_orientation(orientation);
         decoded.to_rgba8()
     };
+
+    // Rotate image
+    if rotate {
+        image = imageops::rotate90(&image);
+    }
 
     // Dither image
     let max_width = Some(384);

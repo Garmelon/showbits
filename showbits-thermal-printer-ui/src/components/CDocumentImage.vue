@@ -10,6 +10,7 @@ const file = ref<File>();
 const title = ref("");
 const caption = ref("");
 const algo = ref("stucki");
+const rotate = ref(false);
 const bright = ref(true);
 const seamless = ref(false);
 const feed = ref(true);
@@ -33,6 +34,7 @@ function onFormSubmit() {
   if (title.value) data.append("title", title.value);
   if (caption.value) data.append("caption", caption.value);
   data.append("algo", algo.value);
+  data.append("rotate", String(rotate.value));
   data.append("bright", String(bright.value));
   data.append("seamless", String(seamless.value));
   data.append("feed", String(feed.value));
@@ -89,6 +91,7 @@ function onImageChange() {
     </label>
 
     <div class="wide">
+      <label><input v-model="rotate" type="checkbox" :disabled /> Rotate</label>
       <label><input v-model="bright" type="checkbox" :disabled /> Bright</label>
       <label>
         <input v-model="seamless" type="checkbox" :disabled />
