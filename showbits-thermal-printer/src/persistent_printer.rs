@@ -79,10 +79,10 @@ impl PersistentPrinter {
 
     pub fn print_backlog(&mut self) -> anyhow::Result<()> {
         // Don't try to print if the chances of success are zero.
-        if let Some(file) = &self.printer_file {
-            if !file.exists() {
-                return Ok(());
-            }
+        if let Some(file) = &self.printer_file
+            && !file.exists()
+        {
+            return Ok(());
         }
 
         let mut files = vec![];

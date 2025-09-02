@@ -3,6 +3,7 @@ use tokio::sync::{mpsc, oneshot};
 
 use crate::persistent_printer::PersistentPrinter;
 
+#[expect(clippy::large_enum_variant)]
 pub enum Command {
     Backlog,
     Typst(Typst, oneshot::Sender<anyhow::Result<()>>),
