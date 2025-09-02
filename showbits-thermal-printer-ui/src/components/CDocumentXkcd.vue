@@ -7,6 +7,7 @@ const { disabled, error, makeRequest } = useApiRequest();
 const form = useTemplateRef<HTMLFormElement>("form");
 
 const number = ref<number>();
+const rotate = ref(false);
 const dither = ref(true);
 const bright = ref(true);
 const feed = ref(true);
@@ -15,6 +16,7 @@ function submit() {
   const data = new URLSearchParams();
   if (typeof number.value === "number")
     data.append("number", number.value.toFixed());
+  data.append("rotate", String(rotate.value));
   data.append("dither", String(dither.value));
   data.append("bright", String(bright.value));
   data.append("feed", String(feed.value));
@@ -38,6 +40,7 @@ function submit() {
     </label>
 
     <div class="wide">
+      <label><input v-model="rotate" type="checkbox" :disabled /> Rotate</label>
       <label><input v-model="dither" type="checkbox" :disabled /> Dither</label>
       <label
         ><input

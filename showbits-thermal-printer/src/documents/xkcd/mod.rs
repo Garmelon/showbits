@@ -6,7 +6,7 @@ use axum::{
     extract::State,
     response::{IntoResponse, Response},
 };
-use image::ImageFormat;
+use image::{ImageFormat, imageops};
 use serde::{Deserialize, Serialize};
 
 use crate::server::{Server, somehow};
@@ -31,6 +31,7 @@ struct Data {
 #[derive(Deserialize)]
 pub struct FormData {
     pub number: Option<u32>,
+    pub rotate: Option<bool>,
     pub dither: Option<bool>,
     pub bright: Option<bool>,
     pub feed: Option<bool>,
@@ -58,6 +59,10 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
         dither: form.dither.unwrap_or(true),
         feed: form.feed.unwrap_or(true),
     };
+
+    if form.rotate.unwrap_or(false) {
+        image = imageops::rotate90(&image);
+    }
 
     if data.dither {
         let max_width = Some(384);
