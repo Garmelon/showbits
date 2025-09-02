@@ -3,7 +3,7 @@
     "fmt": "prettier . --write"
   },
   "devDependencies": {
-    "@types/node": "^22.13.13",
-    "prettier": "^3.5.3"
+    "@types/node": "^22.18.0",
+    "prettier": "^3.6.2"
   }
 }

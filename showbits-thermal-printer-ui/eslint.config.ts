@@ -1,10 +1,11 @@
 import eslint from "@eslint/js";
 import prettier from "eslint-config-prettier";
 import vue from "eslint-plugin-vue";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   { files: ["**/*.{js,mjs,cjs,ts,vue}"] },
   { ignores: ["dist/"] },
 
