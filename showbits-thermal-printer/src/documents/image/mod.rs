@@ -116,13 +116,13 @@ pub async fn post(server: State<Server>, mut multipart: Multipart) -> somehow::R
                 algo = field.text().await?;
             }
             Some("rotate") => {
-                rotate = !field.text().await?.is_empty();
+                rotate = bool_from_str(&field.text().await?)?;
             }
             Some("bright") => {
-                bright = !field.text().await?.is_empty();
+                bright = bool_from_str(&field.text().await?)?;
             }
             Some("seamless") => {
-                data.seamless = !field.text().await?.is_empty();
+                data.seamless = bool_from_str(&field.text().await?)?;
             }
             Some("feed") => {
                 data.feed = bool_from_str(&field.text().await?)?;
