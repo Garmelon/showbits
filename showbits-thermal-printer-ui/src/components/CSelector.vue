@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import CDocumentBanner from "./CDocumentBanner.vue";
 import CDocumentCalendar from "./CDocumentCalendar.vue";
+import CDocumentsCatfishing from "./CDocumentCatfishing.vue";
 import CDocumentCells from "./CDocumentCells.vue";
 import CDocumentChat from "./CDocumentChat.vue";
 import CDocumentEgg from "./CDocumentEgg.vue";
@@ -14,6 +15,7 @@ import CDocumentXkcd from "./CDocumentXkcd.vue";
 const mode = ref<
   | "banner"
   | "calendar"
+  | "catfishing"
   | "cells"
   | "chat"
   | "egg"
@@ -30,6 +32,7 @@ const mode = ref<
     <button v-if="mode" class="close" @click="mode = undefined">X</button>
     <CDocumentBanner v-if="mode === 'banner'" />
     <CDocumentCalendar v-if="mode === 'calendar'" />
+    <CDocumentsCatfishing v-if="mode === 'catfishing'" />
     <CDocumentCells v-if="mode === 'cells'" />
     <CDocumentChat v-if="mode === 'chat'" />
     <CDocumentEgg v-if="mode === 'egg'" />
@@ -44,6 +47,7 @@ const mode = ref<
       <div class="list">
         <button @click="mode = 'banner'">Banner</button>
         <button @click="mode = 'calendar'">Calendar</button>
+        <button @click="mode = 'catfishing'">Catfishing</button>
         <button @click="mode = 'cells'">Cellular Automaton</button>
         <button @click="mode = 'chat'">Chat Message</button>
         <button @click="mode = 'egg'">Easter Egg</button>

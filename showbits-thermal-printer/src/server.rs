@@ -45,6 +45,7 @@ pub async fn run(
         // API
         .route("/api/banner", post(documents::banner::post))
         .route("/api/calendar", post(documents::calendar::post))
+        .route("/api/catfishing", post(documents::catfishing::post))
         .route("/api/cells", post(documents::cells::post))
         .route("/api/chat", post(documents::chat::post))
         .route("/api/egg", post(documents::egg::post))
