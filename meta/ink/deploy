@@ -1,0 +1,25 @@
+#!/usr/bin/env fish
+
+set -l TARGET arm-unknown-linux-gnueabihf
+
+function heading
+    set -l border (string repeat -n (string length $argv) '#')
+    echo
+    set_color --bold yellow
+    echo "##$border##"
+    echo "# $argv #"
+    echo "##$border##"
+    set_color normal
+end
+
+heading "Compile binary"
+cross build --bin showbits-ink --release --target $TARGET
+or exit 1
+
+heading "Copy files"
+rsync -P target/$TARGET/release/showbits-ink inky@inky:
+or exit 1
+
+heading "Run binary"
+ssh inky@inky './showbits-ink'
+or exit 1
