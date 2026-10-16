@@ -46,18 +46,23 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
 
         let solar_day = SolarDay::new(coord, date_chrono);
 
-        let rise_chrono = solar_day.event_time(SolarEvent::Sunrise);
-        let set_chrono = solar_day.event_time(SolarEvent::Sunset);
+        let rise = if let Some(rise) = solar_day.event_time(SolarEvent::Sunrise) {
+            Timestamp::new(rise.timestamp(), 0)?
+                .to_zoned(now.time_zone().clone())
+                .strftime("%H:%M")
+                .to_string()
+        } else {
+            "-----".to_string()
+        };
 
-        let rise = Timestamp::new(rise_chrono.timestamp(), 0)?
-            .to_zoned(now.time_zone().clone())
-            .strftime("%H:%M")
-            .to_string();
-
-        let set = Timestamp::new(set_chrono.timestamp(), 0)?
-            .to_zoned(now.time_zone().clone())
-            .strftime("%H:%M")
-            .to_string();
+        let set = if let Some(set) = solar_day.event_time(SolarEvent::Sunset) {
+            Timestamp::new(set.timestamp(), 0)?
+                .to_zoned(now.time_zone().clone())
+                .strftime("%H:%M")
+                .to_string()
+        } else {
+            "-----".to_string()
+        };
 
         times.push((rise, set));
     }
