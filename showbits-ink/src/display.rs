@@ -24,6 +24,7 @@
 use std::thread;
 use std::time::Duration;
 
+use anyhow::Context;
 use image::{Rgb, RgbImage};
 use rppal::gpio::{Gpio, InputPin, OutputPin};
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
@@ -45,11 +46,14 @@ struct Eps7in5bHd {
 impl Eps7in5bHd {
     fn new() -> anyhow::Result<Self> {
         let gpio = Gpio::new()?;
+        let spi = Spi::new(Bus::Spi0, SlaveSelect::Ss0, 4000000, Mode::Mode0)
+            .context("failed to initialize SPI, make sure it is enabled in raspi-config")?;
+
         Ok(Self {
             pin_dc: gpio.get(25)?.into_output(),
             pin_rst: gpio.get(17)?.into_output(),
             pin_busy: gpio.get(24)?.into_input(),
-            spi: Spi::new(Bus::Spi0, SlaveSelect::Ss0, 4000000, Mode::Mode0)?,
+            spi,
         })
     }
 
