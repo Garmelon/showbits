@@ -3475,6 +3475,14 @@ name = "showbits-assets"
 version = "0.0.0"
 
 [[package]]
+name = "showbits-ink"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+]
+
+[[package]]
 name = "showbits-thermal-printer"
 version = "0.0.0"
 dependencies = [
