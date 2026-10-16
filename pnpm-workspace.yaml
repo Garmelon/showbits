@@ -1,2 +1,4 @@
 packages:
   - showbits-thermal-printer-ui
+allowBuilds:
+  esbuild: false
