@@ -131,7 +131,7 @@ pub async fn post(server: State<Server>, Form(form): Form<FormData>) -> somehow:
     );
 
     let data = Data {
-        rule: Some(rule).filter(|_| show_rule),
+        rule: show_rule.then_some(rule),
         feed: form.feed.unwrap_or(true),
     };
 
