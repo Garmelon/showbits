@@ -6,6 +6,9 @@ edition = { workspace = true }
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true }
+image = { workspace = true }
+palette = { workspace = true }
+rppal = { workspace = true }
 
 [lints]
 workspace = true

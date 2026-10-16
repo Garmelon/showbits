@@ -19,7 +19,3 @@ or exit 1
 heading "Copy files"
 rsync -P target/$TARGET/release/showbits-ink inky@inky:
 or exit 1
-
-heading "Run binary"
-ssh inky@inky './showbits-ink'
-or exit 1
