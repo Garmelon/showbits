@@ -1,0 +1,6 @@
+#!/usr/bin/env fish
+
+magick - \
+    \( xc:white xc:black xc:red +append -write mpr:palette +delete \) \
+    -dither FloydSteinberg -remap mpr:palette \
+    png:-

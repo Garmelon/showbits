@@ -1,0 +1,9 @@
+#!/usr/bin/env fish
+
+set -l WIDTH 880
+set -l HEIGHT 528
+
+magick - \
+    -resize "$WIDTH"x"$HEIGHT>" \
+    -background white -gravity center -extent {$WIDTH}x{$HEIGHT} \
+    png:-

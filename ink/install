@@ -1,0 +1,27 @@
+#!/usr/bin/env fish
+
+function heading
+    set -l border (string repeat -n (string length $argv) '#')
+    echo
+    set_color --bold yellow
+    echo "##$border##"
+    echo "# $argv #"
+    echo "##$border##"
+    set_color normal
+end
+
+if test (count $argv) -ne 2
+    echo "Usage:" (status filename) "<user> <host>"
+    exit 1
+end
+
+set -l USER $argv[1]
+set -l HOST $argv[2]
+
+heading "Enable SPI"
+ssh -t $USER@$HOST "sudo raspi-config nonint do_spi 0"
+or exit 1
+
+heading "Enable lingering"
+ssh -t $USER@$HOST "sudo loginctl enable-linger $USER"
+or exit 1

@@ -1,0 +1,10 @@
+#!/usr/bin/env fish
+
+if test (count $argv) -ne 1
+    echo "Usage:" (status filename) "<url>"
+    return 1
+end
+
+set -l URL $argv[1]
+
+curl --silent --show-error --fail-with-body --form image=@- $URL
