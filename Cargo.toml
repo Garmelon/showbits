@@ -3,6 +3,7 @@ resolver = "3"
 members = [
     "showbits-assets",
     "showbits-ink",
+    "showbits-print",
     "showbits-thermal-printer",
     "showbits-typst",
 ]

@@ -3507,6 +3507,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "showbits-print"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "escpos",
+ "image",
+ "showbits-common",
+ "tokio",
+]
+
+[[package]]
 name = "showbits-thermal-printer"
 version = "0.0.0"
 dependencies = [

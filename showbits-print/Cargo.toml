@@ -1,0 +1,15 @@
+[package]
+name = "showbits-print"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+escpos = { workspace = true }
+image = { workspace = true }
+showbits-common = { workspace = true }
+tokio = { workspace = true, features = ["full"] }
+
+[lints]
+workspace = true
