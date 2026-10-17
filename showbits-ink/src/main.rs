@@ -1,3 +1,4 @@
+mod color;
 mod display;
 
 use std::{path::PathBuf, thread, time::Duration};
@@ -7,6 +8,8 @@ use clap::Parser;
 use image::RgbImage;
 use showbits_common::{Queue, Server, run_server};
 use tokio::runtime::Runtime;
+
+use crate::color::Color;
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -37,14 +40,7 @@ impl Server for InkServer {
         }
 
         for pixel in image.pixels_mut() {
-            let [r, g, b] = pixel.0;
-            if r > 127 && g <= 127 && b <= 127 {
-                *pixel = display::RED;
-            } else if r <= 127 && g <= 127 && b <= 127 {
-                *pixel = display::BLACK;
-            } else {
-                *pixel = display::WHITE;
-            }
+            *pixel = Color::from_rgb(*pixel).into_rgb();
         }
 
         Ok(image)
@@ -63,8 +59,7 @@ fn main() -> anyhow::Result<()> {
         if let Some(entry) = queue.next_entry()? {
             display::display(entry.image())?;
             entry.dequeue()?;
-        } else {
-            thread::sleep(Duration::from_millis(100));
         }
+        thread::sleep(Duration::from_millis(100));
     }
 }

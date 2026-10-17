@@ -25,16 +25,14 @@ use std::thread;
 use std::time::Duration;
 
 use anyhow::Context;
-use image::{Rgb, RgbImage};
+use image::RgbImage;
 use rppal::gpio::{Gpio, InputPin, OutputPin};
 use rppal::spi::{Bus, Mode, SlaveSelect, Spi};
 
+use crate::color::Color;
+
 pub const WIDTH: u32 = 880;
 pub const HEIGHT: u32 = 528;
-
-pub const WHITE: Rgb<u8> = Rgb([255, 255, 255]);
-pub const BLACK: Rgb<u8> = Rgb([0, 0, 0]);
-pub const RED: Rgb<u8> = Rgb([200, 0, 0]);
 
 struct Eps7in5bHd {
     pin_dc: OutputPin,
@@ -156,36 +154,36 @@ impl Eps7in5bHd {
             for i in 0..WIDTH / 8 {
                 let x = i * 8;
 
-                let p0 = image.get_pixel(x, y);
-                let p1 = image.get_pixel(x + 1, y);
-                let p2 = image.get_pixel(x + 2, y);
-                let p3 = image.get_pixel(x + 3, y);
-                let p4 = image.get_pixel(x + 4, y);
-                let p5 = image.get_pixel(x + 5, y);
-                let p6 = image.get_pixel(x + 6, y);
-                let p7 = image.get_pixel(x + 7, y);
+                let p0 = Color::from_rgb(*image.get_pixel(x, y));
+                let p1 = Color::from_rgb(*image.get_pixel(x + 1, y));
+                let p2 = Color::from_rgb(*image.get_pixel(x + 2, y));
+                let p3 = Color::from_rgb(*image.get_pixel(x + 3, y));
+                let p4 = Color::from_rgb(*image.get_pixel(x + 4, y));
+                let p5 = Color::from_rgb(*image.get_pixel(x + 5, y));
+                let p6 = Color::from_rgb(*image.get_pixel(x + 6, y));
+                let p7 = Color::from_rgb(*image.get_pixel(x + 7, y));
 
                 // 0 if black, 1 otherwise
-                let p0b = if *p0 != BLACK { 0b1000_0000 } else { 0 };
-                let p1b = if *p1 != BLACK { 0b0100_0000 } else { 0 };
-                let p2b = if *p2 != BLACK { 0b0010_0000 } else { 0 };
-                let p3b = if *p3 != BLACK { 0b0001_0000 } else { 0 };
-                let p4b = if *p4 != BLACK { 0b0000_1000 } else { 0 };
-                let p5b = if *p5 != BLACK { 0b0000_0100 } else { 0 };
-                let p6b = if *p6 != BLACK { 0b0000_0010 } else { 0 };
-                let p7b = if *p7 != BLACK { 0b0000_0001 } else { 0 };
+                let p0b = if p0 != Color::Black { 0b1000_0000 } else { 0 };
+                let p1b = if p1 != Color::Black { 0b0100_0000 } else { 0 };
+                let p2b = if p2 != Color::Black { 0b0010_0000 } else { 0 };
+                let p3b = if p3 != Color::Black { 0b0001_0000 } else { 0 };
+                let p4b = if p4 != Color::Black { 0b0000_1000 } else { 0 };
+                let p5b = if p5 != Color::Black { 0b0000_0100 } else { 0 };
+                let p6b = if p6 != Color::Black { 0b0000_0010 } else { 0 };
+                let p7b = if p7 != Color::Black { 0b0000_0001 } else { 0 };
                 let black = p0b | p1b | p2b | p3b | p4b | p5b | p6b | p7b;
                 black_buffer[(y * WIDTH / 8 + i) as usize] = black;
 
                 // 1 if red, 0 otherwise (contrary to what the wiki article says)
-                let p0r = if *p0 == RED { 0b1000_0000 } else { 0 };
-                let p1r = if *p1 == RED { 0b0100_0000 } else { 0 };
-                let p2r = if *p2 == RED { 0b0010_0000 } else { 0 };
-                let p3r = if *p3 == RED { 0b0001_0000 } else { 0 };
-                let p4r = if *p4 == RED { 0b0000_1000 } else { 0 };
-                let p5r = if *p5 == RED { 0b0000_0100 } else { 0 };
-                let p6r = if *p6 == RED { 0b0000_0010 } else { 0 };
-                let p7r = if *p7 == RED { 0b0000_0001 } else { 0 };
+                let p0r = if p0 == Color::Red { 0b1000_0000 } else { 0 };
+                let p1r = if p1 == Color::Red { 0b0100_0000 } else { 0 };
+                let p2r = if p2 == Color::Red { 0b0010_0000 } else { 0 };
+                let p3r = if p3 == Color::Red { 0b0001_0000 } else { 0 };
+                let p4r = if p4 == Color::Red { 0b0000_1000 } else { 0 };
+                let p5r = if p5 == Color::Red { 0b0000_0100 } else { 0 };
+                let p6r = if p6 == Color::Red { 0b0000_0010 } else { 0 };
+                let p7r = if p7 == Color::Red { 0b0000_0001 } else { 0 };
                 let red = p0r | p1r | p2r | p3r | p4r | p5r | p6r | p7r;
                 red_buffer[(y * WIDTH / 8 + i) as usize] = red;
             }
