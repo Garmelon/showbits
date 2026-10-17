@@ -1,12 +1,6 @@
 [workspace]
 resolver = "3"
-members = [
-    "showbits-assets",
-    "showbits-ink",
-    "showbits-print",
-    "showbits-thermal-printer",
-    "showbits-typst",
-]
+members = ["showbits-common", "showbits-ink", "showbits-print"]
 
 [workspace.package]
 version = "0.0.0"
@@ -15,32 +9,13 @@ edition = "2024"
 [workspace.dependencies]
 anyhow = "1.0.104"
 axum = "0.8.9"
-chrono = "0.4.45"
 clap = { version = "4.6.7", features = ["derive", "deprecated"] }
 escpos = "0.20.1"
 image = "0.25.10"
 jiff = "0.2.38"
-mime_guess = "2.0.5"
-palette = "0.7.7"
-rand = "0.10.3"
-reqwest = { version = "0.13.5", features = ["json"] }
 rppal = "0.22.1"
-rust-embed = "8.13.0"
-serde = { version = "1.0.229", features = ["derive"] }
-serde_json = "1.0.154"
-showbits-assets = { path = "./showbits-assets" }
 showbits-common = { path = "./showbits-common" }
-showbits-typst = { path = "./showbits-typst" }
-sunrise = "3.0.0"
 tokio = "1.53.3"
-typst = "0.13.1"
-typst-assets = { version = "0.13.1", features = ["fonts"] }
-typst-kit = { version = "0.13.1", features = ["vendor-openssl"] }
-typst-render = "0.13.1"
-
-[workspace.dependencies.mark]
-git = "https://github.com/Garmelon/mark.git"
-rev = "2a862a69d69abc64ddd7eefd1e1ff3d05ce3b6e4"
 
 [workspace.lints]
 rust.unsafe_code = { level = "forbid", priority = 1 }

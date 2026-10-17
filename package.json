@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "fmt": "prettier . --write"
-  },
-  "devDependencies": {
-    "@types/node": "^22.18.0",
-    "prettier": "^3.6.2"
-  }
-}

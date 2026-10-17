@@ -2,9 +2,9 @@
 
 Displaying pixel-perfect images on a thermal printer.
 
-![The printer in question.](images/thermal-printer.jpg)
+![The printer in question.](assets/thermal-printer.jpg)
 
-![The web ui for controlling the printer in question.](images/thermal-printer-ui.png)
+![The web ui for controlling the printer in question.](assets/thermal-printer-ui.png)
 
 ## Developing
 

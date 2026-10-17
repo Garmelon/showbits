@@ -1,4 +1,0 @@
-#!/usr/bin/env fish
-
-cargo fmt
-pnpm fmt

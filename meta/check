@@ -1,7 +1,0 @@
-#!/usr/bin/env fish
-
-cargo clippy
-
-pushd showbits-thermal-printer-ui
-pnpm check
-popd
