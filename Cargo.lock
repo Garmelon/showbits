@@ -3484,15 +3484,25 @@ name = "showbits-assets"
 version = "0.0.0"
 
 [[package]]
-name = "showbits-ink"
+name = "showbits-common"
 version = "0.0.0"
 dependencies = [
  "anyhow",
  "axum",
- "clap",
  "image",
  "jiff",
+ "tokio",
+]
+
+[[package]]
+name = "showbits-ink"
+version = "0.0.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "image",
  "rppal",
+ "showbits-common",
  "tokio",
 ]
 

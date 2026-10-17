@@ -1,15 +1,12 @@
 mod display;
-mod queue;
-mod server;
 
 use std::{path::PathBuf, thread, time::Duration};
 
 use anyhow::bail;
 use clap::Parser;
 use image::RgbImage;
+use showbits_common::{Queue, Server, run_server};
 use tokio::runtime::Runtime;
-
-use crate::{queue::Queue, server::Server};
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -60,7 +57,7 @@ fn main() -> anyhow::Result<()> {
     let server = InkServer(queue.clone());
 
     let runtime = Runtime::new()?;
-    runtime.spawn(server::run(server, args.address));
+    runtime.spawn(run_server(server, args.address));
 
     loop {
         if let Some(entry) = queue.next_entry()? {

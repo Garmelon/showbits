@@ -1,16 +1,15 @@
 use std::fmt::Display;
 
-use ::image::RgbImage;
 use axum::{
     Router,
     extract::{DefaultBodyLimit, Multipart, State},
     http::StatusCode,
     response::{IntoResponse, Response},
-    routing::post,
 };
+use image::RgbImage;
 use tokio::net::TcpListener;
 
-use crate::queue::Queue;
+use crate::Queue;
 
 fn status_code_with_info(code: StatusCode, info: impl Display) -> Response {
     let message = format!("{code}\n\n{info}");
@@ -58,13 +57,13 @@ async fn post_image<S: Server>(
     Ok(status_code_with_info(StatusCode::OK, "image queued"))
 }
 
-pub async fn run<S>(server: S, address: String) -> anyhow::Result<()>
+pub async fn run_server<S>(server: S, address: String) -> anyhow::Result<()>
 where
     S: Server + Clone + Sync + Send + 'static,
 {
     let app = Router::new()
         // Files
-        .route("/", post(post_image::<S>))
+        .route("/", axum::routing::post(post_image::<S>))
         // Rest
         .layer(DefaultBodyLimit::max(32 * 1024 * 1024)) // 32 MiB
         .with_state(server);
