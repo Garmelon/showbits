@@ -1,10 +1,18 @@
-#!/usr/bin/env fish
+#!/usr/bin/env python3
 
-if test (count $argv) -ne 1
-    echo "Usage:" (status filename) "<url>"
-    return 1
-end
+import argparse
+import subprocess
 
-set -l URL $argv[1]
+parser = argparse.ArgumentParser()
+parser.add_argument("url")
+args = parser.parse_args()
 
-curl --silent --show-error --fail-with-body --form image=@- $URL
+subprocess.run(
+    [
+        "curl",
+        *["--silent", "--show-error", "--fail-with-body"],
+        *["--form", "image=@-"],
+        args.url,
+    ],
+    check=True,
+)

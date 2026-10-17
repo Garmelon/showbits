@@ -1,6 +1,21 @@
-#!/usr/bin/env fish
+#!/usr/bin/env python3
 
-magick - \
-    \( xc:white xc:black xc:'rgb(200,0,0)' +append -write mpr:palette +delete \) \
-    -dither FloydSteinberg -remap mpr:palette \
-    png:-
+import argparse
+import subprocess
+
+PALETTE = ["white", "black", "rgb(200,0,0)"]
+
+parser = argparse.ArgumentParser()
+args = parser.parse_args()
+
+subprocess.run(
+    [
+        "magick",
+        "-",
+        *["(", *(f"xc:{color}" for color in PALETTE), "+append"],
+        *["-write", "mpr:palette", "+delete", ")"],
+        *["-dither", "FloydSteinberg", "-remap", "mpr:palette"],
+        "png:-",
+    ],
+    check=True,
+)

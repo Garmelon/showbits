@@ -26,13 +26,13 @@ Description=Showbits E-Ink Display
 
 [Service]
 Type=simple
-ExecStart=%h/showbits-ink -a 0.0.0.0:8080 -Q queue
-# ExecStart=%h/showbits-ink -a 0.0.0.0:8080 -Q queue -A archive
+ExecStart=%h/showbits-ink -a 0.0.0.0:8080 -Q queue -A archive
 Restart=on-failure
 WorkingDirectory=%h
 
 [Install]
-WantedBy=default.target"
+WantedBy=default.target
+"
 
 heading "Compile binary"
 cross build --bin showbits-ink --release --target $TARGET

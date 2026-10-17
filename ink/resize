@@ -1,9 +1,23 @@
-#!/usr/bin/env fish
+#!/usr/bin/env python3
 
-set -l WIDTH 880
-set -l HEIGHT 528
+import argparse
+import subprocess
 
-magick - \
-    -resize "$WIDTH"x"$HEIGHT>" \
-    -background white -gravity center -extent {$WIDTH}x{$HEIGHT} \
-    png:-
+parser = argparse.ArgumentParser()
+parser.add_argument("-W", "--width", type=int, default=880)
+parser.add_argument("-H", "--height", type=int, default=528)
+args = parser.parse_args()
+
+size = f"{args.width}x{args.height}"
+
+subprocess.run(
+    [
+        "magick",
+        "-",
+        *["-resize", f"{size}>"],
+        *["-background", "white", "-gravity", "center"],
+        *["-extent", size],
+        "png:-",
+    ],
+    check=True,
+)
