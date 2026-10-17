@@ -3488,10 +3488,13 @@ name = "showbits-ink"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "axum",
  "clap",
  "image",
+ "jiff",
  "palette",
  "rppal",
+ "tokio",
 ]
 
 [[package]]
