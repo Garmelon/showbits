@@ -1,14 +1,15 @@
 mod display;
-mod prepare;
 mod queue;
 mod server;
 
 use std::{path::PathBuf, thread, time::Duration};
 
+use anyhow::bail;
 use clap::Parser;
+use image::RgbImage;
 use tokio::runtime::Runtime;
 
-use crate::queue::Queue;
+use crate::{queue::Queue, server::Server};
 
 #[derive(Debug, Parser)]
 struct Args {
@@ -25,12 +26,41 @@ struct Args {
     archive: Option<PathBuf>,
 }
 
+#[derive(Clone)]
+struct InkServer(Queue);
+
+impl Server for InkServer {
+    fn queue(&self) -> &Queue {
+        &self.0
+    }
+
+    fn prepare(&self, mut image: RgbImage) -> anyhow::Result<RgbImage> {
+        if image.width() != display::WIDTH || image.height() != display::HEIGHT {
+            bail!("image must be {}x{}", display::WIDTH, display::HEIGHT);
+        }
+
+        for pixel in image.pixels_mut() {
+            let [r, g, b] = pixel.0;
+            if r > 127 && g <= 127 && b <= 127 {
+                *pixel = display::RED;
+            } else if r <= 127 && g <= 127 && b <= 127 {
+                *pixel = display::BLACK;
+            } else {
+                *pixel = display::WHITE;
+            }
+        }
+
+        Ok(image)
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let queue = Queue::new(args.queue, args.archive)?;
+    let server = InkServer(queue.clone());
 
     let runtime = Runtime::new()?;
-    runtime.spawn(server::run(args.address, queue.clone()));
+    runtime.spawn(server::run(server, args.address));
 
     loop {
         if let Some(entry) = queue.next_entry()? {
