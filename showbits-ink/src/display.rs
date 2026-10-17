@@ -34,7 +34,7 @@ pub const HEIGHT: u32 = 528;
 
 pub const WHITE: Rgb<u8> = Rgb([255, 255, 255]);
 pub const BLACK: Rgb<u8> = Rgb([0, 0, 0]);
-pub const RED: Rgb<u8> = Rgb([255, 0, 0]);
+pub const RED: Rgb<u8> = Rgb([200, 0, 0]);
 
 struct Eps7in5bHd {
     pin_dc: OutputPin,
