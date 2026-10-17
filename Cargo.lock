@@ -3492,7 +3492,6 @@ dependencies = [
  "clap",
  "image",
  "jiff",
- "palette",
  "rppal",
  "tokio",
 ]

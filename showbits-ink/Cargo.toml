@@ -9,7 +9,6 @@ axum = { workspace = true, features = ["multipart"] }
 clap = { workspace = true }
 image = { workspace = true }
 jiff = { workspace = true }
-palette = { workspace = true }
 rppal = { workspace = true }
 tokio = { workspace = true, features = ["full"] }
 
