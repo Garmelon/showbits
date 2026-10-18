@@ -1,5 +1,6 @@
 import argparse
 import shlex
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -41,18 +42,28 @@ cv2.namedWindow(WINDOW_TITLE)
 cam = cv2.VideoCapture(args.webcam)
 
 frames = sorted(SRC_FRAMES.iterdir())
+prev_frame = None
+prev_data = None
 for i, frame in enumerate(frames):
     print(f"On frame {i + 1:04}/{len(frames)}")
 
-    run(DIR / "show_frame", args.address, frame)
-    start = time.time()
+    data = frame.read_bytes()
+    if prev_frame is not None and data == prev_data:
+        print("Frame unchanged, copying previous capture")
+        shutil.copy(INK_FRAMES / prev_frame.name, INK_FRAMES / frame.name)
+    else:
+        run(DIR / "show_frame", args.address, frame)
+        start = time.time()
 
-    while time.time() < start + DISPLAY_DELAY:
-        ret, capture = cam.read()
-        cv2.imshow(WINDOW_TITLE, capture)
-        cv2.waitKey(20)
+        while time.time() < start + DISPLAY_DELAY:
+            ret, capture = cam.read()
+            cv2.imshow(WINDOW_TITLE, capture)
+            cv2.waitKey(20)
 
-    cv2.imwrite(INK_FRAMES / frame.name, capture)
+        cv2.imwrite(INK_FRAMES / frame.name, capture)
+
+    prev_frame = frame
+    prev_data = data
 
 cam.release()
 cv2.destroyWindow(WINDOW_TITLE)
