@@ -19,7 +19,7 @@ args = parser.parse_args()
 
 DIR = Path(__file__).parent
 TMP_DIR = DIR / "tmp" / args.name
-SRC_VIDEO = TMP_DIR / "src.mp4"
+SRC_VIDEO = TMP_DIR / "src.mkv"
 SRC_FRAMES = TMP_DIR / "src"
 INK_VIDEO = TMP_DIR / "ink.mp4"
 INK_FRAMES = TMP_DIR / "ink"
@@ -35,7 +35,14 @@ SRC_FRAMES.mkdir(parents=True, exist_ok=True)
 INK_FRAMES.mkdir(parents=True, exist_ok=True)
 
 if not SRC_VIDEO.exists():
-    run("yt-dlp", args.url, "-t", "mp4", "-o", SRC_VIDEO.with_suffix(".%(ext)s"))
+    run(
+        "yt-dlp",
+        args.url,
+        "--remux-video",
+        "mkv",
+        "-o",
+        SRC_VIDEO.with_suffix(".%(ext)s"),
+    )
 
 
 def probe(*args: str) -> str:
