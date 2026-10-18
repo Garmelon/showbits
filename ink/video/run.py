@@ -37,18 +37,29 @@ INK_FRAMES.mkdir(parents=True, exist_ok=True)
 if not SRC_VIDEO.exists():
     run("yt-dlp", args.url, "-t", "mp4", "-o", SRC_VIDEO.with_suffix(".%(ext)s"))
 
-run("ffmpeg", "-i", SRC_VIDEO, SRC_FRAMES / "%04d.png")
-frames = sorted(SRC_FRAMES.iterdir(), key=lambda frame: int(frame.stem))
 
-src_framerate = subprocess.run(
-    [
-        *("ffprobe", "-v", "error", "-select_streams", "v:0"),
-        *("-show_entries", "stream=r_frame_rate", "-of", "csv=p=0", SRC_VIDEO),
-    ],
-    check=True,
-    capture_output=True,
-    text=True,
-).stdout.strip()
+def probe(*args: str) -> str:
+    return subprocess.run(
+        [
+            *("ffprobe", "-v", "error", "-select_streams", "v:0"),
+            *args,
+            *("-of", "csv=p=0", SRC_VIDEO),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+src_framerate = probe("-show_entries", "stream=r_frame_rate")
+src_frame_count = int(
+    probe("-count_packets", "-show_entries", "stream=nb_read_packets")
+)
+
+if len(list(SRC_FRAMES.iterdir())) != src_frame_count:
+    run("ffmpeg", "-i", SRC_VIDEO, SRC_FRAMES / "%04d.png")
+
+src_frames = sorted(SRC_FRAMES.iterdir(), key=lambda frame: int(frame.stem))
 
 cv2.namedWindow(WINDOW_TITLE)
 cam = cv2.VideoCapture(args.webcam)
@@ -56,8 +67,8 @@ cam = cv2.VideoCapture(args.webcam)
 try:
     prev_src_frame = None
     prev_src_data = None
-    for i, src_frame in enumerate(frames):
-        print(f"On frame {i + 1:04}/{len(frames)}")
+    for i, src_frame in enumerate(src_frames):
+        print(f"On frame {i + 1:04}/{len(src_frames)}")
         ink_frame = INK_FRAMES / src_frame.name
 
         data = src_frame.read_bytes()
