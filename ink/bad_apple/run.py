@@ -43,17 +43,21 @@ cv2.namedWindow(WINDOW_TITLE)
 cam = cv2.VideoCapture(args.webcam)
 
 try:
-    prev_frame = None
-    prev_data = None
-    for i, frame in enumerate(frames):
+    prev_src_frame = None
+    prev_src_data = None
+    for i, src_frame in enumerate(frames):
         print(f"On frame {i + 1:04}/{len(frames)}")
+        ink_frame = INK_FRAMES / src_frame.name
 
-        data = frame.read_bytes()
-        if prev_frame is not None and data == prev_data:
+        data = src_frame.read_bytes()
+        if ink_frame.exists():
+            print("Output frame already exists, skipping")
+        elif prev_src_frame is not None and data == prev_src_data:
             print("Frame unchanged, copying previous capture")
-            shutil.copy(INK_FRAMES / prev_frame.name, INK_FRAMES / frame.name)
+            prev_ink_frame = INK_FRAMES / prev_src_frame.name
+            shutil.copy(prev_ink_frame, ink_frame)
         else:
-            run(DIR / "show_frame", args.address, frame)
+            run(DIR / "show_frame", args.address, src_frame)
             start = time.time()
 
             while time.time() < start + DISPLAY_DELAY:
@@ -61,10 +65,10 @@ try:
                 cv2.imshow(WINDOW_TITLE, capture)
                 cv2.waitKey(20)
 
-            cv2.imwrite(INK_FRAMES / frame.name, capture)
+            cv2.imwrite(ink_frame, capture)
 
-        prev_frame = frame
-        prev_data = data
+        prev_src_frame = src_frame
+        prev_src_data = data
 except KeyboardInterrupt:
     print("Aborted, building video from captured frames")
 
