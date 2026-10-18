@@ -10,16 +10,21 @@ import cv2
 WINDOW_TITLE = "camera"
 DISPLAY_DELAY = 24
 
+
+class Args:
+    address: str
+    video: Path
+    webcam: int = 0
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument("address")
-parser.add_argument("name")
-parser.add_argument("url")
+parser.add_argument("video", type=Path)
 parser.add_argument("-w", "--webcam", type=int, default=0)
-args = parser.parse_args()
+args = parser.parse_args(namespace=Args())
 
-DIR = Path(__file__).parent
-TMP_DIR = DIR / "tmp" / args.name
-SRC_VIDEO = TMP_DIR / "src.mkv"
+TMP_DIR = Path(__file__).parent / "tmp" / f"{args.video.name}.d"
+SRC_VIDEO = args.video
 SRC_FRAMES = TMP_DIR / "src"
 INK_VIDEO = TMP_DIR / "ink.mp4"
 INK_FRAMES = TMP_DIR / "ink"
@@ -33,16 +38,6 @@ def run(*args: str | Path) -> None:
 TMP_DIR.mkdir(parents=True, exist_ok=True)
 SRC_FRAMES.mkdir(parents=True, exist_ok=True)
 INK_FRAMES.mkdir(parents=True, exist_ok=True)
-
-if not SRC_VIDEO.exists():
-    run(
-        "yt-dlp",
-        args.url,
-        "--remux-video",
-        "mkv",
-        "-o",
-        SRC_VIDEO.with_suffix(".%(ext)s"),
-    )
 
 
 def probe(*args: str) -> str:
@@ -86,7 +81,7 @@ try:
             prev_ink_frame = INK_FRAMES / prev_src_frame.name
             shutil.copy(prev_ink_frame, ink_frame)
         else:
-            run(DIR / "show_frame", args.address, src_frame)
+            run(Path(__file__).parent / "show_frame", args.address, src_frame)
             start = time.time()
 
             while time.time() < start + DISPLAY_DELAY:
