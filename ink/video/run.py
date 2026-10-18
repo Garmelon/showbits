@@ -7,21 +7,22 @@ from pathlib import Path
 
 import cv2
 
-YOUTUBE_URL = "https://www.youtube.com/watch?v=FtutLA63Cp8"
-WINDOW_TITLE = "last capture"
+WINDOW_TITLE = "camera"
 DISPLAY_DELAY = 24
-SRC_FRAMERATE = 30
-
-DIR = Path(__file__).parent
-SRC_VIDEO = DIR / "bad_apple_src.mp4"
-SRC_FRAMES = DIR / "frames_src"
-INK_VIDEO = DIR / "bad_apple_ink.mp4"
-INK_FRAMES = DIR / "frames_ink"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("address")
+parser.add_argument("name")
+parser.add_argument("url")
 parser.add_argument("-w", "--webcam", type=int, default=0)
 args = parser.parse_args()
+
+DIR = Path(__file__).parent
+TMP_DIR = DIR / "tmp" / args.name
+SRC_VIDEO = TMP_DIR / "src.mp4"
+SRC_FRAMES = TMP_DIR / "src"
+INK_VIDEO = TMP_DIR / "ink.mp4"
+INK_FRAMES = TMP_DIR / "ink"
 
 
 def run(*args: str | Path) -> None:
@@ -29,15 +30,25 @@ def run(*args: str | Path) -> None:
     subprocess.run(args, check=True)
 
 
-DIR.mkdir(parents=True, exist_ok=True)
+TMP_DIR.mkdir(parents=True, exist_ok=True)
 SRC_FRAMES.mkdir(parents=True, exist_ok=True)
 INK_FRAMES.mkdir(parents=True, exist_ok=True)
 
 if not SRC_VIDEO.exists():
-    run("yt-dlp", YOUTUBE_URL, "-t", "mp4", "-o", SRC_VIDEO.with_suffix(".%(ext)s"))
+    run("yt-dlp", args.url, "-t", "mp4", "-o", SRC_VIDEO.with_suffix(".%(ext)s"))
 
 run("ffmpeg", "-i", SRC_VIDEO, SRC_FRAMES / "%04d.png")
-frames = sorted(SRC_FRAMES.iterdir())
+frames = sorted(SRC_FRAMES.iterdir(), key=lambda frame: int(frame.stem))
+
+src_framerate = subprocess.run(
+    [
+        *("ffprobe", "-v", "error", "-select_streams", "v:0"),
+        *("-show_entries", "stream=r_frame_rate", "-of", "csv=p=0", SRC_VIDEO),
+    ],
+    check=True,
+    capture_output=True,
+    text=True,
+).stdout.strip()
 
 cv2.namedWindow(WINDOW_TITLE)
 cam = cv2.VideoCapture(args.webcam)
@@ -77,7 +88,7 @@ cv2.destroyWindow(WINDOW_TITLE)
 
 run(
     "ffmpeg",
-    *("-framerate", str(SRC_FRAMERATE), "-i", INK_FRAMES / "%04d.png"),
-    *("-i", SRC_VIDEO, "-map", "0:v", "-map", "1:a", "-c:a", "copy", "-shortest"),
+    *("-framerate", src_framerate, "-i", INK_FRAMES / "%04d.png"),
+    *("-i", SRC_VIDEO, "-map", "0:v", "-map", "1:a?", "-c:a", "copy", "-shortest"),
     INK_VIDEO,
 )
