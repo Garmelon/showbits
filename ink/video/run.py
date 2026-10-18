@@ -98,8 +98,9 @@ cam.release()
 cv2.destroyWindow(WINDOW_TITLE)
 
 run(
-    "ffmpeg",
+    *("ffmpeg", "-y"),
     *("-framerate", src_framerate, "-i", INK_FRAMES / "%04d.png"),
     *("-i", SRC_VIDEO, "-map", "0:v", "-map", "1:a?", "-c:a", "copy", "-shortest"),
+    *("-c:v", "libx264", "-pix_fmt", "yuv420p"),
     INK_VIDEO,
 )
