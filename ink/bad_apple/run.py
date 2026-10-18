@@ -19,6 +19,7 @@ INK_FRAMES = DIR / "frames_ink"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("address")
+parser.add_argument("-w", "--webcam", type=int, default=0)
 args = parser.parse_args()
 
 
@@ -37,7 +38,7 @@ if not SRC_VIDEO.exists():
 run("ffmpeg", "-i", SRC_VIDEO, SRC_FRAMES / "%04d.png")
 
 cv2.namedWindow(WINDOW_TITLE)
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(args.webcam)
 
 frames = sorted(SRC_FRAMES.iterdir())
 for i, frame in enumerate(frames):
