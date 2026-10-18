@@ -9,6 +9,7 @@ import cv2
 YOUTUBE_URL = "https://www.youtube.com/watch?v=FtutLA63Cp8"
 WINDOW_TITLE = "last capture"
 DISPLAY_DELAY = 30
+SRC_FRAMERATE = 30
 
 DIR = Path(__file__).parent
 SRC_VIDEO = DIR / "bad_apple_src.mp4"
@@ -55,4 +56,9 @@ for i, frame in enumerate(frames):
 cam.release()
 cv2.destroyWindow(WINDOW_TITLE)
 
-run("ffmpeg", "-i", INK_FRAMES / "%04d.png", INK_VIDEO)
+run(
+    "ffmpeg",
+    *("-framerate", str(SRC_FRAMERATE), "-i", INK_FRAMES / "%04d.png"),
+    *("-i", SRC_VIDEO, "-map", "0:v", "-map", "1:a", "-c:a", "copy", "-shortest"),
+    INK_VIDEO,
+)
