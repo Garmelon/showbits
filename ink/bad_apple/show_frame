@@ -1,0 +1,2 @@
+#!/usr/bin/env fish
+cat $argv[2] | ink/resize | ink/dither | ink/post $argv[1]
