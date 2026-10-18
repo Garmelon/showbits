@@ -12,7 +12,7 @@ use tokio::net::TcpListener;
 use crate::Queue;
 
 fn status_code_with_info(code: StatusCode, info: impl Display) -> Response {
-    let message = format!("{code}\n\n{info}");
+    let message = format!("{code}: {info}\n");
     (code, message).into_response()
 }
 
