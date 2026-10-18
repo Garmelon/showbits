@@ -8,7 +8,7 @@ import cv2
 
 YOUTUBE_URL = "https://www.youtube.com/watch?v=FtutLA63Cp8"
 WINDOW_TITLE = "last capture"
-DISPLAY_DELAY = 30
+DISPLAY_DELAY = 24
 SRC_FRAMERATE = 30
 
 DIR = Path(__file__).parent
