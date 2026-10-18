@@ -6,15 +6,17 @@ import subprocess
 parser = argparse.ArgumentParser()
 parser.add_argument("-W", "--width", type=int, default=880)
 parser.add_argument("-H", "--height", type=int, default=528)
+parser.add_argument("-u", "--upscale", action="store_true")
 args = parser.parse_args()
 
 size = f"{args.width}x{args.height}"
+resize = size if args.upscale else f"{size}>"
 
 subprocess.run(
     [
         "magick",
         "-",
-        *["-resize", f"{size}>"],
+        *["-resize", resize],
         *["-background", "white", "-gravity", "center"],
         *["-extent", size],
         "png:-",
