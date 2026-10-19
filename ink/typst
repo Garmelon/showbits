@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import argparse
+import subprocess
+from pathlib import Path
+
+ROOT = Path(__file__).parent.parent
+
+parser = argparse.ArgumentParser()
+parser.add_argument("file")
+args = parser.parse_args()
+
+subprocess.run(
+    [
+        *("typst", "compile"),
+        *("--format", "png"),
+        *("--ppi", "72"),  # 1pt = 1px
+        *("--font-path", ROOT / "assets" / "fonts"),
+        *("--", args.file, "-"),
+    ],
+    check=True,
+)
