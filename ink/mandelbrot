@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import argparse
+import sys
+
+from PIL import Image
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-W", "--width", type=int, default=880)
+parser.add_argument("-H", "--height", type=int, default=528)
+parser.add_argument("--dx", type=int, default=0.5)
+parser.add_argument("--dy", type=int, default=0)
+parser.add_argument("--scale", type=int, default=230)
+parser.add_argument("--bound", type=float, default=2)
+parser.add_argument("--red", type=float, default=10)
+args = parser.parse_args()
+
+
+def lerp(a: float, b: float, f: float) -> float:
+    return a + f * (b - a)
+
+
+def unlerp(a: float, b: float, v: float) -> float:
+    return (v - a) / (b - a)
+
+
+def mandel(c: complex, limit: int = 100) -> int | None:
+    z = 0 + 0j
+    for i in range(limit):
+        z = z**2 + c
+        if abs(z) > 2:
+            return i
+
+
+img = Image.new("RGB", (args.width, args.height))
+for y in range(img.height):
+    fy = (y - (img.height - 1) / 2) / args.scale - args.dy
+    for x in range(img.width):
+        fx = (x - (img.width - 1) / 2) / args.scale - args.dx
+
+        m = mandel(complex(fx, fy))
+        if m is None:
+            img.putpixel((x, y), (255, 255, 255))
+        elif m >= args.red:
+            img.putpixel((x, y), (255, 0, 0))
+        else:
+            img.putpixel((x, y), (0, 0, 0))
+
+
+img.save(sys.stdout, "png")  # pyrefly: ignore[bad-argument-type]
