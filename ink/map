@@ -1,0 +1,233 @@
+#!/usr/bin/env python3
+
+import argparse
+import re
+import sys
+from pathlib import Path
+
+import osmnx as ox
+import pandas as pd
+from geopandas import GeoDataFrame
+from osmnx._errors import InsufficientResponseError
+from PIL import Image, ImageDraw, ImageFont
+from shapely import LineString, Point, Polygon, box
+
+ox.settings.cache_folder = Path.home() / ".cache" / "showbits" / "osmnx"
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+RED = (200, 0, 0)
+
+FONT = Path(__file__).parent.parent / "assets" / "fonts" / "unifont-15.1.05.otf"
+
+# Everything fetched from OSM. Changing this invalidates the cache.
+TAGS = {
+    "highway": True,
+    "area:highway": True,
+    "amenity": "parking",
+    "building": True,
+}
+
+# Road widths in meters by highway=* value, *_link uses the base value.
+ROAD_WIDTHS = {
+    "motorway": 12,
+    "trunk": 10,
+    "primary": 9,
+    "secondary": 8,
+    "tertiary": 7,
+    "unclassified": 6,
+    "residential": 6,
+    "living_street": 6,
+    "road": 6,
+    "pedestrian": 5,
+    "busway": 4,
+    "service": 4,
+    "track": 3,
+    "footway": 2,
+    "cycleway": 2,
+    "path": 2,
+    "bridleway": 2,
+    "steps": 2,
+    "corridor": 2,
+    "platform": 2,
+}
+DEFAULT_ROAD_WIDTH = 3
+
+# Roads that don't exist (yet).
+IGNORED_ROADS = {"construction", "proposed"}
+
+# Highway areas that are more than just road surface.
+IGNORED_ROAD_AREAS = {"services", "rest_area"}
+
+# Highway nodes drawn as circles, radius in meters.
+ROAD_NODES = {"turning_circle": 5, "turning_loop": 5}
+
+
+class Args:
+    location: str
+    radius: float
+    width: int
+    height: int
+    label: str | None
+    label_scale: int
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("location", help="address or 'lat,lon'")
+parser.add_argument("-r", "--radius", type=float, default=500, help="meters")
+parser.add_argument("-W", "--width", type=int, default=880)
+parser.add_argument("-H", "--height", type=int, default=528)
+parser.add_argument(
+    "-l",
+    "--label",
+    nargs="?",
+    const="",
+    help="draw a label, defaults to the location",
+)
+parser.add_argument("-L", "--label-scale", type=int, default=2)
+args = parser.parse_args(namespace=Args())
+
+
+def log(msg: str) -> None:
+    print(msg, file=sys.stderr)
+
+
+def locate(location: str) -> tuple[float, float]:
+    if m := re.fullmatch(r"\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*", location):
+        return float(m[1]), float(m[2])
+    log(f"Geocoding {location!r}")
+    try:
+        return ox.geocode(location)
+    except Exception:
+        sys.exit(f"Could not geocode {location!r}")
+
+
+lat, lon = locate(args.location)
+log(f"Center at {lat:.5f}, {lon:.5f}")
+
+# Work in UTM so meters are meters. The radius is the distance from the center
+# to the left/right edge.
+center = GeoDataFrame(geometry=[Point(lon, lat)], crs="EPSG:4326")
+utm = center.estimate_utm_crs()
+cx, cy = center.to_crs(utm).geometry[0].coords[0]
+dx = args.radius
+dy = args.radius * args.height / args.width
+view = GeoDataFrame(geometry=[box(cx - dx, cy - dy, cx + dx, cy + dy)], crs=utm)
+
+# The view is slightly rotated in lat/lon, so query its bounding box.
+log(f"Fetching OSM data for {2 * dx:.0f}m x {2 * dy:.0f}m area")
+try:
+    features = ox.features_from_polygon(box(*view.to_crs(4326).total_bounds), TAGS)
+except InsufficientResponseError:
+    sys.exit("No OSM features found for this area")
+features = features.to_crs(utm)
+
+
+def tag(key: str) -> pd.Series:
+    if key in features:
+        return features[key]
+    return pd.Series(None, index=features.index)
+
+
+highway = tag("highway")
+is_road = highway.notna() & ~highway.isin(IGNORED_ROADS)
+is_road_area = (is_road & ~highway.isin(IGNORED_ROAD_AREAS)) | tag("area:highway").notna()
+is_parking = (tag("amenity") == "parking") & (tag("parking") != "underground")
+is_building = tag("building").notna()
+
+geom_type = features.geom_type
+nodes = features[is_road & (geom_type == "Point") & highway.isin(ROAD_NODES)]
+lines = features[is_road & geom_type.isin(["LineString", "MultiLineString"])]
+areas = features[
+    (is_road_area | is_parking | is_building)
+    & geom_type.isin(["Polygon", "MultiPolygon"])
+]
+log(f"Drawing {len(areas)} areas, {len(lines)} roads, {len(nodes)} road nodes")
+
+scale = args.width / (2 * dx)  # Pixels per meter
+
+
+def to_px(coords) -> list[tuple[float, float]]:
+    return [((x - cx + dx) * scale, (cy + dy - y) * scale) for x, y, *_ in coords]
+
+
+def parts(geom):
+    return getattr(geom, "geoms", [geom])
+
+
+img = Image.new("RGB", (args.width, args.height), WHITE)
+draw = ImageDraw.Draw(img)
+
+
+def fill_polygon(poly: Polygon) -> None:
+    exterior = to_px(poly.exterior.coords)
+    if not poly.interiors:
+        draw.polygon(exterior, fill=BLACK)
+        return
+
+    # Holes must not erase anything drawn earlier, so draw through a mask.
+    mask = Image.new("1", img.size, 0)
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.polygon(exterior, fill=1)
+    for interior in poly.interiors:
+        mask_draw.polygon(to_px(interior.coords), fill=0)
+    img.paste(BLACK, mask=mask)
+
+
+def draw_circle(x: float, y: float, r: float) -> None:
+    draw.ellipse((x - r, y - r, x + r, y + r), fill=BLACK)
+
+
+def draw_line(line: LineString, width: float) -> None:
+    coords = to_px(line.coords)
+    w = max(1, round(width * scale))
+    draw.line(coords, fill=BLACK, width=w, joint="curve")
+
+    # Round caps so connecting roads have no gaps.
+    if w > 2:
+        for x, y in (coords[0], coords[-1]):
+            draw_circle(x, y, w / 2)
+
+
+def road_width(highway: str) -> float:
+    return ROAD_WIDTHS.get(highway.removesuffix("_link"), DEFAULT_ROAD_WIDTH)
+
+
+for geom in areas.geometry:
+    for poly in parts(geom):
+        fill_polygon(poly)
+
+for geom, kind in zip(lines.geometry, lines["highway"]):
+    for line in parts(geom):
+        draw_line(line, road_width(kind))
+
+for geom, kind in zip(nodes.geometry, nodes["highway"]):
+    x, y = to_px(geom.coords)[0]
+    draw_circle(x, y, ROAD_NODES[kind] * scale)
+
+
+def draw_label(img: Image.Image, text: str, scale: int) -> None:
+    # Unifont is a 16px bitmap font, so render at native size and scale up by an
+    # integer factor to keep it pixel-perfect.
+    font = ImageFont.truetype(FONT, 16)
+    left, top, right, bottom = font.getbbox(text)
+    pad = 4
+    label = Image.new("L", (right - left + 2 * pad, 16 + 2 * pad), 255)
+    ImageDraw.Draw(label).text((pad - left, pad), text, font=font, fill=0)
+    label = label.resize((label.width * scale, label.height * scale), Image.NEAREST)
+
+    margin = 8
+    border = scale
+    x = margin
+    y = img.height - margin - label.height - 2 * border
+    w = label.width + 2 * border
+    h = label.height + 2 * border
+    ImageDraw.Draw(img).rectangle((x, y, x + w - 1, y + h - 1), fill=BLACK)
+    img.paste(label, (x + border, y + border))
+
+
+if args.label is not None:
+    log(f"Drawing label {args.label or args.location!r}")
+    draw_label(img, args.label or args.location, args.label_scale)
+
+img.save(sys.stdout.buffer, "png")
