@@ -15,6 +15,7 @@ subprocess.run(
         *("typst", "compile"),
         *("--format", "png"),
         *("--ppi", "72"),  # 1pt = 1px
+        *("--root", ROOT),
         *("--font-path", ROOT / "assets" / "fonts"),
         *("--", args.file, "-"),
     ],
