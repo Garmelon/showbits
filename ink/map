@@ -3,6 +3,7 @@
 import argparse
 import re
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import osmnx as ox
@@ -70,6 +71,8 @@ class Args:
     height: int
     label: str | None
     label_scale: int
+    track: list[Path]
+    track_width: int
 
 
 parser = argparse.ArgumentParser()
@@ -85,6 +88,16 @@ parser.add_argument(
     help="draw a label, defaults to the location",
 )
 parser.add_argument("-L", "--label-scale", type=int, default=2)
+parser.add_argument(
+    "-t",
+    "--track",
+    type=Path,
+    nargs="+",
+    action="extend",
+    default=[],
+    help="GPX files or directories containing them to draw on top",
+)
+parser.add_argument("--track-width", type=int, default=1, help="pixels")
 args = parser.parse_args(namespace=Args())
 
 
@@ -204,6 +217,40 @@ for geom, kind in zip(lines.geometry, lines["highway"]):
 for geom, kind in zip(nodes.geometry, nodes["highway"]):
     x, y = to_px(geom.coords)[0]
     draw_circle(x, y, ROAD_NODES[kind] * scale)
+
+
+def read_gpx(path: Path) -> list[LineString]:
+    # One line per track segment and per route. GPX 1.0 and 1.1 use different
+    # namespaces, so match any.
+    root = ET.parse(path).getroot()
+    lines = []
+    segments = root.findall(".//{*}trkseg") + root.findall(".//{*}rte")
+    for segment in segments:
+        points = segment.findall("{*}trkpt") + segment.findall("{*}rtept")
+        coords = [(float(pt.get("lon")), float(pt.get("lat"))) for pt in points]
+        if len(coords) >= 2:
+            lines.append(LineString(coords))
+    return lines
+
+
+def gpx_files(paths: list[Path]) -> list[Path]:
+    files = []
+    for path in paths:
+        if path.is_dir():
+            files.extend(sorted(path.rglob("*.gpx")))
+        else:
+            files.append(path)
+    return files
+
+
+for path in gpx_files(args.track):
+    tracks = read_gpx(path)
+    log(f"Drawing {len(tracks)} track segments from {path}")
+    if not tracks:
+        continue
+    tracks = GeoDataFrame(geometry=tracks, crs="EPSG:4326").to_crs(utm)
+    for line in tracks.geometry:
+        draw.line(to_px(line.coords), fill=RED, width=args.track_width, joint="curve")
 
 
 def draw_label(img: Image.Image, text: str, scale: int) -> None:
