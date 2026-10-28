@@ -11,16 +11,20 @@ IMAGE = DIR / "image.png"
 
 
 class Args:
-    number: int
+    number: int | None
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("number", type=int)
+parser.add_argument("number", type=int, nargs="?")
 args = parser.parse_args(namespace=Args())
+
+url = "https://xkcd.com/info.0.json"
+if args.number is not None:
+    url = f"https://xkcd.com/{args.number}/info.0.json"
 
 info = json.loads(
     run(
-        ["curl", f"https://xkcd.com/{args.number}/info.0.json"],
+        ["curl", url],
         capture_output=True,
         text=True,
         check=True,
