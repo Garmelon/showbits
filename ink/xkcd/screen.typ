@@ -6,7 +6,9 @@
 
 #let info = json("info.json")
 
-#align(center + top)[= #info.title]
+#align(center + top)[
+  = #text(fill: prelude.red)[#info.num] #info.title
+]
 
 #{
   set align(center + horizon)

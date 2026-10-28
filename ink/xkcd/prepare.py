@@ -41,6 +41,7 @@ size = json.loads(
 INFO.write_text(
     json.dumps(
         {
+            "num": info["num"],
             "title": info["title"],
             "alt": info["alt"],
             "width": size["w"],
