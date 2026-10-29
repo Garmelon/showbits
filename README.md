@@ -9,4 +9,3 @@ Ideas:
 - https://api.nasa.gov/
 - https://thespacedevs.com/llapi
 - procedural cave painting clock
-- xkcd
