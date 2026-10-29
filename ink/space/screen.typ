@@ -17,7 +17,7 @@
     path(event.image),
     colors: (prelude.white, prelude.black, prelude.red),
     method: "floyd-steinberg",
-    size: 4 * int(prelude.unifont-size.pt()),
+    size: 8 * int(prelude.unifont-size.pt()),
   ))
 
   grid(
@@ -29,8 +29,10 @@
       #event.location
 
       = #event.name
+      #v(8pt)
+
+      #event.description
     ],
-    grid.cell(colspan: 2, event.description),
   )
 
   v(0.5pt)
