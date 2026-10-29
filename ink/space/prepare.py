@@ -25,12 +25,7 @@ data = json.loads(
 )
 
 events = []
-for i, event in enumerate(data["results"][:4]):
-    image_url: str = event["image"]["thumbnail_url"]
-    image_ext = Path(image_url).suffix
-    image = DIR / f"image_{i}{image_ext}"
-    run(["curl", "-o", image, event["image"]["thumbnail_url"]], check=True)
-
+for i, event in enumerate(data["results"]):
     date = datetime.datetime.fromisoformat(event["date"])
     date = date.astimezone()
     date = date.strftime("%Y-%m-%d %H:%M %Z")
@@ -42,7 +37,6 @@ for i, event in enumerate(data["results"][:4]):
             "location": event["location"],
             "date": date,
             "date_precision": event["date_precision"]["name"],
-            "image": image.name,
         }
     )
 
