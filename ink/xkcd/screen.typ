@@ -17,7 +17,7 @@
     let max_w = calc.floor(size.width.pt())
     let max_h = calc.floor(size.height.pt())
     let w_by_max_h = calc.floor(max_h / info.height * info.width)
-    let h_by_max_w = calc.floor(max_w / info.height * info.width)
+    let h_by_max_w = calc.floor(max_w / info.width * info.height)
     // Includes original image size so the image isn't stretched if it's small.
     let size = calc.min(
       calc.max(info.width, info.height),
