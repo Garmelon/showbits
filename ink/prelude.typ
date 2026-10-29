@@ -6,7 +6,7 @@
 #let red = rgb(200, 0, 0)
 
 #let init(it) = {
-  set page(width: width, height: height, margin: (x: 0pt, y: 4pt))
+  set page(width: width, height: height, margin: 0pt)
   it
 }
 
