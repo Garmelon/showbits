@@ -33,13 +33,7 @@ for i, event in enumerate(data["results"][:4]):
 
     date = datetime.datetime.fromisoformat(event["date"])
     date = date.astimezone()
-    match event["date_precision"]["id"]:
-        case 5:  # Day
-            date = date.strftime("%Y-%m-%d")
-        case 7:  # Month
-            date = date.strftime("%Y-%m")
-        case 14:  # Year
-            date = date.strftime("%Y")
+    date = date.strftime("%Y-%m-%d %H:%M %Z")
 
     events.append(
         {
@@ -47,6 +41,7 @@ for i, event in enumerate(data["results"][:4]):
             "description": event["description"],
             "location": event["location"],
             "date": date,
+            "date_precision": event["date_precision"]["name"],
             "image": image.name,
         }
     )

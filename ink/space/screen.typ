@@ -25,8 +25,9 @@
     gutter: 8pt,
     img,
     [
-      #box(fill: prelude.red, inset: 2pt, text(fill: prelude.white, event.date)),
-      #event.location
+      #box(fill: prelude.white, inset: 4pt, text(fill: prelude.black, event.date))
+      (#event.date_precision),
+      #box(fill: prelude.red, inset: 4pt, event.location)
 
       = #event.name
       #v(8pt)
