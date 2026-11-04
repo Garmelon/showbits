@@ -10,9 +10,10 @@
   dir: ltr,
   spacing: 2mm,
 
-  $
-    a^2 + b^2 = text(fill: red, c^2)
-  $,
+  [
+    #v(20mm)
+    $ a^2 + b^2 = text(fill: red, c^2) $
+  ],
 
   cetz.canvas(length: 40mm, {
     import cetz.draw: *
