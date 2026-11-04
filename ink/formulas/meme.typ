@@ -1,5 +1,5 @@
-#import "../prelude.typ"
-#show: prelude.init
+#import "../prelude.typ": *
+#show: set-page
 
 #set align(center + horizon)
 #set text(size: 3cm)

@@ -1,11 +1,11 @@
+#import "../prelude.typ": *
+#show: set-page
+#show: use-unifont
+
 #import "@preview/bulb:0.4.0": dither
 
-#import "../prelude.typ"
-#show: prelude.init
-#show: prelude.use-unifont
-
-#set page(fill: prelude.black, margin: (x: 8pt, top: 8pt))
-#set text(fill: prelude.white)
+#set page(fill: black, margin: (x: 8pt, top: 8pt))
+#set text(fill: white)
 #show heading: set block(above: 8pt)
 
 // Keep everything to one page
@@ -14,14 +14,14 @@
 #let events = json("events.json")
 #for event in events [
   #box(
-    fill: prelude.white,
+    fill: white,
     inset: 4pt,
     radius: 4pt,
-    text(fill: prelude.black, event.date),
+    text(fill: black, event.date),
   )
   (#event.date_precision),
   #box(
-    fill: prelude.red,
+    fill: red,
     inset: 4pt,
     radius: 4pt,
     event.location,
@@ -35,6 +35,6 @@
   #block(
     above: 8.5pt,
     below: 8.5pt,
-    line(stroke: 1pt + prelude.white, length: 100%),
+    line(stroke: 1pt + white, length: 100%),
   )
 ]

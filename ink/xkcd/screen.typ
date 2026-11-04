@@ -1,13 +1,13 @@
-#import "@preview/bulb:0.4.0": dither
+#import "../prelude.typ": *
+#show: set-page
+#show: use-unifont
 
-#import "../prelude.typ"
-#show: prelude.init
-#show: prelude.use-unifont
+#import "@preview/bulb:0.4.0": dither
 
 #let info = json("info.json")
 
 #align(center + top)[
-  = #text(fill: prelude.red)[#info.num] #info.title
+  = #text(fill: red)[#info.num] #info.title
 ]
 
 #{
@@ -26,7 +26,7 @@
     )
     let dithered = image(dither(
       path("image.png"),
-      colors: (prelude.white, prelude.black, prelude.red),
+      colors: (white, black, red),
       method: "floyd-steinberg",
       size: size,
     ))

@@ -1,5 +1,5 @@
-#import "../prelude.typ"
-#show: prelude.init
+#import "../prelude.typ": *
+#show: set-page
 
 #import "@preview/cetz:0.5.3"
 
@@ -11,7 +11,7 @@
   spacing: 2mm,
 
   $
-    a^2 + b^2 = text(fill: prelude.red, c^2)
+    a^2 + b^2 = text(fill: red, c^2)
   $,
 
   cetz.canvas(length: 40mm, {
@@ -49,7 +49,7 @@
       set-transform(none)
     }
 
-    rect((-1, 0), (1, -2), name: "c", stroke: none, fill: prelude.red)
+    rect((-1, 0), (1, -2), name: "c", stroke: none, fill: red)
 
     content((name: "a"), $a$)
     content((name: "b"), text(fill: white, $b$))

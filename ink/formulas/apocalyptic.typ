@@ -1,5 +1,5 @@
-#import "../prelude.typ"
-#show: prelude.init
+#import "../prelude.typ": *
+#show: set-page
 
 #set align(center + horizon)
 #set text(size: 3cm)
@@ -8,7 +8,7 @@
 
 $
   & 2^157 #h(20pt)=#h(20pt)
-    182687704 text(prelude.red, 666) \
+    182687704 text(red, 666) \
   & 362864775460604089 \
   & 535377456991567872 \
 $

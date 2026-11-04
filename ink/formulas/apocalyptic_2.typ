@@ -1,5 +1,5 @@
-#import "../prelude.typ"
-#show: prelude.init
+#import "../prelude.typ": *
+#show: set-page
 
 #set align(center + horizon)
 #set text(size: 3cm)
@@ -7,11 +7,11 @@
 // https://www.youtube.com/watch?v=0LkBwCSMsX4
 
 $
-  & 2^text(prelude.red, 666)
+  & 2^text(red, 666)
     #h(20pt)=#h(20pt) 306180206916 \
   & 083902309240650087 \
   & 602475282639486413 \
-  & 8 text(prelude.red, 666)
+  & 8 text(red, 666)
     225770884719 dots \
   // 135200228947843903
   // 509007380505551381
